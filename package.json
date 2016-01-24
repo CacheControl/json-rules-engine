@@ -1,0 +1,29 @@
+{
+  "name": "json-business-rules",
+  "version": "1.0.0",
+  "description": "Rules Engine expressed in simple json",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "lint": "standard"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cachecontrol/json-business-rules"
+  },
+  "keywords": [
+    "rules",
+    "engine"
+  ],
+  "author": "Cache Hamm <cdhamm@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cachecontrol/json-business-rules/issues"
+  },
+  "homepage": "https://github.com/cachecontrol/json-business-rules",
+  "devDependencies": {
+    "chai": "3.4.1",
+    "mocha": "2.3.4",
+    "standard": "^5.4.1"
+  }
+}
