@@ -63,7 +63,6 @@ achievementRules.addRule({
  action: {
     type: "reward",
     params: {
-      isMiddleAged: true,
       reward: {
         type: "currency",
         detail: {
@@ -83,11 +82,8 @@ achievementRules.addRule({
  }]
 })
 
-let instance = achievementRules.instantiate()
 // ADDING FACTS
 // facts are persisted across each run() of the rules
-instance.addFact("userId", "0e03b9bd-36f9-4933-9ae8-2165baeaccde")
-instance.addFact("age", 25)
 instance.addFact("age", (params, facts, done) => {
   // api call to load demographic data
   // need access to facts
@@ -144,6 +140,7 @@ instance.onAction((r, rule, done) {
       }
       break;
     case 'pointCapReached':
+      // is this the lowest point cap for this currency?
       let newPointCap = Math.max(r.facts.pointBalance - action.data.pointCap)
       r.facts.pointCaps = r.facts.pointCaps || {}
       if(!r.facts.pointCaps[action.data.currency] || r.facts.pointCaps[action.data.currency] < newPointCap) {
@@ -192,16 +189,18 @@ achievementRules.addRule({
   id: "point-cap"
   priority: 100,
   conditions: {
-    all: [{
-     "fact": "inFamily",
-     "operator": "equal",
-     "value": true
-   },
-   {
-     "fact": "familyPointBalance",
-     "operator": "greaterThanInclusive",
-     "value": 5000
-   }]
+    all: [
+      {
+       "fact": "inFamily",
+       "operator": "equal",
+       "value": true
+     },
+     {
+       "fact": "familyPointBalance",
+       "operator": "greaterThanInclusive",
+       "value": 5000
+     }
+    ]
  },
  action: {
     type: "pointCapReached",
