@@ -1,3 +1,4 @@
 'use strict'
 
-module.exports = require('./json-business-rules')
+import jsonBusinessRules from './json-business-rules'
+export default jsonBusinessRules

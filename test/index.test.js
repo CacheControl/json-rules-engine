@@ -1,12 +1,12 @@
 'use strict'
 
-let subject = require('../src/index')
+import subject from '../src/index'
 
 describe('json-business-subject', () => {
   it('has methods for managing facts and subject', () => {
     let set = subject('set1')
-    expect(set).to.have.ownProperty('addRule')
-    expect(set).to.have.ownProperty('addFact')
+    expect(set).to.have.property('addRule')
+    expect(set).to.have.property('addFact')
   })
 
   it('treats each rule set independently', () => {
@@ -53,14 +53,14 @@ describe('json-business-subject', () => {
     it('allows a constant fact', () => {
       set.addFact(FACT_NAME, FACT_VALUE)
       assertFact(set)
-      expect(set.facts[FACT_NAME].val).to.equal(FACT_VALUE)
+      expect(set.facts[FACT_NAME].value).to.equal(FACT_VALUE)
     })
 
     it('allows options to be passed', () => {
       let options = { cache: false }
       set.addFact(FACT_NAME, options, FACT_VALUE)
       assertFact(set)
-      expect(set.facts[FACT_NAME].val).to.equal(FACT_VALUE)
+      expect(set.facts[FACT_NAME].value).to.equal(FACT_VALUE)
       expect(set.facts[FACT_NAME].options).to.equal(options)
     })
 
@@ -69,7 +69,7 @@ describe('json-business-subject', () => {
         done(null, FACT_VALUE)
       })
       assertFact(set)
-      expect(set.facts[FACT_NAME].val).to.equal(null)
+      expect(set.facts[FACT_NAME].value).to.equal(null)
     })
 
     it('allows a lamba fact with options', () => {
@@ -79,7 +79,7 @@ describe('json-business-subject', () => {
       })
       assertFact(set)
       expect(set.facts[FACT_NAME].options).to.equal(options)
-      expect(set.facts[FACT_NAME].val).to.equal(null)
+      expect(set.facts[FACT_NAME].value).to.equal(null)
     })
   })
 
@@ -89,7 +89,7 @@ describe('json-business-subject', () => {
 
     it('allows facts to be set when run', () => {
       set.run({modelId: 'XYZ'})
-      expect(set.facts.modelId.val).to.equal('XYZ')
+      expect(set.facts.modelId.value).to.equal('XYZ')
     })
   })
 })

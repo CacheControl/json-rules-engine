@@ -1,7 +1,7 @@
 'use strict'
 
 import sinon from 'sinon'
-import subject from '../src/runner'
+import Runner from '../src/runner'
 import engineFactory from '../src/json-business-rules'
 
 let engine = engineFactory()
@@ -27,7 +27,8 @@ describe('runner', () => {
   it('supports basic "all" conditions', () => {
     let actionSpy = sinon.spy()
     engine.on('action', actionSpy)
-    subject(engine)
+    let runner = new Runner(engine)
+    runner.run()
     expect(actionSpy).to.have.been.calledWith(action)
   })
 })

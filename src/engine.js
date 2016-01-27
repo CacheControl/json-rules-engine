@@ -1,44 +1,55 @@
 'use strict'
 
-import runner from './runner'
+import Runner from './runner'
 import params from 'params'
+import Fact from './fact'
+import Rule from './rule'
 import { EventEmitter } from 'events'
 
-module.exports = function (set) {
-  let rules = []
-  let facts = {}
-  let engine = new EventEmitter()
+class Engine extends EventEmitter {
 
-  engine.addRule = (rule) => {
-    params(rule).require(['conditions', 'action'])
-    rules.push(rule)
+  constructor (set) {
+    super()
+    this.set = set
+    this.rules = []
+    this.facts = {}
   }
 
-  engine.addFact = function (id, options, cb) {
+  addRule (ruleProperties) {
+    params(ruleProperties).require(['conditions', 'action'])
+
+    let rule = new Rule()
+    rule.setConditions(ruleProperties.conditions)
+    rule.setAction(ruleProperties.action)
+
+    this.rules.push(rule)
+  }
+
+  addFact (id, options, definitionFunc) {
     let val = null
     if (arguments.length < 2) throw new Error('invalid arguments')
     if (arguments.length === 2) {
       if (typeof options === 'function') {
-        cb = options
+        definitionFunc = options
         options = {}
       } else {
         val = options
       }
-    } else if (typeof cb !== 'function') {
-      val = cb
+    } else if (typeof definitionFunc !== 'function') {
+      val = definitionFunc
     }
-    facts[id] = { options, cb, val }
+    let fact = new Fact(options)
+    fact.definition(definitionFunc, val)
+    this.facts[id] = fact
   }
 
-  engine.run = function (facts = {}) {
-    for (let key in facts) {
-      engine.addFact(key, facts[key])
+  run (initialFacts = {}) {
+    for (let key in initialFacts) {
+      this.addFact(key, initialFacts[key])
     }
-    runner(engine)
+    let runner = new Runner(this)
+    return runner.run()
   }
-
-  engine.facts = facts
-  engine.rules = rules
-
-  return engine
 }
+
+export default Engine

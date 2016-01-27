@@ -7,6 +7,14 @@ export let evaluateRuleConditions = function (engine, rule) {
   engine.emit('action', rule.action)
 }
 
-export default function (engine) {
-  engine.rules.forEach(evaluateRuleConditions.bind(null, engine))
+class Runner {
+  constructor (engine) {
+    this.engine = engine
+  }
+
+  run () {
+    this.engine.rules.forEach(evaluateRuleConditions.bind(null, this.engine))
+  }
 }
+
+export default Runner
