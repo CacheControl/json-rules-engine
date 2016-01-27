@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --compilers js:babel-core/register --require babel-polyfill && npm run lint --silent",
-    "lint": "standard || true",
+    "lint": "standard --verbose | snazzy || true",
     "build": "babel src -d dist"
   },
   "repository": {
@@ -47,6 +47,7 @@
     "mocha": "2.3.4",
     "sinon": "^1.17.2",
     "sinon-chai": "^2.8.0",
+    "snazzy": "^2.0.1",
     "standard": "^5.4.1"
   },
   "dependencies": {

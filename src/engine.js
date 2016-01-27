@@ -1,6 +1,5 @@
 'use strict'
 
-import Runner from './runner'
 import params from 'params'
 import Fact from './fact'
 import Rule from './rule'
@@ -53,12 +52,14 @@ class Engine extends EventEmitter {
     return await fact.calculate()
   }
 
-  run (initialFacts = {}) {
+  async run (initialFacts = {}) {
     for (let key in initialFacts) {
       this.addFact(key, initialFacts[key])
     }
-    let runner = new Runner(this)
-    return runner.run()
+    return Promise.all(this.rules.map(async (rule) => {
+      let ruleResult = await rule.evaluate(this)
+      if (ruleResult) this.emit('action', rule.action)
+    }))
   }
 }
 
