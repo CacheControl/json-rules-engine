@@ -46,6 +46,9 @@ class Engine extends EventEmitter {
 
   async factValue (factId) {
     let fact = this.facts[factId]
+    if (!fact) {
+      throw new Error(`Undefined fact: ${factId}`)
+    }
     if (fact.value) {
       return fact.value
     }

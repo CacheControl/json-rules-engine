@@ -1,6 +1,7 @@
 'use strict'
 
 let params = require('params')
+let debug = require('debug')('json-business-rules')
 
 class Rule {
   constructor (options = {}) {
@@ -49,9 +50,12 @@ class Rule {
 
   async all (conditions, engine) {
     let results = await Promise.all(conditions.map(async (condition) => {
-      let result = await engine.factValue(condition.fact)
-      return this.testCondition(condition, result)
+      let factValue = await engine.factValue(condition.fact)
+      let conditionResult = this.testCondition(condition, factValue)
+      debug(`testCondition:: <${factValue} ${condition.operator} ${condition.value}?> (${conditionResult})`)
+      return conditionResult
     }))
+    debug('all::results', results)
     return results.every((result) => result === true)
   }
 
