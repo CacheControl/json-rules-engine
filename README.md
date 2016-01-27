@@ -20,7 +20,9 @@ let achievementRules = JsonRules('Achievements') //shares a universe of rules
 // DEFINING RULES
 // operators:
 // "in", "notIn", "lessThan", "lessThanInclusive", "greaterThan", "greaterThanInclusive", "equal", "notEqual"
-// priority: integer, not exclusive; can be multiple 1's
+// priority: integer, not exclusive; can be multiple 1's.  higher # = runs earlier
+// inSeries(false): true|false.  Defaults to running in parallel.  Turn this on to run 'any' or 'all' in series
+//   useful when needing to load data in the first few conditions
 // conditions: object representing
 // action: callback to be executed when conditions passes
 //         actions can modify facts
@@ -30,6 +32,7 @@ achievementRules.addRule({
   conditions: {
     all: [{
      "id": "6ed20017-375f-40c9-a1d2-6d7e0f4733c5",
+      // priority: integer, not exclusive; can be multiple 1's.  higher # = runs earlier
       fact: "eligibility",
       params: {
         equationId: '11111111-2222-3333-4444-5678901234567',
@@ -87,8 +90,6 @@ achievementRules.addFact("eligibility", { cache: true }, (params, r, done) => {
 //              can also receive a callback, which can return true or false to denote caching
 //      cacheKey: sets the cacheKey
 //      generateCacheKey(fact, params): returns generated cache key based on inputs
-
-
 
 
 // RETRIEVING FACTS

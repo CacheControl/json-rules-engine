@@ -20,7 +20,9 @@ class Engine extends EventEmitter {
 
     let rule = new Rule()
     rule.setConditions(ruleProperties.conditions)
-    rule.setAction(ruleProperties.action)
+    rule.setAction(ruleProperties.action, (type, params) => {
+      this.engine.emit('action', type, params)
+    })
 
     this.rules.push(rule)
   }
@@ -41,6 +43,14 @@ class Engine extends EventEmitter {
     let fact = new Fact(options)
     fact.definition(definitionFunc, val)
     this.facts[id] = fact
+  }
+
+  async factValue (factId) {
+    let fact = this.facts[factId]
+    if (fact.value) {
+      return fact.value
+    }
+    return await fact.calculate()
   }
 
   run (initialFacts = {}) {

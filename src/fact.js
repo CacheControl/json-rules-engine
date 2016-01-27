@@ -5,8 +5,8 @@ class Fact {
     this.options = options
   }
 
-  definition (cb, initialValue = undefined) {
-    this.cb = cb
+  definition (calculate, initialValue = undefined) {
+    this.calculate = calculate
     this.value = initialValue
   }
 }
