@@ -45,7 +45,7 @@ describe('json-business-subject', () => {
 
     beforeEach(() => { set = subject('set1') })
 
-    function assertFact(set) {
+    function assertFact (set) {
       expect(Object.keys(set.facts).length).to.equal(1)
       expect(Object.keys(set.facts)).to.include(FACT_NAME)
     }
@@ -80,6 +80,16 @@ describe('json-business-subject', () => {
       assertFact(set)
       expect(set.facts[FACT_NAME].options).to.equal(options)
       expect(set.facts[FACT_NAME].val).to.equal(null)
+    })
+  })
+
+  describe('run()', () => {
+    let set
+    beforeEach(() => { set = subject('set1') })
+
+    it('allows facts to be set when run', () => {
+      set.run({modelId: 'XYZ'})
+      expect(set.facts.modelId.val).to.equal('XYZ')
     })
   })
 })

@@ -4,8 +4,9 @@
   "description": "Rules Engine expressed in simple json",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
-    "lint": "standard"
+    "test": "mocha --compilers js:babel-register && npm run lint --silent",
+    "lint": "standard || true",
+    "build": "babel src -d dist"
   },
   "repository": {
     "type": "git",
@@ -15,6 +16,16 @@
     "rules",
     "engine"
   ],
+  "standard": {
+    "globals": [
+      "describe",
+      "it",
+      "before",
+      "beforeEach",
+      "expect",
+      "factories"
+    ]
+  },
   "author": "Cache Hamm <cdhamm@gmail.com>",
   "license": "ISC",
   "bugs": {
@@ -22,8 +33,13 @@
   },
   "homepage": "https://github.com/cachecontrol/json-business-rules",
   "devDependencies": {
+    "babel-cli": "^6.4.5",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-register": "^6.4.3",
     "chai": "3.4.1",
     "mocha": "2.3.4",
+    "sinon": "^1.17.2",
+    "sinon-chai": "^2.8.0",
     "standard": "^5.4.1"
   },
   "dependencies": {

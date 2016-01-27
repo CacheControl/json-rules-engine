@@ -5,19 +5,19 @@ module.exports = (options) => {
   return {
     id: 'point-cap',
     priority: 100,
-    conditions: {
+    conditions: options.conditions || {
       all: [{
-       'fact': 'age',
-       'operator': 'lessThan',
-       'value': 45
-     },
-     {
-       'fact': 'pointBalance',
-       'operator': 'greaterThanInclusive',
-       'value': 1000
-     }]
+        'fact': 'age',
+        'operator': 'lessThan',
+        'value': 45
+      },
+      {
+        'fact': 'pointBalance',
+        'operator': 'greaterThanInclusive',
+        'value': 1000
+      }]
     },
-    action: {
+    action: options.action || {
       type: 'pointCapReached',
       params: {
         currency: 'points',

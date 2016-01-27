@@ -30,20 +30,6 @@ achievementRules.addRule({
   conditions: {
     all: [{
      "id": "6ed20017-375f-40c9-a1d2-6d7e0f4733c5",
-
-     // option 1
-     "fact": {
-        name: "eligibility",
-        params: {
-          equationId: '11111111-2222-3333-4444-5678901234567',
-          eligibilityId: '11111111-2222-3333-4444-123456789012',
-          fieldid: 'age'
-        }
-     },
-     "operator": "lessThan",
-     "value": 45,
-
-     // option 2
       fact: "eligibility",
       params: {
         equationId: '11111111-2222-3333-4444-5678901234567',
@@ -84,16 +70,26 @@ achievementRules.addRule({
 
 // ADDING FACTS
 // facts are persisted across each run() of the rules
-instance.addFact("age", (params, facts, done) => {
+achievementRules.addFact("eligibility", { cache: true }, (params, r, done) => {
   // api call to load demographic data
   // need access to facts
-  request(`/users/${facts('userId')}`)
-  done(null, age)
+  let options = Params(params).only('eligibilityId')
+  let eligibilityData = !r.facts.getFact('eligibility', options)
+  if(eligibilityData) {
+    eligibilityData = await request(`/users/${facts('userId')}/eligibilities/${params.eligibilityId}/data`)
+    r.addFact('eligibility', { cacheKey: r.generateCacheKey('eligibility', options)}, eligibilityData)
+  }
+  done(null, eligibilityData.age)
 }, { cache: true })
 
 //    addFact OPTIONS
 //      cache:  persists across each run of the rules engine, default: true
 //              can also receive a callback, which can return true or false to denote caching
+//      cacheKey: sets the cacheKey
+//      generateCacheKey(fact, params): returns generated cache key based on inputs
+
+
+
 
 // RETRIEVING FACTS
 r.getFact(factName, params = {}) //searches the internal facts hash map
@@ -102,32 +98,32 @@ r.getFact(factName, params = {}) //searches the internal facts hash map
 // RUNNING RULES
 // rules.run(facts)
 // all other methods should raise an exception if called after run()
-instance.run({
+achievementRules.run({
   userId: '0e03b9bd-36f9-4933-9ae8-2165baeaccde',
   performedAt: '2015-05-25',
   tags: ['11111111-2222-3333-4444-123456789012']
 })
 
-instance.on('error', (r, rule) {
+achievementRules.on('error', (r, rule) {
   // log failure reason
 })
-instance.on('failure', (r, rule) {
+achievementRules.on('failure', (r, rule) {
   // log failure reason
 })
-instance.on('action', (r, action) {
+achievementRules.on('action', (r, action) {
   // log failure reason
 })
 
 // HANDLING ACTIONS
 // disadvantage is that if the persisted version changes, the code breaks
-instance.on('reward', (r, data) => {
+achievementRules.on('reward', (r, data) => {
   data
   // can this stop the rules?
   // alternatively, could just add some control properties to action
   //  e.g. { emit: reward, stop: true, data: {} }
 })
 
-instance.onAction((r, rule, done) {
+achievementRules.onAction((r, rule, done) {
   let action = rule.action
   switch (action.type) {
     case 'reward':
@@ -251,8 +247,77 @@ achievementRules.addRule({
  },
  action: {}
 })
-// use json-schema for the basic validations?
 
+// ORs: Total Cholesterol: ≤199 OR TC:HDL Ratio: ≤ 4.0 OR individual LDL, HDL, and triglycerides
+achievementRules.addRule({
+  id: "age-range",
+  priority: 1,
+  conditions: {
+    any: [{
+     "id": "6ed20017-375f-40c9-a1d2-6d7e0f4733c5",
+      fact: "biometrics",
+      params: {
+        sponsorTagId: '11111111-2222-3333-4444-5678901234567',
+        fieldId: 'LDL'
+      },
+     "operator": "lessThanInclusive",
+     "value": 199
+   },
+   {
+     "id": "6ed20017-375f-40c9-a1d2-6d7e0f4733c5",
+      fact: "biometrics",
+      params: {
+        sponsorTagId: '11111111-2222-3333-4444-5678901234567',
+        fieldId: 'TC-HDL-Ratio'
+      },
+     "operator": "lessThanInclusive",
+     "value": 4
+   }]
+ },
+ action: {}
+})
+
+
+// Group Rewards:
+//    Offer incentive when more than 50% of the group completes a step program
+//    Award bonus rewards to all participants that have completed the activity once the threshold is reached
+// group.4184a91a-582e-4e9a-93da-8e34d5b458b3.program.abdcfe9f-5d6a-43af-8cb5-95b7f69cef44.completion-progress
+achievementRules.addRule({
+  id: "age-range",
+  priority: 1,
+  conditions: {
+    all: [{
+     "id": "6ed20017-375f-40c9-a1d2-6d7e0f4733c5",
+      fact: "team_participation",
+     "operator": "greaterThanInclusive",
+     "value": 50
+   },
+   {
+     "id": "6ed20017-375f-40c9-a1d2-6d7e0f4733c5",
+      "fact": {
+        name: "rateLimit",
+        params: {
+          per: 1
+        }
+      }
+     "operator": "lessThan",
+     "value": 1
+   }]
+ },
+ action: {
+    type: "groupReward",
+    params: {
+      reward: {
+        type: "currency",
+        detail: {
+          currency: "points"
+          amount: 50
+        }
+      }
+    }
+ }
+})
+achievementRules.run({groupId: '4184a91a-582e-4e9a-93da-8e34d5b458b3'})
 
 // hash the fact to cache: https://github.com/puleos/object-hash
 // add debug() so can output things like 'loading from cache: fact: XXX, params: YYYY'
