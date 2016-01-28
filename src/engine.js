@@ -44,7 +44,7 @@ class Engine extends EventEmitter {
     this.facts[id] = fact
   }
 
-  async factValue (factId) {
+  async factValue (factId, params = {}) {
     let fact = this.facts[factId]
     if (!fact) {
       throw new Error(`Undefined fact: ${factId}`)
@@ -52,7 +52,7 @@ class Engine extends EventEmitter {
     if (fact.value) {
       return fact.value
     }
-    return await fact.calculate()
+    return await fact.calculate(params, this)
   }
 
   async run (initialFacts = {}) {

@@ -14,18 +14,14 @@ let eligconditions =  {
   'fieldid': 'age'
 }
 
-
 let JsonRules = require('json-rules')
 let achievementRules = JsonRules('Achievements') //shares a universe of rules
 // DEFINING RULES
-// operators:
-// "in", "notIn", "lessThan", "lessThanInclusive", "greaterThan", "greaterThanInclusive", "equal", "notEqual"
 // priority: integer, not exclusive; can be multiple 1's.  higher # = runs earlier
 // inSeries(false): true|false.  Defaults to running in parallel.  Turn this on to run 'any' or 'all' in series
 //   useful when needing to load data in the first few conditions
-// conditions: object representing
 // action: callback to be executed when conditions passes
-//         actions can modify facts
+//         *** actions can modify facts
 achievementRules.addRule({
   id: "age-range"
   priority: 1,

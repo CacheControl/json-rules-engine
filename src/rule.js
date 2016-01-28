@@ -47,7 +47,7 @@ class Rule {
 
   async runConditions (conditions, engine) {
     return await Promise.all(conditions.map(async (condition) => {
-      let factValue = await engine.factValue(condition.fact)
+      let factValue = await engine.factValue(condition.fact, condition.params)
       let conditionResult = this.testCondition(condition, factValue)
       debug(`testCondition:: <${factValue} ${condition.operator} ${condition.value}?> (${conditionResult})`)
       return conditionResult

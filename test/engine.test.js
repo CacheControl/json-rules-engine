@@ -59,8 +59,8 @@ describe('Engine', () => {
     })
 
     it('allows a lamba fact with no options', () => {
-      engine.addFact(FACT_NAME, (params, facts, done) => {
-        done(null, FACT_VALUE)
+      engine.addFact(FACT_NAME, async (params, engine) => {
+        return FACT_VALUE
       })
       assertFact(engine)
       expect(engine.facts[FACT_NAME].value).to.equal(null)
@@ -68,8 +68,8 @@ describe('Engine', () => {
 
     it('allows a lamba fact with options', () => {
       let options = { cache: false }
-      engine.addFact(FACT_NAME, options, (params, facts, done) => {
-        done(null, FACT_VALUE)
+      engine.addFact(FACT_NAME, options, async (params, engine) => {
+        return FACT_VALUE
       })
       assertFact(engine)
       expect(engine.facts[FACT_NAME].options).to.equal(options)
@@ -78,13 +78,28 @@ describe('Engine', () => {
   })
 
   describe('run()', () => {
-    it('allows facts to be engine when run', () => {
+    it('allows facts to be added when run', () => {
       engine.run({modelId: 'XYZ'})
       expect(engine.facts.modelId.value).to.equal('XYZ')
     })
   })
 
   describe('factValue', () => {
+    beforeEach(() => {
+      engine.addFact('foo', async (params, facts) => {
+        if (params.userId) return params.userId
+        return 'unknown'
+      })
+    })
+
+    it('allows parameters to be passed to the fact', async () => {
+      return expect(engine.factValue('foo')).to.eventually.equal('unknown')
+    })
+
+    it('allows parameters to be passed to the fact', async () => {
+      return expect(engine.factValue('foo', { userId: 1 })).to.eventually.equal(1)
+    })
+
     it('throws an exception if it encounters an undefined fact', () => {
       expect(engine.factValue('foo')).to.be.rejectedWith(/Undefined fact: foo/)
     })

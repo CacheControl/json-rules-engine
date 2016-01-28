@@ -8,5 +8,6 @@ chai.use(sinonChai)
 
 global.expect = chai.expect
 global.factories = {
-  rule: require('./rule-factory')
+  rule: require('./rule-factory'),
+  condition: require('./condition-factory')
 }

@@ -17,9 +17,6 @@ async function factAdult (params, engine) {
 
 describe('Engine: "all" conditions', () => {
   let engine
-  it('throws an exception if a fact has not been registered', () => {
-
-  })
 
   describe('supports a single "all" condition', () => {
     let action = {
