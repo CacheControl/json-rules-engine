@@ -45,16 +45,23 @@ class Rule {
     }
   }
 
-  async any (conditions, engine) {
-  }
-
-  async all (conditions, engine) {
-    let results = await Promise.all(conditions.map(async (condition) => {
+  async runConditions (conditions, engine) {
+    return await Promise.all(conditions.map(async (condition) => {
       let factValue = await engine.factValue(condition.fact)
       let conditionResult = this.testCondition(condition, factValue)
       debug(`testCondition:: <${factValue} ${condition.operator} ${condition.value}?> (${conditionResult})`)
       return conditionResult
     }))
+  }
+
+  async any (conditions, engine) {
+    let results = await this.runConditions(conditions, engine)
+    debug('any::results', results)
+    return results.some((result) => result === true)
+  }
+
+  async all (conditions, engine) {
+    let results = await this.runConditions(conditions, engine)
     debug('all::results', results)
     return results.every((result) => result === true)
   }
