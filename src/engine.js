@@ -58,7 +58,7 @@ class Engine extends EventEmitter {
       return fact.value
     }
     let cacheKey = fact.getCacheKey(params)
-    if (this.factCache[cacheKey]) {
+    if (cacheKey && this.factCache[cacheKey]) {
       debug(`engine::factValue cache hit for '${factId}'`)
       return this.factCache[cacheKey]
     }

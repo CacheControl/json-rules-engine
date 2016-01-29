@@ -14,7 +14,9 @@ class Fact {
   }
 
   getCacheKey (params) {
-    return hash({ params, id: this.id })
+    if (this.options.cache === true) {
+      return hash({ params, id: this.id })
+    }
   }
 }
 

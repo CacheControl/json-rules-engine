@@ -27,23 +27,32 @@ describe('Engine: action', () => {
   }
 
   let factSpy = sinon.stub().returns(22)
-  beforeEach(() => {
+  let actionSpy = sinon.spy()
+  function setup (factOptions) {
     factSpy.reset()
+    actionSpy.reset()
     engine = engineFactory()
-    let determineDrinkingAgeRule = factories.rule({ conditions, action, priority: 100 })
-    engine.addRule(determineDrinkingAgeRule)
+    let determineDrinkingAge = factories.rule({ conditions, action, priority: 100 })
+    engine.addRule(determineDrinkingAge)
     let determineCollegeSenior = factories.rule({ conditions, action: collegeSeniorAction, priority: 1 })
     engine.addRule(determineCollegeSenior)
     let over20 = factories.rule({ conditions, action: collegeSeniorAction, priority: 50 })
     engine.addRule(over20)
-    engine.addFact('age', factSpy)
-  })
+    engine.addFact('age', factOptions, factSpy)
+    engine.on('action', actionSpy)
+  }
 
   it('loads facts once and caches the results for future use', async () => {
-    let actionSpy = sinon.spy()
-    engine.on('action', actionSpy)
+    setup({cache: true})
     await engine.run()
     expect(actionSpy).to.have.been.calledThrice
     expect(factSpy).to.have.been.calledOnce
+  })
+
+  it('allows caching to be turned off', async () => {
+    setup({cache: false})
+    await engine.run()
+    expect(actionSpy).to.have.been.calledThrice
+    expect(factSpy).to.have.been.calledThrice
   })
 })
