@@ -25,9 +25,8 @@ class Rule {
     }
   }
 
-  setAction (action, cb) {
+  setAction (action) {
     this.action = params(action).only(['type', 'params'])
-    this.actionCallback = cb
   }
 
   testCondition (condition, test) {

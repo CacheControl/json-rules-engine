@@ -316,5 +316,13 @@ achievementRules.addRule({
 })
 achievementRules.run({groupId: '4184a91a-582e-4e9a-93da-8e34d5b458b3'})
 
-// hash the fact to cache: https://github.com/puleos/object-hash
-// add debug() so can output things like 'loading from cache: fact: XXX, params: YYYY'
+// TODOs:
+// cache; hash the fact to cache: https://github.com/puleos/object-hash
+// input validatons; guard against bad input data
+// README
+// emit 'failure' when a rule doesn't pass
+// recursive processing of any/all
+// ----------
+// controls: engine.stop(), engine.restart()
+// support callback based facts and engine.run()
+// might be nice to emit(action.type)

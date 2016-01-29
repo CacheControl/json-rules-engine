@@ -14,6 +14,7 @@ class Engine extends EventEmitter {
     this.set = set
     this.rules = []
     this.facts = {}
+    this.factCache = {}
   }
 
   addRule (ruleProperties) {
@@ -22,9 +23,7 @@ class Engine extends EventEmitter {
     let rule = new Rule()
     rule.setPriority(ruleProperties.priority)
     rule.setConditions(ruleProperties.conditions)
-    rule.setAction(ruleProperties.action, (type, params) => {
-      this.engine.emit('action', type, params)
-    })
+    rule.setAction(ruleProperties.action)
     debug(`engine::addRule`, rule)
 
     this.rules.push(rule)
@@ -43,9 +42,9 @@ class Engine extends EventEmitter {
     } else if (typeof definitionFunc !== 'function') {
       val = definitionFunc
     }
-    let fact = new Fact(options)
+    let fact = new Fact(id, options)
     fact.definition(definitionFunc, val)
-    debug(`engine::addFact id:${id}`, fact)
+    debug(`engine::addFact id:${id}`)
     this.facts[id] = fact
   }
 
@@ -54,10 +53,19 @@ class Engine extends EventEmitter {
     if (!fact) {
       throw new Error(`Undefined fact: ${factId}`)
     }
+    // if constant fact w/set value, return immediately
     if (fact.value) {
       return fact.value
     }
-    return await fact.calculate(params, this)
+    let cacheKey = fact.getCacheKey(params)
+    if (this.factCache[cacheKey]) {
+      debug(`engine::factValue cache hit for '${factId}'`)
+      return this.factCache[cacheKey]
+    }
+    debug(`engine::factValue cache miss for '${factId}'; calculating`)
+    let value = await fact.calculate(params, this)
+    this.factCache[cacheKey] = value
+    return value
   }
 
   prioritizeRules () {
@@ -92,7 +100,7 @@ class Engine extends EventEmitter {
       // for each batch of promise priorities, fire off all promises in parallel (Promise.all)
       // before proceeding to the next priority batch.
       orderedSets.map((set) => {
-        cursor = current.then(() => {
+        cursor = cursor.then(() => {
           return Promise.all(set.map((rule) => {
             return rule.evaluate(this).then((rulePasses) => {
               if (rulePasses) this.emit('action', rule.action, this)

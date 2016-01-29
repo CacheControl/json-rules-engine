@@ -55,6 +55,7 @@
   },
   "dependencies": {
     "debug": "^2.2.0",
+    "object-hash": "^1.1.0",
     "params": "0.1.1"
   }
 }
