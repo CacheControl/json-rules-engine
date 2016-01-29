@@ -3,8 +3,7 @@
 module.exports = (options) => {
   options = options || {}
   return {
-    id: 'point-cap',
-    priority: 100,
+    priority: options.priority || 1,
     conditions: options.conditions || {
       all: [{
         'fact': 'age',

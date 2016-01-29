@@ -4,12 +4,18 @@ let params = require('params')
 let debug = require('debug')('json-business-rules')
 
 class Rule {
-  constructor (options = {}) {
-    this.options = options
+  constructor () {
+    this.priority = 1
     this.conditions = {}
     this.action = {
       type: 'unknown'
     }
+  }
+
+  setPriority (priority) {
+    priority = parseInt(priority, 10)
+    if (priority <= 0) throw new Error('Priority must be greater than zero')
+    this.priority = priority
   }
 
   setConditions (conditions) {
@@ -42,6 +48,8 @@ class Rule {
         return test > condition.value
       case 'greaterThanInclusive':
         return test >= condition.value
+      default:
+        throw new Error(`Unknown operator: ${condition.operator}`)
     }
   }
 

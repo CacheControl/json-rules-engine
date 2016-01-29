@@ -9,6 +9,21 @@ describe('Rule', () => {
     value: 50
   })
 
+  describe('setPriority', () => {
+    it('defaults to a priority of 1', () => {
+      expect(rule.priority).to.equal(1)
+    })
+
+    it('allows a priority to be set', () => {
+      rule.setPriority(10)
+      expect(rule.priority).to.equal(10)
+    })
+
+    it('errors if priority is less than 0', () => {
+      expect(rule.setPriority.bind(null, 0)).to.throw(/greater than zero/)
+    })
+  })
+
   describe('testCondition', () => {
     it('evaluates "equal"', () => {
       let condition = Object.assign({}, conditionBase, { operator: 'equal' })
