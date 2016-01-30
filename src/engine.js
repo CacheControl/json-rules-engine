@@ -59,13 +59,12 @@ class Engine extends EventEmitter {
     }
     let cacheKey = fact.getCacheKey(params)
     if (cacheKey && this.factCache[cacheKey]) {
-      debug(`engine::factValue cache hit for '${factId}'`)
+      debug(`engine::factValue cache hit for '${factId}' cacheKey:${cacheKey}`)
       return this.factCache[cacheKey]
     }
-    debug(`engine::factValue cache miss for '${factId}'; calculating`)
-    let value = await fact.calculate(params, this)
-    this.factCache[cacheKey] = value
-    return value
+    debug(`engine::factValue cache miss for '${factId}' using cacheKey:${cacheKey}; calculating`)
+    this.factCache[cacheKey] = fact.calculate(params, this)
+    return this.factCache[cacheKey]
   }
 
   prioritizeRules () {

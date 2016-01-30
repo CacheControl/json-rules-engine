@@ -6,18 +6,8 @@ import sinon from 'sinon'
 describe('Engine: action', () => {
   let engine
 
-  let action = {
-    type: 'setDrinkingFlag',
-    params: {
-      canOrderDrinks: true
-    }
-  }
-  let collegeSeniorAction = {
-    type: 'isCollegeSenior',
-    params: {
-      chargeGraduationFee: true
-    }
-  }
+  let action = { type: 'setDrinkingFlag' }
+  let collegeSeniorAction = { type: 'isCollegeSenior' }
   let conditions = {
     any: [{
       fact: 'age',

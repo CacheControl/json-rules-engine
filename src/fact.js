@@ -3,7 +3,7 @@
 import hash from 'object-hash'
 
 class Fact {
-  constructor (id, options = {}) {
+  constructor (id, options = { cache: true }) {
     this.id = id
     this.options = options
   }
