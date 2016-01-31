@@ -43,7 +43,6 @@ class Engine extends EventEmitter {
         } else {
           val = options
         }
-        options = {}
       } else if (typeof definitionFunc !== 'function') {
         val = definitionFunc
       }
@@ -85,8 +84,11 @@ class Engine extends EventEmitter {
     }).map((priority) => ruleSets[priority])
   }
 
-  async run (initialFacts = {}) {
-    debug(`engine::run`, initialFacts)
+  async run (initialFacts = {}, runOptions = { clearFactCache: true }) {
+    debug(`engine::run initialFacts:`, initialFacts)
+    if (runOptions.clearFactCache) {
+      this.factCache = {}
+    }
     for (let key in initialFacts) {
       this.addFact(key, initialFacts[key])
     }

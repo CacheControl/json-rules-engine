@@ -317,7 +317,6 @@ achievementRules.addRule({
 achievementRules.run({groupId: '4184a91a-582e-4e9a-93da-8e34d5b458b3'})
 
 // TODOs:
-// move fact cache into class
 // cache busting utilities;
 //   engine.deleteFactCache(key)
 //   engine.storeFactCache(key)
@@ -335,7 +334,6 @@ achievementRules.run({groupId: '4184a91a-582e-4e9a-93da-8e34d5b458b3'})
 //  }
 //
 
-// emit 'failure' when a rule doesn't pass
 // recursive processing of any/all
 // README
 // ----------
