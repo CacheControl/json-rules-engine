@@ -85,14 +85,6 @@ class Engine extends EventEmitter {
     }).map((priority) => ruleSets[priority])
   }
 
-  async runRules (rules) {
-    return Promise.all(rules.map(async (rule) => {
-      let ruleResult = await rule.evaluate(this)
-      debug(`engine::run ruleResult:${ruleResult}`)
-      if (ruleResult) this.emit('action', rule.action)
-    }))
-  }
-
   async run (initialFacts = {}) {
     debug(`engine::run`, initialFacts)
     for (let key in initialFacts) {
@@ -108,7 +100,9 @@ class Engine extends EventEmitter {
         cursor = cursor.then(() => {
           return Promise.all(set.map((rule) => {
             return rule.evaluate(this).then((rulePasses) => {
+              debug(`engine::run ruleResult:${rulePasses}`)
               if (rulePasses) this.emit('action', rule.action, this)
+              if (!rulePasses) this.emit('failure', rule, this)
             }).catch(reject)
           }))
         }).catch(reject)

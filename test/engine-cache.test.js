@@ -3,7 +3,7 @@
 import engineFactory from '../src/json-business-rules'
 import sinon from 'sinon'
 
-describe('Engine: action', () => {
+describe('Engine: cache', () => {
   let engine
 
   let action = { type: 'setDrinkingFlag' }
