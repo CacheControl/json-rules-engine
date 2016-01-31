@@ -1,6 +1,8 @@
 'use strict'
 
 import engineFactory from '../src/json-business-rules'
+import { Fact } from '../src/json-business-rules'
+import { Rule } from '../src/json-business-rules'
 
 describe('Engine', () => {
   let engine
@@ -16,6 +18,16 @@ describe('Engine', () => {
   })
 
   describe('addRule()', () => {
+    describe('rule instance', () => {
+      it('adds the rule', () => {
+        let rule = new Rule()
+        expect(engine.rules.length).to.equal(0)
+        engine.addRule(rule)
+        expect(engine.rules.length).to.equal(1)
+        expect(engine.rules).to.include(rule)
+      })
+    })
+
     describe('required fields', () => {
       it('.conditions', () => {
         let rule = factories.rule()
@@ -74,6 +86,15 @@ describe('Engine', () => {
       assertFact(engine)
       expect(engine.facts[FACT_NAME].options).to.equal(options)
       expect(engine.facts[FACT_NAME].value).to.equal(null)
+    })
+
+    it('allows a fact instance', () => {
+      let options = { cache: false }
+      let fact = new Fact(FACT_NAME, options)
+      engine.addFact(fact)
+      assertFact(engine)
+      expect(engine.facts[FACT_NAME]).to.exist
+      expect(engine.facts[FACT_NAME].options).to.equal(options)
     })
   })
 

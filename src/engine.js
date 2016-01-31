@@ -20,10 +20,15 @@ class Engine extends EventEmitter {
   addRule (ruleProperties) {
     params(ruleProperties).require(['conditions', 'action'])
 
-    let rule = new Rule()
-    rule.setPriority(ruleProperties.priority)
-    rule.setConditions(ruleProperties.conditions)
-    rule.setAction(ruleProperties.action)
+    let rule
+    if (ruleProperties instanceof Rule) {
+      rule = ruleProperties
+    } else {
+      rule = new Rule()
+      rule.setPriority(ruleProperties.priority)
+      rule.setConditions(ruleProperties.conditions)
+      rule.setAction(ruleProperties.action)
+    }
     debug(`engine::addRule`, rule)
 
     this.rules.push(rule)
