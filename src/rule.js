@@ -1,6 +1,8 @@
 'use strict'
 
-let params = require('params')
+import params from 'params'
+import Condition from './condition'
+
 let debug = require('debug')('json-business-rules')
 
 class Rule {
@@ -19,10 +21,11 @@ class Rule {
   }
 
   setConditions (conditions) {
-    this.conditions = params(conditions).only(['all', 'any'])
-    if (Object.keys(this.conditions).length !== 1) {
-      throw new Error('conditions root must contain a single instance of "all" or "any"')
+    conditions = params(conditions).only(['all', 'any'])
+    if (Object.keys(conditions).length !== 1) {
+      throw new Error('"conditions" root must contain a single instance of "all" or "any"')
     }
+    this.conditions = new Condition(conditions)
   }
 
   setAction (action) {

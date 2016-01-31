@@ -9,6 +9,14 @@ describe('Rule', () => {
     value: 50
   })
 
+  describe('setConditions()', () => {
+    describe('validations', () => {
+      it('throws an exception for invalid root conditions', () => {
+        expect(rule.setConditions.bind(rule, { foo: true })).to.throw(/"conditions" root must contain a single instance of "all" or "any"/)
+      })
+    })
+  })
+
   describe('setPriority', () => {
     it('defaults to a priority of 1', () => {
       expect(rule.priority).to.equal(1)

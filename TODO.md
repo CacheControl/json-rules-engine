@@ -316,6 +316,36 @@ achievementRules.addRule({
 })
 achievementRules.run({groupId: '4184a91a-582e-4e9a-93da-8e34d5b458b3'})
 
+// nested conditions
+ let conditions = {
+  all: [
+    {
+     "fact": "age",
+     "operator": "lessThan",
+     "value": 45
+   },
+   {
+     "fact": "pointBalance",
+     "operator": "greaterThanInclusive",
+     "value": 1000
+   }
+   {
+    any: [
+      {
+       "fact": "gender",
+       "operator": "equal",
+       "value": 'female'
+     },
+     {
+       "fact": "income",
+       "operator": "greaterThanInclusive",
+       "value": 50000
+     }
+    ]
+   }
+ ]
+}
+
 // TODOs:
 // cache busting utilities;
 //   engine.deleteFactCache(key)
