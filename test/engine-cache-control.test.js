@@ -1,30 +1,35 @@
 'use strict'
 
 import engineFactory from '../src/json-business-rules'
+import { Fact } from '../src/json-business-rules'
 import sinon from 'sinon'
 
-describe('Engine', () => {
+describe('Engine: custom cache keys', () => {
   let engine
   let action = { type: 'early-twenties' }
   let conditions = {
     all: [{
-      fact: 'age',
+      fact: 'demographics',
+      params: {
+        userId: 1,
+        clientId: 50
+      },
       operator: 'lessThanInclusive',
       value: 25
     }, {
-      fact: 'age',
+      fact: 'demographics',
+      params: {
+        userId: 1,
+        clientId: 50
+      },
       operator: 'greaterThanInclusive',
       value: 20
-    }, {
-      fact: 'age',
-      operator: 'notIn',
-      value: [21, 22]
     }]
   }
 
   let actionSpy = sinon.spy()
   let factSpy = sinon.spy()
-  function setup (factOptions) {
+  beforeEach(() => {
     factSpy.reset()
     actionSpy.reset()
 
@@ -32,24 +37,25 @@ describe('Engine', () => {
       factSpy()
       return 24
     }
+    let fact = new Fact('demographics', factDefinition)
+    fact.cacheKeys = function (id, params) {
+      return {
+        id,
+        params: {
+          clientId: params.clientId
+        }
+      }
+    }
 
     engine = engineFactory()
     let rule = factories.rule({ conditions, action })
     engine.addRule(rule)
-    engine.addFact('age', factOptions, factDefinition)
+    engine.addFact(fact)
     engine.on('action', actionSpy)
-  }
+  })
 
-  describe('1 rule with parallel conditions', () => {
-    it('calls the fact definition once for each condition if caching is off', async () => {
-      setup({ cache: false })
-      await engine.run()
-      expect(actionSpy).to.have.been.calledOnce
-      expect(factSpy).to.have.been.calledThrice
-    })
-
+  describe('1 rule with custom cache keys', () => {
     it('calls the fact definition once', async () => {
-      setup()
       await engine.run()
       expect(actionSpy).to.have.been.calledOnce
       expect(factSpy).to.have.been.calledOnce
@@ -58,12 +64,15 @@ describe('Engine', () => {
 
   describe('2 rules with parallel conditions', () => {
     it('calls the fact definition once', async () => {
-      setup()
       let conditions = {
         all: [{
-          fact: 'age',
-          operator: 'notIn',
-          value: [21, 22]
+          fact: 'demographics',
+          params: {
+            userId: 1,
+            clientId: 50
+          },
+          operator: 'greaterThanInclusive',
+          value: 20
         }]
       }
       let rule = factories.rule({ conditions, action })

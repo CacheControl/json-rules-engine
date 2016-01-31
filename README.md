@@ -317,12 +317,27 @@ achievementRules.addRule({
 achievementRules.run({groupId: '4184a91a-582e-4e9a-93da-8e34d5b458b3'})
 
 // TODOs:
-// cache; hash the fact to cache: https://github.com/puleos/object-hash
+// move fact cache into class
+// cache busting utilities;
+//   engine.deleteFactCache(key)
+//   engine.storeFactCache(key)
+//   engine.retrieveFactCache(key)
 // input validatons; guard against bad input data
-// README
+//  action.type (can have spaces?).  presence: true
+//  action.params must be object
+//
+
+// Fact.priority; will help in scenarios where certain conditions should fail early;
+//  all: {
+//    Fast condition, priority: 100
+//    Medium condition, priority: 50
+//    Slow condition, priority: 1
+//  }
+//
+
 // emit 'failure' when a rule doesn't pass
 // recursive processing of any/all
+// README
 // ----------
 // controls: engine.stop(), engine.restart()
-// support callback based facts and engine.run()
 // might be nice to emit(action.type)

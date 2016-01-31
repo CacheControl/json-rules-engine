@@ -31,21 +31,27 @@ class Engine extends EventEmitter {
 
   addFact (id, options, definitionFunc) {
     let val = null
-    if (arguments.length < 2) throw new Error('invalid arguments')
-    if (arguments.length === 2) {
-      if (typeof options === 'function') {
-        definitionFunc = options
-      } else {
-        val = options
+    let factId = id
+    let fact
+    if (id instanceof Fact) {
+      factId = id.id
+      fact = id
+    } else {
+      if (arguments.length === 2) {
+        if (typeof options === 'function') {
+          definitionFunc = options
+        } else {
+          val = options
+        }
+        options = {}
+      } else if (typeof definitionFunc !== 'function') {
+        val = definitionFunc
       }
-      options = {}
-    } else if (typeof definitionFunc !== 'function') {
-      val = definitionFunc
+      fact = new Fact(id, options)
+      fact.definition(definitionFunc, val)
     }
-    let fact = new Fact(id, options)
-    fact.definition(definitionFunc, val)
-    debug(`engine::addFact id:${id}`)
-    this.facts[id] = fact
+    debug(`engine::addFact id:${factId}`)
+    this.facts[factId] = fact
   }
 
   async factValue (factId, params = {}) {
