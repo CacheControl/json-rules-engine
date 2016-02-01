@@ -26,7 +26,7 @@ class Fact {
   }
 
   static hashFromObject (obj) {
-    debug(`fact::hashFromObject cache key from:`, obj)
+    debug(`fact::hashFromObject generating cache key from:`, obj)
     return hash(obj)
   }
 

@@ -50,30 +50,48 @@ class Rule {
         return test > condition.value
       case 'greaterThanInclusive':
         return test >= condition.value
+      // for any/all, simply test that the sub-condition array evaluated truthy
+      case 'any':
+        return test === true
+      case 'all':
+        return test === true
       default:
         throw new Error(`Unknown operator: ${condition.operator}`)
     }
   }
 
+  async evaluateCondition (condition, engine) {
+    if (condition.isBooleanOperator()) {
+      let subConditions = condition[condition.operator]
+      return this[condition.operator](subConditions, engine)
+    } else {
+      return engine.factValue(condition.fact, condition.params)
+    }
+  }
+
   async runConditions (conditions, engine) {
     return await Promise.all(conditions.map(async (condition) => {
-      let factValue = await engine.factValue(condition.fact, condition.params)
+      let factValue = await this.evaluateCondition(condition, engine)
       let conditionResult = this.testCondition(condition, factValue)
-      debug(`testCondition:: <${factValue} ${condition.operator} ${condition.value}?> (${conditionResult})`)
+      if (!condition.isBooleanOperator()) {
+        debug(`runConditions:: <${factValue} ${condition.operator} ${condition.value}?> (${conditionResult})`)
+      }
       return conditionResult
     }))
   }
 
   async any (conditions, engine) {
     let results = await this.runConditions(conditions, engine)
-    debug('any::results', results)
-    return results.some((result) => result === true)
+    let pass = results.some((result) => result === true)
+    debug(`any::results [${results}] (${pass})`)
+    return pass
   }
 
   async all (conditions, engine) {
     let results = await this.runConditions(conditions, engine)
-    debug('all::results', results)
-    return results.every((result) => result === true)
+    let pass = results.every((result) => result === true)
+    debug(`all::results [${results}] (${pass})`)
+    return pass
   }
 
   async evaluate (engine) {

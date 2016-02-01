@@ -13,6 +13,7 @@ export default class Condition {
       if (!(properties[booleanOperator] instanceof Array)) {
         throw new Error(`"${booleanOperator}" must be an array`)
       }
+      this.operator = booleanOperator
       this[booleanOperator] = properties[booleanOperator].map((c) => {
         return new Condition(c)
       })
@@ -23,5 +24,9 @@ export default class Condition {
         this[p] = properties[p]
       })
     }
+  }
+
+  isBooleanOperator () {
+    return this.any !== undefined || this.all !== undefined
   }
 }
