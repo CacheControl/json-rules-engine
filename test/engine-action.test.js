@@ -26,9 +26,21 @@ describe('Engine: action', () => {
   })
 
   it('passes the action type and params', (done) => {
-    engine.on('action', function (a) {
+    engine.on('action', function (a, engine) {
       try {
         expect(a).to.eql(action)
+        expect(engine).to.eql(engine)
+      } catch (e) { return done(e) }
+      done()
+    })
+    engine.run()
+  })
+
+  it('emits using the action "type"', (done) => {
+    engine.on('setDrinkingFlag', function (params, engine) {
+      try {
+        expect(params).to.eql(action.params)
+        expect(engine).to.eql(engine)
       } catch (e) { return done(e) }
       done()
     })

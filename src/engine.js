@@ -108,7 +108,10 @@ class Engine extends EventEmitter {
           return Promise.all(set.map((rule) => {
             return rule.evaluate(this).then((rulePasses) => {
               debug(`engine::run ruleResult:${rulePasses}`)
-              if (rulePasses) this.emit('action', rule.action, this)
+              if (rulePasses) {
+                this.emit('action', rule.action, this)
+                this.emit(rule.action.type, rule.action.params, this)
+              }
               if (!rulePasses) this.emit('failure', rule, this)
             }).catch(reject)
           }))

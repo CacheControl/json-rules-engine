@@ -146,11 +146,6 @@ achievementRules.onAction((r, rule, done) {
   }
 })
 
-// when a rule runs, it works from the outside-in
-// when it encounters a fact that is not defined, it will emit an error event, and continue to
-// the next rule
-//
-//
 // POINT CAPS
 //  single user who meets certain criteria, limit to X points
 achievementRules.addRule({
@@ -247,8 +242,6 @@ achievementRules.addRule({
 
 // ORs: Total Cholesterol: ≤199 OR TC:HDL Ratio: ≤ 4.0 OR individual LDL, HDL, and triglycerides
 achievementRules.addRule({
-  id: "age-range",
-  priority: 1,
   conditions: {
     any: [{
      "id": "6ed20017-375f-40c9-a1d2-6d7e0f4733c5",
@@ -273,7 +266,6 @@ achievementRules.addRule({
  },
  action: {}
 })
-
 
 // Group Rewards:
 //    Offer incentive when more than 50% of the group completes a step program
@@ -328,7 +320,7 @@ achievementRules.run({groupId: '4184a91a-582e-4e9a-93da-8e34d5b458b3'})
      "fact": "pointBalance",
      "operator": "greaterThanInclusive",
      "value": 1000
-   }
+   },
    {
     any: [
       {
@@ -364,8 +356,6 @@ achievementRules.run({groupId: '4184a91a-582e-4e9a-93da-8e34d5b458b3'})
 //  }
 //
 
-// recursive processing of any/all
 // README
 // ----------
 // controls: engine.stop(), engine.restart()
-// might be nice to emit(action.type)
