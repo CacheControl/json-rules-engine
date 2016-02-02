@@ -20,7 +20,7 @@ describe('Engine', () => {
   describe('addRule()', () => {
     describe('rule instance', () => {
       it('adds the rule', () => {
-        let rule = new Rule()
+        let rule = new Rule(factories.rule())
         expect(engine.rules.length).to.equal(0)
         engine.addRule(rule)
         expect(engine.rules.length).to.equal(1)

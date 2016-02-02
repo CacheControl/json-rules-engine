@@ -6,18 +6,21 @@ import Condition from './condition'
 let debug = require('debug')('json-business-rules')
 
 class Rule {
-  constructor () {
-    this.priority = 1
-    this.conditions = {}
-    this.action = {
-      type: 'unknown'
+  constructor (options) {
+    if (options && options.conditions) {
+      this.setConditions(options.conditions)
     }
+    let priority = (options && options.priority) || 1
+    this.setPriority(priority)
+    let action = (options && options.action) || { type: 'unknown' }
+    this.setAction(action)
   }
 
   setPriority (priority) {
     priority = parseInt(priority, 10)
     if (priority <= 0) throw new Error('Priority must be greater than zero')
     this.priority = priority
+    return this
   }
 
   setConditions (conditions) {
@@ -26,10 +29,12 @@ class Rule {
       throw new Error('"conditions" root must contain a single instance of "all" or "any"')
     }
     this.conditions = new Condition(conditions)
+    return this
   }
 
   setAction (action) {
     this.action = params(action).only(['type', 'params'])
+    return this
   }
 
   testCondition (condition, test) {

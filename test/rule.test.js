@@ -9,6 +9,26 @@ describe('Rule', () => {
     value: 50
   })
 
+  describe('constructor()', () => {
+    it('can be initialized with priority, conditions, and action', () => {
+      let condition = {
+        all: [ Object.assign({}, conditionBase) ]
+      }
+      condition.operator = 'all'
+      let opts = {
+        priority: 50,
+        conditions: condition,
+        action: {
+          type: 'awesome'
+        }
+      }
+      let rule = new Rule(opts)
+      expect(rule.priority).to.eql(opts.priority)
+      expect(rule.conditions).to.eql(opts.conditions)
+      expect(rule.action).to.eql(opts.action)
+    })
+  })
+
   describe('setConditions()', () => {
     describe('validations', () => {
       it('throws an exception for invalid root conditions', () => {

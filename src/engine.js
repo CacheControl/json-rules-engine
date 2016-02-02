@@ -26,8 +26,8 @@ class Engine extends EventEmitter {
     } else {
       rule = new Rule()
       rule.setPriority(ruleProperties.priority)
-      rule.setConditions(ruleProperties.conditions)
-      rule.setAction(ruleProperties.action)
+          .setConditions(ruleProperties.conditions)
+          .setAction(ruleProperties.action)
     }
     debug(`engine::addRule`, rule)
 
