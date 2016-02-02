@@ -4,22 +4,30 @@ import params from 'params'
 
 export default class Condition {
   constructor (properties) {
-    if (Object.keys(properties).includes('any') || Object.keys(properties).includes('all')) {
-      let keys = Object.keys(properties)
-      if (keys.length !== 1) {
-        throw new Error('boolean operators be an object with a "all" or "any" property')
-      }
-      let booleanOperator = keys[0]
+    let booleanOperator
+    if (properties.hasOwnProperty('any')) {
+      booleanOperator = 'any'
+    } else if (properties.hasOwnProperty('all')) {
+      booleanOperator = 'all'
+    }
+    if (booleanOperator) {
       if (!(properties[booleanOperator] instanceof Array)) {
         throw new Error(`"${booleanOperator}" must be an array`)
       }
       this.operator = booleanOperator
+      // boolean conditions always have a priority, default 1
+      this.priority = parseInt(properties.priority, 10) || 1
       this[booleanOperator] = properties[booleanOperator].map((c) => {
         return new Condition(c)
       })
     } else {
       properties = params(properties).require(['fact', 'operator', 'value'])
-      properties = params(properties).only(['fact', 'operator', 'value', 'params'])
+      // a non-boolean condition does not have a priority by default. this allows
+      // priority to be dictated by the fact definition
+      if (properties.hasOwnProperty('priority')) {
+        properties.priority = parseInt(properties.priority, 10)
+      }
+      properties = params(properties).only(['fact', 'operator', 'value', 'params', 'priority'])
       Object.keys(properties).forEach((p) => {
         this[p] = properties[p]
       })

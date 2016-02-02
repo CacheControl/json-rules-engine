@@ -322,6 +322,7 @@ achievementRules.run({groupId: '4184a91a-582e-4e9a-93da-8e34d5b458b3'})
      "value": 1000
    },
    {
+    priority: 20
     any: [
       {
        "fact": "gender",
@@ -343,18 +344,9 @@ achievementRules.run({groupId: '4184a91a-582e-4e9a-93da-8e34d5b458b3'})
 //   engine.deleteFactCache(key)
 //   engine.storeFactCache(key)
 //   engine.retrieveFactCache(key)
-// input validatons; guard against bad input data
-//  action.type (can have spaces?).  presence: true
-//  action.params must be object
-//
 
-// Fact.priority; will help in scenarios where certain conditions should fail early;
-//  all: {
-//    Fast condition, priority: 100
-//    Medium condition, priority: 50
-//    Slow condition, priority: 1
-//  }
-//
+// object.keys audit; can replace with for(in)
+// 'any' test coverage?
 
 // README
 // ----------

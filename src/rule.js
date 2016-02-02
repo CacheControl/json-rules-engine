@@ -24,8 +24,7 @@ class Rule {
   }
 
   setConditions (conditions) {
-    conditions = params(conditions).only(['all', 'any'])
-    if (Object.keys(conditions).length !== 1) {
+    if (!conditions.hasOwnProperty('all') && !conditions.hasOwnProperty('any')) {
       throw new Error('"conditions" root must contain a single instance of "all" or "any"')
     }
     this.conditions = new Condition(conditions)
@@ -74,29 +73,70 @@ class Rule {
     }
   }
 
-  async runConditions (conditions, engine) {
-    return await Promise.all(conditions.map(async (condition) => {
+  prioritizeConditions (conditions, engine) {
+    let factSets = conditions.reduce((sets, condition) => {
+      // if a priority has been set on this specific condition, honor that first
+      // otherwise, use the fact's priority
+      let priority = condition.priority ? condition.priority : engine.facts[condition.fact].priority
+      if (!sets[priority]) sets[priority] = []
+      sets[priority].push(condition)
+      return sets
+    }, {})
+    return Object.keys(factSets).sort((a, b) => {
+      return Number(a) > Number(b) ? -1 : 1 // order highest priority -> lowest
+    }).map((priority) => factSets[priority])
+  }
+
+  async runConditionSet (set, engine, method) {
+    if (!(Array.isArray(set))) set = [ set ]
+    let conditionResults = await Promise.all(set.map(async (condition) => {
       let factValue = await this.evaluateCondition(condition, engine)
       let conditionResult = this.testCondition(condition, factValue)
       if (!condition.isBooleanOperator()) {
-        debug(`runConditions:: <${factValue} ${condition.operator} ${condition.value}?> (${conditionResult})`)
+        debug(`runConditionSet:: <${factValue} ${condition.operator} ${condition.value}?> (${conditionResult})`)
       }
       return conditionResult
     }))
+    debug(`runConditionSet::results`, conditionResults)
+    return method.call(conditionResults, (result) => result === true)
+  }
+
+  async prioritizeAndRun (conditions, engine, operator) {
+    let method = Array.prototype.some
+    if (operator === 'all') {
+      method = Array.prototype.every
+    }
+    let orderedSets = this.prioritizeConditions(conditions, engine)
+    let cursor = Promise.resolve()
+    orderedSets.forEach((set) => {
+      let stop = false
+      cursor = cursor.then((setResult) => {
+        // after the first set succeeds, don't fire off the remaining promises
+        if ((operator === 'any' && setResult === true) || stop) {
+          debug(`prioritizeAndRun::detected truthy result; skipping remaining conditions`)
+          stop = true
+          return true
+        }
+
+        // after the first set fails, don't fire off the remaining promises
+        if ((operator === 'all' && setResult === false) || stop) {
+          debug(`prioritizeAndRun::detected falsey result; skipping remaining conditions`)
+          stop = true
+          return false
+        }
+        // all conditions passed; proceed with running next set in parallel
+        return this.runConditionSet(set, engine, method)
+      })
+    })
+    return cursor
   }
 
   async any (conditions, engine) {
-    let results = await this.runConditions(conditions, engine)
-    let pass = results.some((result) => result === true)
-    debug(`any::results [${results}] (${pass})`)
-    return pass
+    return this.prioritizeAndRun(conditions, engine, 'any')
   }
 
   async all (conditions, engine) {
-    let results = await this.runConditions(conditions, engine)
-    let pass = results.every((result) => result === true)
-    debug(`all::results [${results}] (${pass})`)
-    return pass
+    return this.prioritizeAndRun(conditions, engine, 'all')
   }
 
   async evaluate (engine) {

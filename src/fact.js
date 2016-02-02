@@ -14,6 +14,7 @@ class Fact {
     } else if (typeof options === 'undefined') {
       options = defaultOptions
     }
+    this.priority = parseInt(options.priority || 1, 10)
     this.options = options
     this.calculate = calculationMethod
     this.cacheKeyMethod = this.defaultCacheKeys

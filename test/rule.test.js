@@ -15,6 +15,7 @@ describe('Rule', () => {
         all: [ Object.assign({}, conditionBase) ]
       }
       condition.operator = 'all'
+      condition.priority = 25
       let opts = {
         priority: 50,
         conditions: condition,

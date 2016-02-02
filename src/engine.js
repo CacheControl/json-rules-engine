@@ -85,7 +85,7 @@ class Engine extends EventEmitter {
       return sets
     }, {})
     return Object.keys(ruleSets).sort((a, b) => {
-      return a > b ? -1 : 1 // order highest priority -> lowest
+      return Number(a) > Number(b) ? -1 : 1 // order highest priority -> lowest
     }).map((priority) => ruleSets[priority])
   }
 
