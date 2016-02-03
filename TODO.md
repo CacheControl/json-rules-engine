@@ -344,9 +344,15 @@ achievementRules.run({groupId: '4184a91a-582e-4e9a-93da-8e34d5b458b3'})
 //   engine.deleteFactCache(key)
 //   engine.storeFactCache(key)
 //   engine.retrieveFactCache(key)
+//
+// rule failures should include the exact condition that failed
+// users should be able to attached whatever properties they wish to
+// rules, conditions, and facts
+//
+// conditions should evaluate themselves (rule.testCondition)
+// jsdoc
 
-// object.keys audit; can replace with for(in)
-// hasOwnProperty audit
+// rule failure should emit condition that failed
 
 // README
 // ----------

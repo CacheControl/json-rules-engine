@@ -35,7 +35,7 @@ class Engine extends EventEmitter {
   }
 
   addFact (id, options, definitionFunc) {
-    let val = null
+    let val
     let factId = id
     let fact
     if (id instanceof Fact) {
@@ -64,7 +64,7 @@ class Engine extends EventEmitter {
       throw new Error(`Undefined fact: ${factId}`)
     }
     // if constant fact w/set value, return immediately
-    if (fact.value) {
+    if (fact.hasOwnProperty('value')) {
       return fact.value
     }
     let cacheKey = fact.getCacheKey(params)

@@ -10,8 +10,10 @@ class Rule {
     if (options && options.conditions) {
       this.setConditions(options.conditions)
     }
+
     let priority = (options && options.priority) || 1
     this.setPriority(priority)
+
     let action = (options && options.action) || { type: 'unknown' }
     this.setAction(action)
   }

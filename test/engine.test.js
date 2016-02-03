@@ -75,7 +75,7 @@ describe('Engine', () => {
         return FACT_VALUE
       })
       assertFact(engine)
-      expect(engine.facts[FACT_NAME].value).to.equal(null)
+      expect(engine.facts[FACT_NAME].value).to.be.undefined
     })
 
     it('allows a lamba fact with options', () => {
@@ -85,7 +85,7 @@ describe('Engine', () => {
       })
       assertFact(engine)
       expect(engine.facts[FACT_NAME].options).to.equal(options)
-      expect(engine.facts[FACT_NAME].value).to.equal(null)
+      expect(engine.facts[FACT_NAME].value).to.be.undefined
     })
 
     it('allows a fact instance', () => {

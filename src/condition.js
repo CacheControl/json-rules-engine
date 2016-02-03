@@ -11,13 +11,14 @@ export default class Condition {
       booleanOperator = 'all'
     }
     if (booleanOperator) {
-      if (!(properties[booleanOperator] instanceof Array)) {
+      let subConditions = properties[booleanOperator]
+      if (!(subConditions instanceof Array)) {
         throw new Error(`"${booleanOperator}" must be an array`)
       }
       this.operator = booleanOperator
-      // boolean conditions always have a priority, default 1
+      // boolean conditions always have a priority; default 1
       this.priority = parseInt(properties.priority, 10) || 1
-      this[booleanOperator] = properties[booleanOperator].map((c) => {
+      this[booleanOperator] = subConditions.map((c) => {
         return new Condition(c)
       })
     } else {
@@ -28,9 +29,9 @@ export default class Condition {
         properties.priority = parseInt(properties.priority, 10)
       }
       properties = params(properties).only(['fact', 'operator', 'value', 'params', 'priority'])
-      Object.keys(properties).forEach((p) => {
+      for (let p in properties) {
         this[p] = properties[p]
-      })
+      }
     }
   }
 

@@ -21,9 +21,11 @@ class Fact {
   }
 
   // todo, rename 'calculate', 'definition'
-  definition (calculate, initialValue = undefined) {
+  definition (calculate, initialValue) {
     this.calculate = calculate
-    this.value = initialValue
+    if (typeof (initialValue) !== 'undefined') {
+      this.value = initialValue
+    }
   }
 
   static hashFromObject (obj) {
