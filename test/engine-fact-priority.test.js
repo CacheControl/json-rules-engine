@@ -97,7 +97,7 @@ describe('Engine: fact priority', () => {
       expect(accountTypeStub).to.not.have.been.called
     })
 
-    it.only('short circuits on the first fact to fail, part 2', async () => {
+    it('short circuits on the first fact to fail, part 2', async () => {
       setup(anyCondition)
       ageStub.returns(10) // fail
       segmentStub.returns('human') // pass

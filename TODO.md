@@ -346,7 +346,7 @@ achievementRules.run({groupId: '4184a91a-582e-4e9a-93da-8e34d5b458b3'})
 //   engine.retrieveFactCache(key)
 
 // object.keys audit; can replace with for(in)
-// 'any' test coverage?
+// hasOwnProperty audit
 
 // README
 // ----------
