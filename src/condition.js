@@ -10,6 +10,7 @@ export default class Condition {
     } else if (properties.hasOwnProperty('all')) {
       booleanOperator = 'all'
     }
+    Object.assign(this, properties)
     if (booleanOperator) {
       let subConditions = properties[booleanOperator]
       if (!(subConditions instanceof Array)) {
@@ -27,10 +28,6 @@ export default class Condition {
       // priority to be dictated by the fact definition
       if (properties.hasOwnProperty('priority')) {
         properties.priority = parseInt(properties.priority, 10)
-      }
-      properties = params(properties).only(['fact', 'operator', 'value', 'params', 'priority'])
-      for (let p in properties) {
-        this[p] = properties[p]
       }
     }
   }

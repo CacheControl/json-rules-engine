@@ -18,6 +18,7 @@ class Fact {
     this.options = options
     this.calculate = calculationMethod
     this.cacheKeyMethod = this.defaultCacheKeys
+    return this
   }
 
   // todo, rename 'calculate', 'definition'
@@ -26,6 +27,7 @@ class Fact {
     if (typeof (initialValue) !== 'undefined') {
       this.value = initialValue
     }
+    return this
   }
 
   static hashFromObject (obj) {
