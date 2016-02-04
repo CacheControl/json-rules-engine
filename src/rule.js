@@ -67,12 +67,19 @@ class Rule {
   }
 
   async evaluateCondition (condition, engine) {
+    let comparator
     if (condition.isBooleanOperator()) {
       let subConditions = condition[condition.operator]
-      return this[condition.operator](subConditions, engine)
+      comparator = await this[condition.operator](subConditions, engine)
     } else {
-      return engine.factValue(condition.fact, condition.params)
+      comparator = await engine.factValue(condition.fact, condition.params)
     }
+
+    let conditionResult = this.testCondition(condition, comparator)
+    if (!condition.isBooleanOperator()) {
+      debug(`runConditionSet:: <${comparator} ${condition.operator} ${condition.value}?> (${conditionResult})`)
+    }
+    return conditionResult
   }
 
   prioritizeConditions (conditions, engine) {
@@ -91,13 +98,8 @@ class Rule {
 
   async runConditionSet (set, engine, method) {
     if (!(Array.isArray(set))) set = [ set ]
-    let conditionResults = await Promise.all(set.map(async (condition) => {
-      let factValue = await this.evaluateCondition(condition, engine)
-      let conditionResult = this.testCondition(condition, factValue)
-      if (!condition.isBooleanOperator()) {
-        debug(`runConditionSet:: <${factValue} ${condition.operator} ${condition.value}?> (${conditionResult})`)
-      }
-      return conditionResult
+    let conditionResults = await Promise.all(set.map((condition) => {
+      return this.evaluateCondition(condition, engine)
     }))
     debug(`runConditionSet::results`, conditionResults)
     return method.call(conditionResults, (result) => result === true)

@@ -68,6 +68,40 @@ describe('Engine: fact priority', () => {
       expect(segmentStub).to.have.been.calledOnce
       expect(accountTypeStub).to.not.have.been.called
     })
+
+    describe('sub-conditions', () => {
+      let allSubCondition = {
+        all: [{
+          fact: 'age',
+          operator: 'greaterThanInclusive',
+          value: 18
+        }, {
+          all: [
+            {
+              fact: 'segment',
+              operator: 'equal',
+              value: 'human'
+            }, {
+              fact: 'accountType',
+              operator: 'equal',
+              value: 'admin'
+            }
+          ]
+        }]
+      }
+
+      it('stops after the first sub-condition fact fails', async () => {
+        setup(allSubCondition)
+        ageStub.returns(20) // pass
+        segmentStub.returns('android') // fail
+        await engine.run()
+        expect(failureSpy).to.have.been.called
+        expect(actionSpy).to.not.have.been.called
+        expect(ageStub).to.have.been.calledOnce
+        expect(segmentStub).to.have.been.calledOnce
+        expect(accountTypeStub).to.not.have.been.called
+      })
+    })
   })
 
   describe('any conditions', () => {
@@ -107,6 +141,40 @@ describe('Engine: fact priority', () => {
       expect(ageStub).to.have.been.calledOnce
       expect(segmentStub).to.have.been.calledOnce
       expect(accountTypeStub).to.not.have.been.called
+    })
+
+    describe('sub-conditions', () => {
+      let anySubCondition = {
+        all: [{
+          fact: 'age',
+          operator: 'greaterThanInclusive',
+          value: 18
+        }, {
+          any: [
+            {
+              fact: 'segment',
+              operator: 'equal',
+              value: 'human'
+            }, {
+              fact: 'accountType',
+              operator: 'equal',
+              value: 'admin'
+            }
+          ]
+        }]
+      }
+
+      it('stops after the first sub-condition fact succeeds', async () => {
+        setup(anySubCondition)
+        ageStub.returns(20) // success
+        segmentStub.returns('human') // success
+        await engine.run()
+        expect(failureSpy).to.not.have.been.called
+        expect(actionSpy).to.have.been.called
+        expect(ageStub).to.have.been.calledOnce
+        expect(segmentStub).to.have.been.calledOnce
+        expect(accountTypeStub).to.not.have.been.called
+      })
     })
   })
 })
