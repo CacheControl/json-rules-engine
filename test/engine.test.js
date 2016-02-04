@@ -1,5 +1,6 @@
 'use strict'
 
+import sinon from 'sinon'
 import engineFactory from '../src/json-business-rules'
 import { Fact } from '../src/json-business-rules'
 import { Rule } from '../src/json-business-rules'
@@ -15,6 +16,19 @@ describe('Engine', () => {
     expect(engine).to.have.property('addFact')
     expect(engine).to.have.property('factValue')
     expect(engine).to.have.property('run')
+    expect(engine).to.have.property('stop')
+  })
+
+  describe('constructor', () => {
+    it('begins in status "READY"', () => {
+      expect(engine.status).to.equal('READY')
+    })
+  })
+
+  describe('stop()', () => {
+    it('changes the status to "FINISHED"', () => {
+      expect(engine.stop().status).to.equal('FINISHED')
+    })
   })
 
   describe('addRule()', () => {
@@ -99,9 +113,38 @@ describe('Engine', () => {
   })
 
   describe('run()', () => {
+    beforeEach(() => {
+      let conditions = {
+        all: [{
+          fact: 'age',
+          operator: 'greaterThanInclusive',
+          value: 18
+        }]
+      }
+      let action = { type: 'generic' }
+      let rule = factories.rule({ conditions, action })
+      engine.addRule(rule)
+      engine.addFact('age', 20)
+    })
+
     it('allows facts to be added when run', () => {
       engine.run({modelId: 'XYZ'})
       expect(engine.facts.modelId.value).to.equal('XYZ')
+    })
+
+    it('changes the status to "RUNNING"', () => {
+      let actionSpy = sinon.spy()
+      engine.on('action', (action, engine) => {
+        actionSpy()
+        expect(engine.status).to.equal('RUNNING')
+      })
+      return engine.run()
+    })
+
+    it('changes status to FINISHED once complete', async () => {
+      expect(engine.status).to.equal('READY')
+      await engine.run()
+      expect(engine.status).to.equal('FINISHED')
     })
   })
 

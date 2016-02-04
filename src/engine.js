@@ -7,14 +7,18 @@ import { EventEmitter } from 'events'
 
 let debug = require('debug')('json-business-rules')
 
-class Engine extends EventEmitter {
+export const READY = 'READY'
+export const RUNNING = 'RUNNING'
+export const FINISHED = 'FINISHED'
 
+class Engine extends EventEmitter {
   constructor (set) {
     super()
     this.set = set
     this.rules = []
     this.facts = {}
     this.factCache = {}
+    this.status = READY
   }
 
   addRule (ruleProperties) {
@@ -58,6 +62,10 @@ class Engine extends EventEmitter {
     this.facts[factId] = fact
   }
 
+  getFact (factId) {
+    return this.facts[factId]
+  }
+
   async factValue (factId, params = {}) {
     let fact = this.facts[factId]
     if (!fact) {
@@ -89,8 +97,14 @@ class Engine extends EventEmitter {
     }).map((priority) => ruleSets[priority])
   }
 
+  stop () {
+    this.status = FINISHED
+    return this
+  }
+
   async run (initialFacts = {}, runOptions = { clearFactCache: true }) {
     debug(`engine::run initialFacts:`, initialFacts)
+    this.status = RUNNING
     if (runOptions.clearFactCache) {
       this.factCache = {}
     }
@@ -106,6 +120,10 @@ class Engine extends EventEmitter {
       orderedSets.map((set) => {
         cursor = cursor.then(() => {
           return Promise.all(set.map((rule) => {
+            if (this.status !== RUNNING) {
+              debug(`engine::run status:${this.status}; skipping remaining rules`)
+              return
+            }
             return rule.evaluate(this).then((rulePasses) => {
               debug(`engine::run ruleResult:${rulePasses}`)
               if (rulePasses) {
@@ -118,7 +136,10 @@ class Engine extends EventEmitter {
         }).catch(reject)
         return cursor
       })
-      cursor.then(resolve).catch(reject)
+      cursor.then(() => {
+        this.status = FINISHED
+        resolve()
+      }).catch(reject)
     })
   }
 }

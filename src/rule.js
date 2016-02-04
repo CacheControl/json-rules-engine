@@ -86,7 +86,14 @@ class Rule {
     let factSets = conditions.reduce((sets, condition) => {
       // if a priority has been set on this specific condition, honor that first
       // otherwise, use the fact's priority
-      let priority = condition.priority ? condition.priority : engine.facts[condition.fact].priority
+      let priority = condition.priority
+      if (!priority) {
+        let fact = engine.getFact(condition.fact)
+        if (!fact) {
+          throw new Error(`Undefined fact: ${condition.fact}`)
+        }
+        priority = fact.priority
+      }
       if (!sets[priority]) sets[priority] = []
       sets[priority].push(condition)
       return sets
