@@ -32,6 +32,34 @@ export default class Condition {
     }
   }
 
+  evaluate (comparisonValue) {
+    switch (this.operator) {
+      case 'equal':
+        return comparisonValue === this.value
+      case 'notEqual':
+        return comparisonValue !== this.value
+      case 'in':
+        return this.value.includes(comparisonValue)
+      case 'notIn':
+        return !this.value.includes(comparisonValue)
+      case 'lessThan':
+        return comparisonValue < this.value
+      case 'lessThanInclusive':
+        return comparisonValue <= this.value
+      case 'greaterThan':
+        return comparisonValue > this.value
+      case 'greaterThanInclusive':
+        return comparisonValue >= this.value
+      // for any/all, simply comparisonValue that the sub-condition array evaluated truthy
+      case 'any':
+        return comparisonValue === true
+      case 'all':
+        return comparisonValue === true
+      default:
+        throw new Error(`Unknown operator: ${this.operator}`)
+    }
+  }
+
   isBooleanOperator () {
     return this.any !== undefined || this.all !== undefined
   }

@@ -14,6 +14,74 @@ function condition () {
 }
 
 describe('Condition', () => {
+  describe('evaluate', () => {
+    let conditionBase = factories.condition({
+      fact: 'age',
+      value: 50
+    })
+    let condition
+    function setup (options) {
+      let properties = Object.assign({}, conditionBase, options)
+      condition = new Condition(properties)
+    }
+
+    it('evaluates "equal"', () => {
+      setup({ operator: 'equal' })
+      expect(condition.evaluate(50)).to.equal(true)
+      expect(condition.evaluate(5)).to.equal(false)
+    })
+
+    it('evaluates "notEqual"', () => {
+      setup({ operator: 'notEqual' })
+      expect(condition.evaluate(50)).to.equal(false)
+      expect(condition.evaluate(5)).to.equal(true)
+    })
+
+    it('evaluates "in"', () => {
+      setup({
+        operator: 'in',
+        value: [5, 10, 15, 20]
+      })
+      expect(condition.evaluate(15)).to.equal(true)
+      expect(condition.evaluate(99)).to.equal(false)
+    })
+
+    it('evaluates "notIn"', () => {
+      setup({
+        operator: 'notIn',
+        value: [5, 10, 15, 20]
+      })
+      expect(condition.evaluate(15)).to.equal(false)
+      expect(condition.evaluate(99)).to.equal(true)
+    })
+
+    it('evaluates "lessThan"', () => {
+      setup({ operator: 'lessThan' })
+      expect(condition.evaluate(49)).to.equal(true)
+      expect(condition.evaluate(50)).to.equal(false)
+      expect(condition.evaluate(51)).to.equal(false)
+    })
+
+    it('evaluates "lessThanInclusive"', () => {
+      setup({ operator: 'lessThanInclusive' })
+      expect(condition.evaluate(49)).to.equal(true)
+      expect(condition.evaluate(50)).to.equal(true)
+      expect(condition.evaluate(51)).to.equal(false)
+    })
+    it('evaluates "greaterThan"', () => {
+      setup({ operator: 'greaterThan' })
+      expect(condition.evaluate(51)).to.equal(true)
+      expect(condition.evaluate(49)).to.equal(false)
+      expect(condition.evaluate(50)).to.equal(false)
+    })
+    it('evaluates "greaterThanInclusive"', () => {
+      setup({operator: 'greaterThanInclusive'})
+      expect(condition.evaluate(51)).to.equal(true)
+      expect(condition.evaluate(50)).to.equal(true)
+      expect(condition.evaluate(49)).to.equal(false)
+    })
+  })
+
   describe('boolean operators', () => {
     it('throws if not not an array', () => {
       let conditions = condition()

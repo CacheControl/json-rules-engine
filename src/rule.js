@@ -38,46 +38,18 @@ class Rule {
     return this
   }
 
-  testCondition (condition, test) {
-    switch (condition.operator) {
-      case 'equal':
-        return test === condition.value
-      case 'notEqual':
-        return test !== condition.value
-      case 'in':
-        return condition.value.includes(test)
-      case 'notIn':
-        return !condition.value.includes(test)
-      case 'lessThan':
-        return test < condition.value
-      case 'lessThanInclusive':
-        return test <= condition.value
-      case 'greaterThan':
-        return test > condition.value
-      case 'greaterThanInclusive':
-        return test >= condition.value
-      // for any/all, simply test that the sub-condition array evaluated truthy
-      case 'any':
-        return test === true
-      case 'all':
-        return test === true
-      default:
-        throw new Error(`Unknown operator: ${condition.operator}`)
-    }
-  }
-
   async evaluateCondition (condition, engine) {
-    let comparator
+    let comparisonValue
     if (condition.isBooleanOperator()) {
       let subConditions = condition[condition.operator]
-      comparator = await this[condition.operator](subConditions, engine)
+      comparisonValue = await this[condition.operator](subConditions, engine)
     } else {
-      comparator = await engine.factValue(condition.fact, condition.params)
+      comparisonValue = await engine.factValue(condition.fact, condition.params)
     }
 
-    let conditionResult = this.testCondition(condition, comparator)
+    let conditionResult = condition.evaluate(comparisonValue)
     if (!condition.isBooleanOperator()) {
-      debug(`runConditionSet:: <${comparator} ${condition.operator} ${condition.value}?> (${conditionResult})`)
+      debug(`runConditionSet:: <${comparisonValue} ${condition.operator} ${condition.value}?> (${conditionResult})`)
     }
     return conditionResult
   }
