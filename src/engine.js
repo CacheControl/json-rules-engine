@@ -90,6 +90,23 @@ class Engine extends EventEmitter {
     return this
   }
 
+  async runConditionSet (set) {
+    return Promise.all(set.map((rule) => {
+      if (this.status !== RUNNING) {
+        debug(`engine::run status:${this.status}; skipping remaining rules`)
+        return
+      }
+      return rule.evaluate(this).then((rulePasses) => {
+        debug(`engine::run ruleResult:${rulePasses}`)
+        if (rulePasses) {
+          this.emit('action', rule.action, this)
+          this.emit(rule.action.type, rule.action.params, this)
+        }
+        if (!rulePasses) this.emit('failure', rule, this)
+      })
+    }))
+  }
+
   async run (initialFacts = {}, runOptions = { clearFactCache: true }) {
     debug(`engine::run initialFacts:`, initialFacts)
     this.status = RUNNING
@@ -102,25 +119,12 @@ class Engine extends EventEmitter {
 
     let orderedSets = this.prioritizeRules()
     let cursor = Promise.resolve()
+    // for each rule set, evaluate in parallel,
+    // before proceeding to the next priority set.
     return new Promise((resolve, reject) => {
-      // for each batch of promise priorities, fire off all promises in parallel (Promise.all)
-      // before proceeding to the next priority batch.
       orderedSets.map((set) => {
         cursor = cursor.then(() => {
-          return Promise.all(set.map((rule) => {
-            if (this.status !== RUNNING) {
-              debug(`engine::run status:${this.status}; skipping remaining rules`)
-              return
-            }
-            return rule.evaluate(this).then((rulePasses) => {
-              debug(`engine::run ruleResult:${rulePasses}`)
-              if (rulePasses) {
-                this.emit('action', rule.action, this)
-                this.emit(rule.action.type, rule.action.params, this)
-              }
-              if (!rulePasses) this.emit('failure', rule, this)
-            }).catch(reject)
-          }))
+          return this.runConditionSet(set)
         }).catch(reject)
         return cursor
       })
