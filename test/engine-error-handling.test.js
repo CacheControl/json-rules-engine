@@ -1,7 +1,6 @@
 'use strict'
 
 import engineFactory from '../src/json-business-rules'
-import sinon from 'sinon'
 
 describe('Engine: failure', () => {
   let engine
