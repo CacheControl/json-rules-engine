@@ -17,7 +17,7 @@ class Engine extends EventEmitter {
     this.set = set
     this.rules = []
     this.facts = {}
-    this.factCache = {}
+    this.factCache = new Map()
     this.status = READY
   }
 
@@ -64,13 +64,14 @@ class Engine extends EventEmitter {
       throw new Error(`Undefined fact: ${factId}`)
     }
     let cacheKey = fact.getCacheKey(params)
-    if (cacheKey && this.factCache[cacheKey]) {
+    let cacheVal = cacheKey && this.factCache.get(cacheKey)
+    if (cacheVal) {
       debug(`engine::factValue cache hit for '${factId}' cacheKey:${cacheKey}`)
-      return this.factCache[cacheKey]
+      return cacheVal
     }
     debug(`engine::factValue cache miss for '${factId}' using cacheKey:${cacheKey}; calculating`)
-    this.factCache[cacheKey] = fact.calculate(params, this)
-    return this.factCache[cacheKey]
+    this.factCache.set(cacheKey, fact.calculate(params, this))
+    return this.factCache.get(cacheKey)
   }
 
   prioritizeRules () {
@@ -111,7 +112,7 @@ class Engine extends EventEmitter {
     debug(`engine::run initialFacts:`, initialFacts)
     this.status = RUNNING
     if (runOptions.clearFactCache) {
-      this.factCache = {}
+      this.factCache.clear()
     }
     for (let key in initialFacts) {
       this.addFact(key, initialFacts[key])
