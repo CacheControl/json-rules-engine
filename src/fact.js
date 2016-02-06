@@ -5,29 +5,32 @@ import hash from 'object-hash'
 let debug = require('debug')('json-business-rules')
 
 class Fact {
-  constructor (id, options, calculationMethod) {
+  constructor (id, options, valueOrMethod) {
     this.id = id
     let defaultOptions = { cache: true }
     if (typeof options === 'function') {
-      calculationMethod = options
+      valueOrMethod = options
       options = defaultOptions
     } else if (typeof options === 'undefined') {
       options = defaultOptions
     }
+    if (typeof valueOrMethod !== 'function') {
+      this.value = valueOrMethod
+    } else {
+      this.calculationMethod = valueOrMethod
+    }
     this.priority = parseInt(options.priority || 1, 10)
     this.options = options
-    this.calculate = calculationMethod
     this.cacheKeyMethod = this.defaultCacheKeys
     return this
   }
 
-  // todo, rename 'calculate', 'definition'
-  definition (calculate, initialValue) {
-    this.calculate = calculate
-    if (typeof (initialValue) !== 'undefined') {
-      this.value = initialValue
+  calculate (params, engine) {
+    // if constant fact w/set value, return immediately
+    if (this.hasOwnProperty('value')) {
+      return this.value
     }
-    return this
+    return this.calculationMethod(params, engine)
   }
 
   static hashFromObject (obj) {

@@ -39,7 +39,6 @@ class Engine extends EventEmitter {
   }
 
   addFact (id, options, definitionFunc) {
-    let val
     let factId = id
     let fact
     if (id instanceof Fact) {
@@ -47,16 +46,9 @@ class Engine extends EventEmitter {
       fact = id
     } else {
       if (arguments.length === 2) {
-        if (typeof options === 'function') {
-          definitionFunc = options
-        } else {
-          val = options
-        }
-      } else if (typeof definitionFunc !== 'function') {
-        val = definitionFunc
+        definitionFunc = options
       }
-      fact = new Fact(id, options)
-      fact.definition(definitionFunc, val)
+      fact = new Fact(id, options, definitionFunc)
     }
     debug(`engine::addFact id:${factId}`)
     this.facts[factId] = fact
@@ -70,10 +62,6 @@ class Engine extends EventEmitter {
     let fact = this.facts[factId]
     if (!fact) {
       throw new Error(`Undefined fact: ${factId}`)
-    }
-    // if constant fact w/set value, return immediately
-    if (fact.hasOwnProperty('value')) {
-      return fact.value
     }
     let cacheKey = fact.getCacheKey(params)
     if (cacheKey && this.factCache[cacheKey]) {
