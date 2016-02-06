@@ -1,5 +1,5 @@
 {
-  "name": "json-business-rules",
+  "name": "json-rules-engine",
   "version": "1.0.0",
   "description": "Rules Engine expressed in simple json",
   "main": "index.js",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/cachecontrol/json-business-rules"
+    "url": "https://github.com/cachecontrol/json-rules-engine"
   },
   "keywords": [
     "rules",
@@ -32,9 +32,9 @@
   "author": "Cache Hamm <cdhamm@gmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/cachecontrol/json-business-rules/issues"
+    "url": "https://github.com/cachecontrol/json-rules-engine/issues"
   },
-  "homepage": "https://github.com/cachecontrol/json-business-rules",
+  "homepage": "https://github.com/cachecontrol/json-rules-engine",
   "devDependencies": {
     "babel-cli": "^6.4.5",
     "babel-core": "^6.4.5",

@@ -1,4 +1,4 @@
 'use strict'
 
-import jsonBusinessRules from './json-business-rules'
+import jsonBusinessRules from './json-rules-engine'
 export default jsonBusinessRules

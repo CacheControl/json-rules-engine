@@ -2,7 +2,7 @@
 
 import hash from 'object-hash'
 
-let debug = require('debug')('json-business-rules')
+let debug = require('debug')('json-rules-engine')
 
 class Fact {
   constructor (id, options, valueOrMethod) {

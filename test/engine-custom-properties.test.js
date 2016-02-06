@@ -1,6 +1,6 @@
 'use strict'
 
-import engineFactory, { Fact, Rule } from '../src/json-business-rules'
+import engineFactory, { Fact, Rule } from '../src/json-rules-engine'
 
 describe('Engine: custom properties', () => {
   let engine

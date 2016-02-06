@@ -1,7 +1,7 @@
 'use strict'
 
 import sinon from 'sinon'
-import engineFactory from '../src/json-business-rules'
+import engineFactory from '../src/json-rules-engine'
 
 describe('Engine: "any" conditions', () => {
   let engine

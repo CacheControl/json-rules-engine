@@ -5,7 +5,7 @@ import Fact from './fact'
 import Rule from './rule'
 import { EventEmitter } from 'events'
 
-let debug = require('debug')('json-business-rules')
+let debug = require('debug')('json-rules-engine')
 
 export const READY = 'READY'
 export const RUNNING = 'RUNNING'

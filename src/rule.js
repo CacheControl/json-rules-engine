@@ -3,7 +3,7 @@
 import params from 'params'
 import Condition from './condition'
 
-let debug = require('debug')('json-business-rules')
+let debug = require('debug')('json-rules-engine')
 
 class Rule {
   constructor (options) {

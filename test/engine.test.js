@@ -1,9 +1,9 @@
 'use strict'
 
 import sinon from 'sinon'
-import engineFactory from '../src/json-business-rules'
-import { Fact } from '../src/json-business-rules'
-import { Rule } from '../src/json-business-rules'
+import engineFactory from '../src/json-rules-engine'
+import { Fact } from '../src/json-rules-engine'
+import { Rule } from '../src/json-rules-engine'
 
 describe('Engine', () => {
   let engine
