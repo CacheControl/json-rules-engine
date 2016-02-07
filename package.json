@@ -4,7 +4,7 @@
   "description": "Rules Engine expressed in simple json",
   "main": "dist/index.js",
   "scripts": {
-    "test": "mocha --compilers js:babel-core/register --require babel-polyfill && npm run lint --silent",
+    "test": "mocha && npm run lint --silent",
     "lint": "standard --verbose | snazzy || true",
     "prepublish": "npm run compile",
     "compile": "babel --stage 1 -d dist/ src/"
@@ -19,6 +19,9 @@
   ],
   "standard": {
     "parser": "babel-eslint",
+    "ignore": [
+      "/dist"
+    ],
     "globals": [
       "describe",
       "xdescribe",

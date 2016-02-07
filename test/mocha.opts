@@ -1,3 +1,5 @@
+--compilers js:babel-core/register
+--require babel-polyfill
 --require ./test/support/bootstrap.js
 --check-leaks
 --globals expect
