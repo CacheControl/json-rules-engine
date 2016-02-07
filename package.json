@@ -2,11 +2,12 @@
   "name": "json-rules-engine",
   "version": "1.0.0",
   "description": "Rules Engine expressed in simple json",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "mocha --compilers js:babel-core/register --require babel-polyfill && npm run lint --silent",
     "lint": "standard --verbose | snazzy || true",
-    "build": "babel src -d dist"
+    "prepublish": "npm run compile",
+    "compile": "babel --stage 1 -d dist/ src/"
   },
   "repository": {
     "type": "git",

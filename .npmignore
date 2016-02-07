@@ -1,0 +1,6 @@
+src/
+dist/
+coverage/
+.coveralls.yml
+.travis.yml
+.gitignore
