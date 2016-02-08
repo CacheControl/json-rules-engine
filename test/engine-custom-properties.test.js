@@ -12,8 +12,8 @@ describe('Engine: custom properties', () => {
       let fact = new Fact('age')
       fact.customId = 'uuid'
       engine.addFact(fact)
-      expect(engine.facts.age).to.have.property('customId')
-      expect(engine.facts.age.customId).to.equal(fact.customId)
+      expect(engine.facts.get('age')).to.have.property('customId')
+      expect(engine.facts.get('age').customId).to.equal(fact.customId)
     })
 
     describe('conditions', () => {

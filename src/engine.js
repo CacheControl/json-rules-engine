@@ -16,7 +16,7 @@ class Engine extends EventEmitter {
     super()
     this.set = set
     this.rules = []
-    this.facts = {}
+    this.facts = new Map()
     this.factCache = new Map()
     this.status = READY
   }
@@ -51,15 +51,15 @@ class Engine extends EventEmitter {
       fact = new Fact(id, options, definitionFunc)
     }
     debug(`engine::addFact id:${factId}`)
-    this.facts[factId] = fact
+    this.facts.set(factId, fact)
   }
 
   getFact (factId) {
-    return this.facts[factId]
+    return this.facts.get(factId)
   }
 
   async factValue (factId, params = {}) {
-    let fact = this.facts[factId]
+    let fact = this.facts.get(factId)
     if (!fact) {
       throw new Error(`Undefined fact: ${factId}`)
     }

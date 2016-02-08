@@ -66,22 +66,22 @@ describe('Engine', () => {
     const FACT_VALUE = 'FACT_VALUE'
 
     function assertFact (engine) {
-      expect(Object.keys(engine.facts).length).to.equal(1)
-      expect(Object.keys(engine.facts)).to.include(FACT_NAME)
+      expect(engine.facts.size).to.equal(1)
+      expect(engine.facts.has(FACT_NAME)).to.be.true
     }
 
     it('allows a constant fact', () => {
       engine.addFact(FACT_NAME, FACT_VALUE)
       assertFact(engine)
-      expect(engine.facts[FACT_NAME].value).to.equal(FACT_VALUE)
+      expect(engine.facts.get(FACT_NAME).value).to.equal(FACT_VALUE)
     })
 
     it('allows options to be passed', () => {
       let options = { cache: false }
       engine.addFact(FACT_NAME, options, FACT_VALUE)
       assertFact(engine)
-      expect(engine.facts[FACT_NAME].value).to.equal(FACT_VALUE)
-      expect(engine.facts[FACT_NAME].options).to.equal(options)
+      expect(engine.facts.get(FACT_NAME).value).to.equal(FACT_VALUE)
+      expect(engine.facts.get(FACT_NAME).options).to.equal(options)
     })
 
     it('allows a lamba fact with no options', () => {
@@ -89,7 +89,7 @@ describe('Engine', () => {
         return FACT_VALUE
       })
       assertFact(engine)
-      expect(engine.facts[FACT_NAME].value).to.be.undefined
+      expect(engine.facts.get(FACT_NAME).value).to.be.undefined
     })
 
     it('allows a lamba fact with options', () => {
@@ -98,8 +98,8 @@ describe('Engine', () => {
         return FACT_VALUE
       })
       assertFact(engine)
-      expect(engine.facts[FACT_NAME].options).to.equal(options)
-      expect(engine.facts[FACT_NAME].value).to.be.undefined
+      expect(engine.facts.get(FACT_NAME).options).to.equal(options)
+      expect(engine.facts.get(FACT_NAME).value).to.be.undefined
     })
 
     it('allows a fact instance', () => {
@@ -107,8 +107,8 @@ describe('Engine', () => {
       let fact = new Fact(FACT_NAME, options)
       engine.addFact(fact)
       assertFact(engine)
-      expect(engine.facts[FACT_NAME]).to.exist
-      expect(engine.facts[FACT_NAME].options).to.equal(options)
+      expect(engine.facts.get(FACT_NAME)).to.exist
+      expect(engine.facts.get(FACT_NAME).options).to.equal(options)
     })
   })
 
@@ -129,7 +129,7 @@ describe('Engine', () => {
 
     it('allows facts to be added when run', () => {
       engine.run({modelId: 'XYZ'})
-      expect(engine.facts.modelId.value).to.equal('XYZ')
+      expect(engine.facts.get('modelId').value).to.equal('XYZ')
     })
 
     it('changes the status to "RUNNING"', () => {
