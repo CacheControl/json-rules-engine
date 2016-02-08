@@ -28,6 +28,26 @@ describe('Rule', () => {
       expect(rule.conditions).to.eql(opts.conditions)
       expect(rule.action).to.eql(opts.action)
     })
+
+    it('it can be initialized with a json string', () => {
+      let condition = {
+        all: [ Object.assign({}, conditionBase) ]
+      }
+      condition.operator = 'all'
+      condition.priority = 25
+      let opts = {
+        priority: 50,
+        conditions: condition,
+        action: {
+          type: 'awesome'
+        }
+      }
+      let json = JSON.stringify(opts)
+      let rule = new Rule(json)
+      expect(rule.priority).to.eql(opts.priority)
+      expect(rule.conditions).to.eql(opts.conditions)
+      expect(rule.action).to.eql(opts.action)
+    })
   })
 
   describe('setConditions()', () => {

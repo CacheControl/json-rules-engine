@@ -7,6 +7,9 @@ let debug = require('debug')('json-rules-engine')
 
 class Rule {
   constructor (options) {
+    if (typeof options === 'string') {
+      options = JSON.parse(options)
+    }
     if (options && options.conditions) {
       this.setConditions(options.conditions)
     }
