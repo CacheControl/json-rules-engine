@@ -3,12 +3,12 @@
 import subject from '../src/index'
 
 describe('json-business-subject', () => {
-  it('treats each rule set independently', () => {
-    let set1 = subject('set1')
-    let set2 = subject('set2')
-    set1.addRule(factories.rule())
-    set2.addRule(factories.rule())
-    expect(set1.rules.length).to.equal(1)
-    expect(set2.rules.length).to.equal(1)
+  it('treats each rule engine independently', () => {
+    let engine1 = subject()
+    let engine2 = subject()
+    engine1.addRule(factories.rule())
+    engine2.addRule(factories.rule())
+    expect(engine1.rules.length).to.equal(1)
+    expect(engine2.rules.length).to.equal(1)
   })
 })

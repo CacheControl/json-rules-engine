@@ -12,10 +12,9 @@ export const RUNNING = 'RUNNING'
 export const FINISHED = 'FINISHED'
 
 class Engine extends EventEmitter {
-  constructor (set) {
+  constructor (rules = []) {
     super()
-    this.set = set
-    this.rules = []
+    this.rules = rules
     this.facts = new Map()
     this.factResultsCache = new Map()
     this.status = READY

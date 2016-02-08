@@ -23,6 +23,16 @@ describe('Engine', () => {
     it('begins in status "READY"', () => {
       expect(engine.status).to.equal('READY')
     })
+
+    it('can be initialized with rules', () => {
+      let rules = [
+        factories.rule(),
+        factories.rule(),
+        factories.rule()
+      ]
+      engine = engineFactory(rules)
+      expect(engine.rules).to.equal(rules)
+    })
   })
 
   describe('stop()', () => {
