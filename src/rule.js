@@ -91,11 +91,19 @@ class Rule {
 
     let conditionResult = condition.evaluate(comparisonValue)
     if (!condition.isBooleanOperator()) {
-      debug(`runConditionSet:: <${comparisonValue} ${condition.operator} ${condition.value}?> (${conditionResult})`)
+      debug(`evaluateConditions:: <${comparisonValue} ${condition.operator} ${condition.value}?> (${conditionResult})`)
     }
     return conditionResult
   }
 
+  /**
+   * Priorizes an array of conditions based on "priority"
+   *   When no explicit priority is provided on the condition itself, the condition's priority is determine by its fact
+   * @param  {Condition[]} conditions
+   * @return {Condition[][]} prioritized two-dimensional array of conditions
+   *    Each outer array element represents a single priority(integer).  Inner array is
+   *    all conditions with that priority.
+   */
   prioritizeConditions (conditions) {
     let factSets = conditions.reduce((sets, condition) => {
       // if a priority has been set on this specific condition, honor that first
@@ -117,15 +125,31 @@ class Rule {
     }).map((priority) => factSets[priority])
   }
 
-  async runConditionSet (set, method) {
-    if (!(Array.isArray(set))) set = [ set ]
-    let conditionResults = await Promise.all(set.map((condition) => {
+  /**
+   * Evalutes an array of conditions, using an 'every' or 'some' array operation
+   * @param  {Condition[]} conditions
+   * @param  {string(every|some)} array method to call for determining result
+   * @return {Promise(boolean)} whether conditions evaluated truthy or falsey based on condition evaluation + method
+   */
+  async evaluateConditions (conditions, method) {
+    if (!(Array.isArray(conditions))) conditions = [ conditions ]
+    let conditionResults = await Promise.all(conditions.map((condition) => {
       return this.evaluateCondition(condition)
     }))
-    debug(`runConditionSet::results`, conditionResults)
+    debug(`evaluateConditions::results`, conditionResults)
     return method.call(conditionResults, (result) => result === true)
   }
 
+  /**
+   * Evaluates a set of conditions based on an 'all' or 'any' operator.
+   *   First, orders the top level conditions based on priority
+   *   Iterates over each priority set, evaluating each condition
+   *   If any condition results in the rule to be guaranteed truthy or falsey,
+   *   it will short-circuit and not bother evaluating any additional rules
+   * @param  {Condition[]} conditions - conditions to be evaluated
+   * @param  {string('all'|'any')} operator
+   * @return {Promise(boolean)} rule evaluation result
+   */
   async prioritizeAndRun (conditions, operator) {
     let method = Array.prototype.some
     if (operator === 'all') {
@@ -150,20 +174,34 @@ class Rule {
           return false
         }
         // all conditions passed; proceed with running next set in parallel
-        return this.runConditionSet(set, method)
+        return this.evaluateConditions(set, method)
       })
     })
     return cursor
   }
 
+  /**
+   * Runs an 'any' boolean operator on an array of conditions
+   * @param  {Condition[]} conditions to be evaluated
+   * @return {Promise(boolean)} condition evaluation result
+   */
   async any (conditions) {
     return this.prioritizeAndRun(conditions, 'any')
   }
 
+  /**
+   * Runs an 'all' boolean operator on an array of conditions
+   * @param  {Condition[]} conditions to be evaluated
+   * @return {Promise(boolean)} condition evaluation result
+   */
   async all (conditions) {
     return this.prioritizeAndRun(conditions, 'all')
   }
 
+  /**
+   * Evaluates the rule, starting with the root boolean operator and recursing down
+   * @return {Promise(boolean)} rule evaluation result
+   */
   async evaluate () {
     if (this.conditions.any) {
       return await this.any(this.conditions.any)
