@@ -38,6 +38,7 @@ class Engine extends EventEmitter {
     } else {
       rule = new Rule(properties)
     }
+    rule.setEngine(this)
     debug(`engine::addRule`, rule)
 
     this.rules.push(rule)

@@ -66,18 +66,27 @@ class Rule {
   }
 
   /**
+   * Sets the engine to run the rules under
+   * @param {object} engine
+   * @returns {Rule}
+   */
+  setEngine (engine) {
+    this.engine = engine
+    return this
+  }
+
+  /**
    * Evaluates the rule conditions
    * @param  {Condition} condition - condition to evaluate
-   * @param  {Engine} engine - the engine instance the rules belongs to
    * @return {Promise(true|false)} - resolves with the result of the condition evaluation
    */
-  async evaluateCondition (condition, engine) {
+  async evaluateCondition (condition) {
     let comparisonValue
     if (condition.isBooleanOperator()) {
       let subConditions = condition[condition.operator]
-      comparisonValue = await this[condition.operator](subConditions, engine)
+      comparisonValue = await this[condition.operator](subConditions)
     } else {
-      comparisonValue = await engine.factValue(condition.fact, condition.params)
+      comparisonValue = await this.engine.factValue(condition.fact, condition.params)
     }
 
     let conditionResult = condition.evaluate(comparisonValue)
@@ -87,13 +96,13 @@ class Rule {
     return conditionResult
   }
 
-  prioritizeConditions (conditions, engine) {
+  prioritizeConditions (conditions) {
     let factSets = conditions.reduce((sets, condition) => {
       // if a priority has been set on this specific condition, honor that first
       // otherwise, use the fact's priority
       let priority = condition.priority
       if (!priority) {
-        let fact = engine.getFact(condition.fact)
+        let fact = this.engine.getFact(condition.fact)
         if (!fact) {
           throw new Error(`Undefined fact: ${condition.fact}`)
         }
@@ -108,21 +117,21 @@ class Rule {
     }).map((priority) => factSets[priority])
   }
 
-  async runConditionSet (set, engine, method) {
+  async runConditionSet (set, method) {
     if (!(Array.isArray(set))) set = [ set ]
     let conditionResults = await Promise.all(set.map((condition) => {
-      return this.evaluateCondition(condition, engine)
+      return this.evaluateCondition(condition)
     }))
     debug(`runConditionSet::results`, conditionResults)
     return method.call(conditionResults, (result) => result === true)
   }
 
-  async prioritizeAndRun (conditions, engine, operator) {
+  async prioritizeAndRun (conditions, operator) {
     let method = Array.prototype.some
     if (operator === 'all') {
       method = Array.prototype.every
     }
-    let orderedSets = this.prioritizeConditions(conditions, engine)
+    let orderedSets = this.prioritizeConditions(conditions)
     let cursor = Promise.resolve()
     orderedSets.forEach((set) => {
       let stop = false
@@ -141,25 +150,25 @@ class Rule {
           return false
         }
         // all conditions passed; proceed with running next set in parallel
-        return this.runConditionSet(set, engine, method)
+        return this.runConditionSet(set, method)
       })
     })
     return cursor
   }
 
-  async any (conditions, engine) {
-    return this.prioritizeAndRun(conditions, engine, 'any')
+  async any (conditions) {
+    return this.prioritizeAndRun(conditions, 'any')
   }
 
-  async all (conditions, engine) {
-    return this.prioritizeAndRun(conditions, engine, 'all')
+  async all (conditions) {
+    return this.prioritizeAndRun(conditions, 'all')
   }
 
-  async evaluate (engine) {
+  async evaluate () {
     if (this.conditions.any) {
-      return await this.any(this.conditions.any, engine)
+      return await this.any(this.conditions.any)
     } else {
-      return await this.all(this.conditions.all, engine)
+      return await this.all(this.conditions.all)
     }
   }
 }
