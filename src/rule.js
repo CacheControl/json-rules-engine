@@ -6,6 +6,16 @@ import Condition from './condition'
 let debug = require('debug')('json-rules-engine')
 
 class Rule {
+  /**
+   * returns a new Rule instance
+   * @param {object,string} options, or json string that can be parsed into options
+   * @param {integer} options.priority (>1) - higher runs sooner.
+   * @param {Object} options.action - action to fire when rule evaluates as successful
+   * @param {string} options.action.type - name of action to emit
+   * @param {string} options.action.params - parameters to pass to the action listener
+   * @param {Object} options.conditions - conditions to evaluate when processing this rule
+   * @return {Rule} instance
+   */
   constructor (options) {
     if (typeof options === 'string') {
       options = JSON.parse(options)
@@ -21,6 +31,10 @@ class Rule {
     this.setAction(action)
   }
 
+  /**
+   * Sets the priority of the rule
+   * @param {integer} priority (>=1) - increasing the priority causes the rule to be run prior to other rules
+   */
   setPriority (priority) {
     priority = parseInt(priority, 10)
     if (priority <= 0) throw new Error('Priority must be greater than zero')
@@ -28,6 +42,10 @@ class Rule {
     return this
   }
 
+  /**
+   * Sets the conditions to run when evaluating the rule.
+   * @param {object} conditions - conditions, root element must be a boolean operator
+   */
   setConditions (conditions) {
     if (!conditions.hasOwnProperty('all') && !conditions.hasOwnProperty('any')) {
       throw new Error('"conditions" root must contain a single instance of "all" or "any"')
@@ -36,11 +54,23 @@ class Rule {
     return this
   }
 
+  /**
+   * Sets the action to emit when the conditions evaluate truthy
+   * @param {object} action - action to emit
+   * @param {string} action.type - event name to emit on
+   * @param {string} action.params - parameters to emit as the argument of the event emission
+   */
   setAction (action) {
     this.action = params(action).only(['type', 'params'])
     return this
   }
 
+  /**
+   * Evaluates the rule conditions
+   * @param  {Condition} condition - condition to evaluate
+   * @param  {Engine} engine - the engine instance the rules belongs to
+   * @return {Promise(true|false)} - resolves with the result of the condition evaluation
+   */
   async evaluateCondition (condition, engine) {
     let comparisonValue
     if (condition.isBooleanOperator()) {
