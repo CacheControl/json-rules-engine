@@ -12,9 +12,14 @@ export const RUNNING = 'RUNNING'
 export const FINISHED = 'FINISHED'
 
 class Engine extends EventEmitter {
+  /**
+   * Returns a new Engine instance
+   * @param  {Rule[]} rules - array of rules to initialize with
+   */
   constructor (rules = []) {
     super()
-    this.rules = rules
+    this.rules = []
+    rules.forEach((r) => this.addRule(r))
     this.facts = new Map()
     this.factResultsCache = new Map()
     this.status = READY

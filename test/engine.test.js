@@ -31,7 +31,7 @@ describe('Engine', () => {
         factories.rule()
       ]
       engine = engineFactory(rules)
-      expect(engine.rules).to.equal(rules)
+      expect(engine.rules.length).to.equal(rules.length)
     })
   })
 
