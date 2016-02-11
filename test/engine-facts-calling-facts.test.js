@@ -11,54 +11,58 @@ describe('Engine: custom cache keys', () => {
     all: [{
       fact: 'demographics',
       params: {
-        userId: 1,
-        clientId: 50
+        field: 'age'
       },
       operator: 'lessThanInclusive',
       value: 25
     }, {
       fact: 'demographics',
       params: {
-        userId: 1,
-        clientId: 50
+        field: 'zipCode'
       },
-      operator: 'greaterThanInclusive',
-      value: 20
+      operator: 'equal',
+      value: 80211
     }]
   }
 
   let actionSpy = sinon.spy()
-  let factSpy = sinon.spy()
+  let demographicDataSpy = sinon.spy()
+  let demographicSpy = sinon.spy()
   beforeEach(() => {
-    factSpy.reset()
+    demographicSpy.reset()
+    demographicDataSpy.reset()
     actionSpy.reset()
 
-    let factDefinition = () => {
-      factSpy()
-      return 24
-    }
-    let fact = new Fact('demographics', factDefinition)
-    fact.cacheKeys = function (id, params) {
+    let demographicsDataDefinition = async (params, engine) => {
+      demographicDataSpy()
       return {
-        id,
-        params: {
-          clientId: params.clientId
-        }
+        age: 20,
+        zipCode: 80211
       }
     }
+
+    let demographicsDefinition = async (params, engine) => {
+      demographicSpy()
+      let data = await engine.factValue('demographic-data')
+      return data[params.field]
+    }
+    let demographicsFact = new Fact('demographics', demographicsDefinition)
+    let demographicsDataFact = new Fact('demographic-data', demographicsDataDefinition)
 
     engine = engineFactory()
     let rule = factories.rule({ conditions, action })
     engine.addRule(rule)
-    engine.addFact(fact)
+    engine.addFact(demographicsFact)
+    engine.addFact(demographicsDataFact)
     engine.on('action', actionSpy)
   })
 
-  describe('1 rule with custom cache keys', () => {
-    it('calls the fact definition once', async () => {
+  describe('1 rule', () => {
+    it('allows a fact to retrieve other fact values', async () => {
       await engine.run()
       expect(actionSpy).to.have.been.calledOnce
-      expect(factSpy).to.have.been.calledOnce
+      expect(demographicDataSpy).to.have.been.calledOnce
+      expect(demographicSpy).to.have.been.calledTwice
     })
   })
 
@@ -68,8 +72,7 @@ describe('Engine: custom cache keys', () => {
         all: [{
           fact: 'demographics',
           params: {
-            userId: 1,
-            clientId: 50
+            field: 'age'
           },
           operator: 'greaterThanInclusive',
           value: 20
@@ -80,7 +83,9 @@ describe('Engine: custom cache keys', () => {
 
       await engine.run()
       expect(actionSpy).to.have.been.calledTwice
-      expect(factSpy).to.have.been.calledOnce
+      expect(demographicDataSpy).to.have.been.calledOnce
+      expect(demographicSpy).to.have.been.calledTwice
+      expect(demographicDataSpy).to.have.been.calledOnce
     })
   })
 })
