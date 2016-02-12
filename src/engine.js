@@ -47,6 +47,7 @@ class Engine extends EventEmitter {
     debug(`engine::addRule`, rule)
 
     this.rules.push(rule)
+    this.prioritizedRules = null
   }
 
   /**
@@ -110,15 +111,18 @@ class Engine extends EventEmitter {
    *    all rules with that priority.
    */
   prioritizeRules () {
-    let ruleSets = this.rules.reduce((sets, rule) => {
-      let priority = rule.priority
-      if (!sets[priority]) sets[priority] = []
-      sets[priority].push(rule)
-      return sets
-    }, {})
-    return Object.keys(ruleSets).sort((a, b) => {
-      return Number(a) > Number(b) ? -1 : 1 // order highest priority -> lowest
-    }).map((priority) => ruleSets[priority])
+    if (!this.prioritizedRules) {
+      let ruleSets = this.rules.reduce((sets, rule) => {
+        let priority = rule.priority
+        if (!sets[priority]) sets[priority] = []
+        sets[priority].push(rule)
+        return sets
+      }, {})
+      this.prioritizedRules = Object.keys(ruleSets).sort((a, b) => {
+        return Number(a) > Number(b) ? -1 : 1 // order highest priority -> lowest
+      }).map((priority) => ruleSets[priority])
+    }
+    return this.prioritizedRules
   }
 
   /**
