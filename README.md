@@ -87,7 +87,7 @@ engine.addFact('age', fact)
   let engine = new Engine()
 ```
 
-### Step 2: Add a Rule
+### Step 2: Add Rules
 
 Rules are composed of two components: conditions and actions.  _Conditions_ are a set of requirements that must be met to trigger the rule's _action_.  Actions are emitted as events and may subscribed to by the application (see step 4).
 
@@ -195,6 +195,18 @@ engine.on('action', function (action, engine) {
   //   }
   // }
 })
+```
+
+### Step 5: Run the engine
+
+Running an engine executes the rules, and fires off action events for conditions that were met.  The fact results cache will be cleared with each ```run()```
+
+```js
+// evaluate the rules
+engine.run()
+
+// Optionally, constant facts may be provided
+engine.run({ userId: 1 })  // any time a rule condition requires 'userId', '1' will be returned
 ```
 
 ## Debugging
