@@ -103,11 +103,11 @@ let conditions = {
   all: [
     {
       fact: 'age',
-      operator: 'lessThanInclusive',
+      operator: 'greaterThanInclusive',
       value: 18
     }, {
       fact: 'age',
-      operator: 'greaterThanInclusive',
+      operator: 'lessThanInclusive',
       value: 25
     }, {
       fact: 'state',
@@ -165,7 +165,7 @@ engine.addFact('age', ageFact)
 
 Now when the engine is run, it will call the methods above whenever it encounters the ```fact: "age"``` or ```fact: "state"```properties.
 
-**Important:** facts should be *pure functions*, meaning their values will always evaluate based on the ```params``` argument.  By establishing facts are pure functions, it allows the rules engine to cache results; if the same fact is called multiple times with the same ```params```, it will trigger the computation once and cache the results for future calls.  If fact caching not desired, this behavior can be turned off via the options; see the [docs](./docs/facts.md).
+**Important:** facts should be *pure functions*, meaning their values will always evaluate based on the ```params``` argument.  By establishing facts are pure functions, it allows the rules engine to cache results throughout a ```run()```; if the same fact is called multiple times with the same ```params```, it will trigger the computation once and cache the results for future calls.  If fact caching not desired, this behavior can be turned off via the options; see the [docs](./docs/facts.md).
 
 More on facts can be found [here](./docs/facts.md)
 
