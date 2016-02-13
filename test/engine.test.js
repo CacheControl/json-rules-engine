@@ -91,7 +91,7 @@ describe('Engine', () => {
       engine.addFact(FACT_NAME, options, FACT_VALUE)
       assertFact(engine)
       expect(engine.facts.get(FACT_NAME).value).to.equal(FACT_VALUE)
-      expect(engine.facts.get(FACT_NAME).options).to.equal(options)
+      expect(engine.facts.get(FACT_NAME).options).to.eql(options)
     })
 
     it('allows a lamba fact with no options', () => {
@@ -108,7 +108,7 @@ describe('Engine', () => {
         return FACT_VALUE
       })
       assertFact(engine)
-      expect(engine.facts.get(FACT_NAME).options).to.equal(options)
+      expect(engine.facts.get(FACT_NAME).options).to.eql(options)
       expect(engine.facts.get(FACT_NAME).value).to.be.undefined
     })
 
@@ -118,7 +118,7 @@ describe('Engine', () => {
       engine.addFact(fact)
       assertFact(engine)
       expect(engine.facts.get(FACT_NAME)).to.exist
-      expect(engine.facts.get(FACT_NAME).options).to.equal(options)
+      expect(engine.facts.get(FACT_NAME).options).to.eql(options)
     })
   })
 
@@ -159,23 +159,52 @@ describe('Engine', () => {
   })
 
   describe('factValue', () => {
-    beforeEach(() => {
-      engine.addFact('foo', async (params, facts) => {
-        if (params.userId) return params.userId
-        return 'unknown'
+    describe('arguments', () => {
+      beforeEach(() => {
+        engine.addFact('foo', async (params, facts) => {
+          if (params.userId) return params.userId
+          return 'unknown'
+        })
+      })
+
+      it('allows parameters to be passed to the fact', async () => {
+        return expect(engine.factValue('foo')).to.eventually.equal('unknown')
+      })
+
+      it('allows parameters to be passed to the fact', async () => {
+        return expect(engine.factValue('foo', { userId: 1 })).to.eventually.equal(1)
+      })
+
+      it('throws an exception if it encounters an undefined fact', () => {
+        expect(engine.factValue('foo')).to.be.rejectedWith(/Undefined fact: foo/)
       })
     })
 
-    it('allows parameters to be passed to the fact', async () => {
-      return expect(engine.factValue('foo')).to.eventually.equal('unknown')
-    })
+    describe('caching', () => {
+      let factSpy = sinon.spy()
+      function setup (factOptions) {
+        factSpy.reset()
+        engine.addFact('foo', factOptions, async (params, facts) => {
+          factSpy()
+          return 'unknown'
+        })
+      }
 
-    it('allows parameters to be passed to the fact', async () => {
-      return expect(engine.factValue('foo', { userId: 1 })).to.eventually.equal(1)
-    })
+      it('evaluates the fact every time when fact caching is off', () => {
+        setup({ cache: false })
+        engine.factValue('foo')
+        engine.factValue('foo')
+        engine.factValue('foo')
+        expect(factSpy).to.have.been.calledThrice
+      })
 
-    it('throws an exception if it encounters an undefined fact', () => {
-      expect(engine.factValue('foo')).to.be.rejectedWith(/Undefined fact: foo/)
+      it('evaluates the fact once when fact caching is on', () => {
+        setup({ cache: true })
+        engine.factValue('foo')
+        engine.factValue('foo')
+        engine.factValue('foo')
+        expect(factSpy).to.have.been.calledOnce
+      })
     })
   })
 })

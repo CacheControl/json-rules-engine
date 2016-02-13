@@ -1,5 +1,6 @@
 'use strict'
 
+import Engine from '../src/index'
 import Rule from '../src/rule'
 
 describe('Rule', () => {
@@ -70,6 +71,42 @@ describe('Rule', () => {
 
     it('errors if priority is less than 0', () => {
       expect(rule.setPriority.bind(null, 0)).to.throw(/greater than zero/)
+    })
+  })
+
+  describe('priotizeConditions()', () => {
+    let conditions = [{
+      fact: 'age',
+      operator: 'greaterThanInclusive',
+      value: 18
+    }, {
+      fact: 'segment',
+      operator: 'equal',
+      value: 'human'
+    }, {
+      fact: 'accountType',
+      operator: 'equal',
+      value: 'admin'
+    }, {
+      fact: 'state',
+      operator: 'equal',
+      value: 'admin'
+    }]
+    it('orders based on priority', async () => {
+      let engine = new Engine()
+      engine.addFact('state', { priority: 500 }, async () => {})
+      engine.addFact('segment', { priority: 50 }, async () => {})
+      engine.addFact('accountType', { priority: 25 }, async () => {})
+      engine.addFact('age', { priority: 100 }, async () => {})
+      let rule = new Rule()
+      rule.setEngine(engine)
+
+      let prioritizedConditions = rule.prioritizeConditions(conditions)
+      expect(prioritizedConditions.length).to.equal(4)
+      expect(prioritizedConditions[0][0].fact).to.equal('state')
+      expect(prioritizedConditions[1][0].fact).to.equal('age')
+      expect(prioritizedConditions[2][0].fact).to.equal('segment')
+      expect(prioritizedConditions[3][0].fact).to.equal('accountType')
     })
   })
 })

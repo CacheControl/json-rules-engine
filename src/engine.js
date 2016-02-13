@@ -100,8 +100,12 @@ class Engine extends EventEmitter {
       return cacheVal
     }
     debug(`engine::factValue cache miss for '${factId}' using cacheKey:${cacheKey}; calculating`)
-    this.factResultsCache.set(cacheKey, fact.calculate(params, this))
-    return this.factResultsCache.get(cacheKey)
+    cacheVal = fact.calculate(params, this)
+    debug(`engine::factValue '${factId}' calculated as: ${cacheVal}`)
+    if (cacheKey) {
+      this.factResultsCache.set(cacheKey, cacheVal)
+    }
+    return cacheVal
   }
 
   /**

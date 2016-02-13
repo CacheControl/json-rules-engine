@@ -28,7 +28,7 @@ class Fact {
       this.calculationMethod = valueOrMethod
     }
     this.priority = parseInt(options.priority || 1, 10)
-    this.options = options
+    this.options = Object.assign({}, defaultOptions, options)
     this.cacheKeyMethod = this.defaultCacheKeys
     return this
   }

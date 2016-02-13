@@ -46,7 +46,8 @@ describe('Engine: fact priority', () => {
         value: 'admin'
       }]
     }
-    it('fail on the first fact to fail, part 1', async () => {
+
+    it('stops on the first fact to fail, part 1', async () => {
       setup(allCondition)
       ageStub.returns(10) // fail
       await engine.run()
@@ -57,7 +58,7 @@ describe('Engine: fact priority', () => {
       expect(accountTypeStub).to.not.have.been.called
     })
 
-    it('fail on the first fact to fail, part 2', async () => {
+    it('stops on the first fact to fail, part 2', async () => {
       setup(allCondition)
       ageStub.returns(20) // pass
       segmentStub.returns('android') // fail
