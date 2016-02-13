@@ -92,6 +92,7 @@ describe('Rule', () => {
       operator: 'equal',
       value: 'admin'
     }]
+
     it('orders based on priority', async () => {
       let engine = new Engine()
       engine.addFact('state', { priority: 500 }, async () => {})

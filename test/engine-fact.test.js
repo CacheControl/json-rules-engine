@@ -75,4 +75,26 @@ describe('Engine: fact evaluation', () => {
       expect(actionSpy).to.have.been.called
     })
   })
+
+  describe('synchronous functions', () => {
+    it('works with synchronous, non-promise evaluations that are truthy', async () => {
+      setup()
+      let eligibility = function (params, engine) {
+        return 20
+      }
+      engine.addFact('eligibility', eligibility)
+      await engine.run()
+      expect(actionSpy).to.have.been.called
+    })
+
+    it('works with synchronous, non-promise evaluations that are falsey', async () => {
+      setup()
+      let eligibility = function (params, engine) {
+        return 100
+      }
+      engine.addFact('eligibility', eligibility)
+      await engine.run()
+      expect(actionSpy).to.not.have.been.called
+    })
+  })
 })

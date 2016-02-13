@@ -36,19 +36,20 @@ let engine = new Engine()
 _Rule_ - contains a set of _conditions_ and a single _action_.  When the engine is run, each rule condition is evaluated.  If the results are truthy, the rule's _action_ is triggered.
 
 ```js
-let rule = new Rule({ priority: 25 })
+let rule = new Rule({ priority: 25 })  // the higher the priority, the earlier the rule will run.  default=1
 ```
 
 _Rule Condition_ - Each condition consists of a constant _value_, an _operator_, a _fact_, and (optionally) fact _params_.  The _operator_ compares the fact result to the _value_.
 
 ```js
+// engine will call the "new-years" method at runtime with "params" and compare the results to "true"
 rule.setConditions({
-  fact: 'age',  // engine will call the "age" method at runtime with "params" and compare the results to "18"
+  fact: 'new-years',
   params: {
-    allowUserReported: true
+    calendar: 'gregorian'
   }
   operator: 'equal',
-  value: 18
+  value: true
 })
 ```
 
@@ -56,29 +57,29 @@ _Rule Action_ - Actions are event emissions triggered by the engine when conditi
 
 ```js
 rule.setAction({
-  type: 'isAdult',
+  type: 'celebrate',
   params: {
-    canVote: true
+    balloons: true,
+    cake: false
   }
 })
-engine.on('isAdult', function (params) {
+engine.on('celebrate', function (params) {
   // handle action business logic
-  // params = { canVote: true }
+  // params = { balloons: true, cake: false }
 })
 ```
 
-_Fact_ - Methods or constants registered with the engine prior to runtime, and referenced within rule conditions.  Each fact method is a pure function that returns a promise. As rule conditions are evaluated during runtime, they retrieve fact values dynamically and use the condition _operator_ to compare the fact result with the condition _value_.
+_Fact_ - Methods or constants registered with the engine prior to runtime, and referenced within rule conditions.  Each fact method is a pure function that may return a computed value or promise. As rule conditions are evaluated during runtime, they retrieve fact values dynamically and use the condition _operator_ to compare the fact result with the condition _value_.
 
 ```js
 let fact = function(params, engine) {
-  return new Promise((resolve, reject) => {
-    // business logic for computing fact value based on runtime variables
-  })
+  // business logic for computing fact value based on params
+  return dayOfYearByCalendar(params.calendar)
 }
-engine.addFact('age', fact)
+engine.addFact('year', fact)
 ```
 
-## Usage
+## Usage Example
 
 ### Step 1: Create an Engine
 
@@ -93,7 +94,7 @@ Rules are composed of two components: conditions and actions.  _Conditions_ are 
 
 ```js
 let action = {
-  type: 'young-adult-colorado',
+  type: 'young-adult-rocky-mnts',
   params: {  // optional
     giftCard: 'amazon',
     value: 50
@@ -109,14 +110,24 @@ let conditions = {
       fact: 'age',
       operator: 'lessThanInclusive',
       value: 25
-    }, {
-      fact: 'state',
-      params: {
-        zipCode: 80211
-      },
-      operator: 'equal',
-      value: 'colorado'
-    }
+    },
+    any: [
+      {
+        fact: 'state',
+        params: {
+          country: 'us'
+        },
+        operator: 'equal',
+        value: 'colorado'
+      }, {
+        fact: 'state',
+        params: {
+          country: 'us'
+        },
+        operator: 'equal',
+        value: 'utah'
+      }
+    ]
   ]
 }
 let rule = new Rule({ conditions, action})
@@ -137,13 +148,9 @@ Facts are constants or pure functions that may return different results during r
  * Define the 'state' fact
  */
 let stateFact = function(params, engine) {
-  return new Promise((resolve, reject) => {
-    // facts can perform asynchronous operations such as database calls, http requests, etc to gather data
-    request(`/state-lookup/${params.zipCode}`, function(err, resp, body) {
-      if (err) return reject(err)
-      resolve(body.state)
-    })
-  })
+  // rule "params" value is passed to the fact
+  // other fact values accessible via engine.factValue()
+  return stateLookupByZip(params.country, engine.factValue('zip-code'))
 }
 engine.addFact('state', stateFact)
 
@@ -151,13 +158,12 @@ engine.addFact('state', stateFact)
  * Define the 'age' fact
  */
 let ageFact = function(params, engine) {
-  return new Promise((resolve, reject) => {
-    // facts can also access other facts via 'engine.factValue(factId, params = {})'
-    engine.factValue('userId').then((userId) => {
-      return db.getUser(userId)
-    }).then((user) => {
-      return user.age
-    })
+  // facts may return a promise when performing asynchronous operations
+  // such as database calls, http requests, etc to gather data
+  return engine.factValue('userId').then((userId) => {
+    return db.getUser(userId)
+  }).then((user) => {
+    return user.age
   })
 }
 engine.addFact('age', ageFact)
@@ -207,6 +213,11 @@ engine.run()
 
 // Optionally, constant facts may be provided
 engine.run({ userId: 1 })  // any time a rule condition requires 'userId', '1' will be returned
+
+// run() returns a promise
+engine.run().then(() => {
+  console.log('all rules executed')
+})
 ```
 
 ## Debugging
