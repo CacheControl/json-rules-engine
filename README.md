@@ -88,6 +88,8 @@ engine.addFact('year', fact)
   let engine = new Engine()
 ```
 
+More on engines can be found [here](./docs/engine.md)
+
 ### Step 2: Add Rules
 
 Rules are composed of two components: conditions and actions.  _Conditions_ are a set of requirements that must be met to trigger the rule's _action_.  Actions are emitted as events and may subscribed to by the application (see step 4).

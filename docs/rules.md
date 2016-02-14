@@ -1,6 +1,51 @@
 # Rules
 
-## Actions
+## Methods
+
+### constructor([options])
+
+Returns a new rule instance
+
+```js
+let rule = new Rule(options)
+```
+
+### setConditions(conditions)
+
+Assigns the rule conditions to the provided argument.  The root condition must be a boolean operator (```all``` or ```any```)
+
+```js
+rule.setConditions({
+  all: [
+    {
+      fact: 'revenue',
+      operator: 'greaterThanInclusive'
+      value: 1000000
+    }
+  ]
+})
+```
+
+### setAction(object)
+
+Sets the action the engine should emit when the rule conditions pass.  All actions must have a ```type``` property, which denotes the event name to emit when the rule passes.
+
+Optionally, a ```params``` property may be provided as well.  ```params``` will be passed to the event as an argument.
+
+```js
+rule.setAction({
+  type: 'string', //required
+  params: 'object' //optional
+})
+```
+
+### setPriority(integer = 1)
+
+Sets the rule priority.  Priority must be a positive, non-zero integer.  The higher the priority, the sooner the rule will run.  If no priority is assigned to a Rule, it will receive a default priority of 1.
+
+```js
+rule.setPriority(100)
+```
 
 ## Conditions
 
