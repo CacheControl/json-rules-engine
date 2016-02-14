@@ -17,6 +17,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var debug = require('debug')('json-rules-engine');
 
 var Fact = function () {
+  /**
+   * Returns a new fact instance
+   * @param  {string} id - fact unique identifer
+   * @param  {object} options
+   * @param  {boolean} options.cache - whether to cache the fact's value for future rules
+   * @param  {primitive|function} valueOrMethod - constant primitive, or method to call when computing the fact's value
+   * @return {Fact}
+   */
+
   function Fact(id, options, valueOrMethod) {
     _classCallCheck(this, Fact);
 
@@ -34,10 +43,17 @@ var Fact = function () {
       this.calculationMethod = valueOrMethod;
     }
     this.priority = parseInt(options.priority || 1, 10);
-    this.options = options;
+    this.options = Object.assign({}, defaultOptions, options);
     this.cacheKeyMethod = this.defaultCacheKeys;
     return this;
   }
+
+  /**
+   * Return the fact value, based on provided parameters
+   * @param  {object} params
+   * @param  {Engine} engine
+   * @return {any} calculation method results
+   */
 
   _createClass(Fact, [{
     key: 'calculate',
@@ -48,11 +64,35 @@ var Fact = function () {
       }
       return this.calculationMethod(params, engine);
     }
+
+    /**
+     * Return a cache key (MD5 string) based on parameters
+     * @param  {object} obj - properties to generate a hash key from
+     * @return {string} MD5 string based on the hash'd object
+     */
+
   }, {
     key: 'defaultCacheKeys',
+
+    /**
+     * Default properties to use when caching a fact
+     * Assumes every fact is a pure function, whose computed value will only
+     * change when input params are modified
+     * @param  {string} id - fact unique identifer
+     * @param  {object} params - parameters passed to fact calcution method
+     * @return {object} id + params
+     */
     value: function defaultCacheKeys(id, params) {
       return { params: params, id: id };
     }
+
+    /**
+     * Generates the fact's cache key(MD5 string)
+     * Returns nothing if the fact's caching has been disabled
+     * @param  {object} params - parameters that would be passed to the computation method
+     * @return {string} cache key
+     */
+
   }, {
     key: 'getCacheKey',
     value: function getCacheKey(params) {

@@ -5,8 +5,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Rule = exports.Fact = undefined;
 
-exports.default = function (set) {
-  return new _engine2.default(set);
+exports.default = function (rules) {
+  return new _engine2.default(rules);
 };
 
 var _engine = require('./engine');

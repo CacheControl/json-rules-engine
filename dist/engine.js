@@ -40,35 +40,63 @@ var FINISHED = exports.FINISHED = 'FINISHED';
 var Engine = function (_EventEmitter) {
   _inherits(Engine, _EventEmitter);
 
-  function Engine(set) {
+  /**
+   * Returns a new Engine instance
+   * @param  {Rule[]} rules - array of rules to initialize with
+   */
+
+  function Engine() {
+    var rules = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
+
     _classCallCheck(this, Engine);
 
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Engine).call(this));
 
-    _this.set = set;
     _this.rules = [];
-    _this.facts = {};
-    _this.factCache = new Map();
+    rules.forEach(function (r) {
+      return _this.addRule(r);
+    });
+    _this.facts = new Map();
+    _this.factResultsCache = new Map();
     _this.status = READY;
     return _this;
   }
 
+  /**
+   * Add a rule definition to the engine
+   * @param {object|Rule} properties - rule definition.  can be JSON representation, or instance of Rule
+   * @param {integer} properties.priority (>1) - higher runs sooner.
+   * @param {Object} properties.action - action to fire when rule evaluates as successful
+   * @param {string} properties.action.type - name of action to emit
+   * @param {string} properties.action.params - parameters to pass to the action listener
+   * @param {Object} properties.conditions - conditions to evaluate when processing this rule
+   */
+
   _createClass(Engine, [{
     key: 'addRule',
-    value: function addRule(ruleProperties) {
-      (0, _params2.default)(ruleProperties).require(['conditions', 'action']);
+    value: function addRule(properties) {
+      (0, _params2.default)(properties).require(['conditions', 'action']);
 
       var rule = undefined;
-      if (ruleProperties instanceof _rule2.default) {
-        rule = ruleProperties;
+      if (properties instanceof _rule2.default) {
+        rule = properties;
       } else {
-        rule = new _rule2.default();
-        rule.setPriority(ruleProperties.priority).setConditions(ruleProperties.conditions).setAction(ruleProperties.action);
+        rule = new _rule2.default(properties);
       }
+      rule.setEngine(this);
       debug('engine::addRule', rule);
 
       this.rules.push(rule);
+      this.prioritizedRules = null;
     }
+
+    /**
+     * Add a fact definition to the engine.  Facts are called by rules as they are evaluated.
+     * @param {object|Fact} id - fact identifier or instance of Fact
+     * @param {Object} options - options to initialize the fact with. used when "id" is not a Fact instance
+     * @param {function} definitionFunc - function to be called when computing the fact value for a given rule
+     */
+
   }, {
     key: 'addFact',
     value: function addFact(id, options, definitionFunc) {
@@ -84,13 +112,29 @@ var Engine = function (_EventEmitter) {
         fact = new _fact2.default(id, options, definitionFunc);
       }
       debug('engine::addFact id:' + factId);
-      this.facts[factId] = fact;
+      this.facts.set(factId, fact);
     }
+
+    /**
+     * Returns a fact from the engine, by fact-id
+     * @param  {string} factId - fact identifier
+     * @return {Fact} fact instance, or undefined if no such fact exists
+     */
+
   }, {
     key: 'getFact',
     value: function getFact(factId) {
-      return this.facts[factId];
+      return this.facts.get(factId);
     }
+
+    /**
+     * Returns the value of a fact, based on the given parameters.  Utilizes the 'factResultsCache' maintained
+     * by the engine, which cache's fact computations based on parameters provided
+     * @param  {string} factId - fact identifier
+     * @param  {Object} params - parameters to feed into the fact.  By default, these will also be used to compute the cache key
+     * @return {Promise} a promise which will resolve with the fact computation.
+     */
+
   }, {
     key: 'factValue',
     value: function () {
@@ -101,7 +145,7 @@ var Engine = function (_EventEmitter) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                fact = this.facts[factId];
+                fact = this.facts.get(factId);
 
                 if (fact) {
                   _context.next = 3;
@@ -112,7 +156,7 @@ var Engine = function (_EventEmitter) {
 
               case 3:
                 cacheKey = fact.getCacheKey(params);
-                cacheVal = cacheKey && this.factCache.get(cacheKey);
+                cacheVal = cacheKey && this.factResultsCache.get(cacheKey);
 
                 if (!cacheVal) {
                   _context.next = 8;
@@ -124,10 +168,14 @@ var Engine = function (_EventEmitter) {
 
               case 8:
                 debug('engine::factValue cache miss for \'' + factId + '\' using cacheKey:' + cacheKey + '; calculating');
-                this.factCache.set(cacheKey, fact.calculate(params, this));
-                return _context.abrupt('return', this.factCache.get(cacheKey));
+                cacheVal = fact.calculate(params, this);
+                debug('engine::factValue \'' + factId + '\' calculated as: ' + cacheVal);
+                if (cacheKey) {
+                  this.factResultsCache.set(cacheKey, cacheVal);
+                }
+                return _context.abrupt('return', cacheVal);
 
-              case 11:
+              case 13:
               case 'end':
                 return _context.stop();
             }
@@ -135,53 +183,83 @@ var Engine = function (_EventEmitter) {
         }, _callee, this);
       }));
 
-      return function factValue(_x, _x2) {
+      return function factValue(_x2, _x3) {
         return ref.apply(this, arguments);
       };
     }()
+
+    /**
+     * Iterates over the engine rules, organizing them by highest -> lowest priority
+     * @return {Rule[][]} two dimensional array of Rules.
+     *    Each outer array element represents a single priority(integer).  Inner array is
+     *    all rules with that priority.
+     */
+
   }, {
     key: 'prioritizeRules',
     value: function prioritizeRules() {
-      var ruleSets = this.rules.reduce(function (sets, rule) {
-        var priority = rule.priority;
-        if (!sets[priority]) sets[priority] = [];
-        sets[priority].push(rule);
-        return sets;
-      }, {});
-      return Object.keys(ruleSets).sort(function (a, b) {
-        return Number(a) > Number(b) ? -1 : 1; // order highest priority -> lowest
-      }).map(function (priority) {
-        return ruleSets[priority];
-      });
+      var _this2 = this;
+
+      if (!this.prioritizedRules) {
+        (function () {
+          var ruleSets = _this2.rules.reduce(function (sets, rule) {
+            var priority = rule.priority;
+            if (!sets[priority]) sets[priority] = [];
+            sets[priority].push(rule);
+            return sets;
+          }, {});
+          _this2.prioritizedRules = Object.keys(ruleSets).sort(function (a, b) {
+            return Number(a) > Number(b) ? -1 : 1; // order highest priority -> lowest
+          }).map(function (priority) {
+            return ruleSets[priority];
+          });
+        })();
+      }
+      return this.prioritizedRules;
     }
+
+    /**
+     * Stops the rules engine from running the next priority set of Rules.  All remaining rules will be resolved as undefined,
+     * and no further actions emitted.  Since rules of the same priority are evaluated in parallel(not series), other rules of
+     * the same priority may still emit actions, even though the engine is in a "finished" state.
+     * @return {Engine}
+     */
+
   }, {
     key: 'stop',
     value: function stop() {
       this.status = FINISHED;
       return this;
     }
+
+    /**
+     * Runs an array of rules
+     * @param  {Rule[]} array of rules to be evaluated
+     * @return {Promise} resolves when all rules in the array have been evaluated
+     */
+
   }, {
-    key: 'runConditionSet',
+    key: 'evaluateRules',
     value: function () {
-      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(set) {
-        var _this2 = this;
+      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(ruleArray) {
+        var _this3 = this;
 
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                return _context2.abrupt('return', Promise.all(set.map(function (rule) {
-                  if (_this2.status !== RUNNING) {
-                    debug('engine::run status:' + _this2.status + '; skipping remaining rules');
+                return _context2.abrupt('return', Promise.all(ruleArray.map(function (rule) {
+                  if (_this3.status !== RUNNING) {
+                    debug('engine::run status:' + _this3.status + '; skipping remaining rules');
                     return;
                   }
-                  return rule.evaluate(_this2).then(function (rulePasses) {
+                  return rule.evaluate(_this3).then(function (rulePasses) {
                     debug('engine::run ruleResult:' + rulePasses);
                     if (rulePasses) {
-                      _this2.emit('action', rule.action, _this2);
-                      _this2.emit(rule.action.type, rule.action.params, _this2);
+                      _this3.emit('action', rule.action, _this3);
+                      _this3.emit(rule.action.type, rule.action.params, _this3);
                     }
-                    if (!rulePasses) _this2.emit('failure', rule, _this2);
+                    if (!rulePasses) _this3.emit('failure', rule, _this3);
                   });
                 })));
 
@@ -193,18 +271,26 @@ var Engine = function (_EventEmitter) {
         }, _callee2, this);
       }));
 
-      return function runConditionSet(_x4) {
+      return function evaluateRules(_x5) {
         return ref.apply(this, arguments);
       };
     }()
+
+    /**
+     * Runs the rules engine
+     * @param  {Object} initialFacts - fact values known at runtime
+     * @param  {Object} runOptions - run options
+     * @return {Promise} resolves when the engine has completed running
+     */
+
   }, {
     key: 'run',
     value: function () {
       var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3() {
-        var _this3 = this;
+        var _this4 = this;
 
         var initialFacts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-        var runOptions = arguments.length <= 1 || arguments[1] === undefined ? { clearFactCache: true } : arguments[1];
+        var runOptions = arguments.length <= 1 || arguments[1] === undefined ? { clearfactResultsCache: true } : arguments[1];
         var key, orderedSets, cursor;
         return regeneratorRuntime.wrap(function _callee3$(_context3) {
           while (1) {
@@ -212,8 +298,8 @@ var Engine = function (_EventEmitter) {
               case 0:
                 debug('engine::run initialFacts:', initialFacts);
                 this.status = RUNNING;
-                if (runOptions.clearFactCache) {
-                  this.factCache.clear();
+                if (runOptions.clearfactResultsCache) {
+                  this.factResultsCache.clear();
                 }
                 for (key in initialFacts) {
                   this.addFact(key, initialFacts[key]);
@@ -227,12 +313,12 @@ var Engine = function (_EventEmitter) {
                 return _context3.abrupt('return', new Promise(function (resolve, reject) {
                   orderedSets.map(function (set) {
                     cursor = cursor.then(function () {
-                      return _this3.runConditionSet(set);
+                      return _this4.evaluateRules(set);
                     }).catch(reject);
                     return cursor;
                   });
                   cursor.then(function () {
-                    _this3.status = FINISHED;
+                    _this4.status = FINISHED;
                     resolve();
                   }).catch(reject);
                 }));
@@ -245,7 +331,7 @@ var Engine = function (_EventEmitter) {
         }, _callee3, this);
       }));
 
-      return function run(_x5, _x6) {
+      return function run(_x6, _x7) {
         return ref.apply(this, arguments);
       };
     }()

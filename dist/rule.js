@@ -23,9 +23,23 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var debug = require('debug')('json-rules-engine');
 
 var Rule = function () {
+  /**
+   * returns a new Rule instance
+   * @param {object,string} options, or json string that can be parsed into options
+   * @param {integer} options.priority (>1) - higher runs sooner.
+   * @param {Object} options.action - action to fire when rule evaluates as successful
+   * @param {string} options.action.type - name of action to emit
+   * @param {string} options.action.params - parameters to pass to the action listener
+   * @param {Object} options.conditions - conditions to evaluate when processing this rule
+   * @return {Rule} instance
+   */
+
   function Rule(options) {
     _classCallCheck(this, Rule);
 
+    if (typeof options === 'string') {
+      options = JSON.parse(options);
+    }
     if (options && options.conditions) {
       this.setConditions(options.conditions);
     }
@@ -37,6 +51,11 @@ var Rule = function () {
     this.setAction(action);
   }
 
+  /**
+   * Sets the priority of the rule
+   * @param {integer} priority (>=1) - increasing the priority causes the rule to be run prior to other rules
+   */
+
   _createClass(Rule, [{
     key: 'setPriority',
     value: function setPriority(priority) {
@@ -45,6 +64,12 @@ var Rule = function () {
       this.priority = priority;
       return this;
     }
+
+    /**
+     * Sets the conditions to run when evaluating the rule.
+     * @param {object} conditions - conditions, root element must be a boolean operator
+     */
+
   }, {
     key: 'setConditions',
     value: function setConditions(conditions) {
@@ -54,16 +79,44 @@ var Rule = function () {
       this.conditions = new _condition2.default(conditions);
       return this;
     }
+
+    /**
+     * Sets the action to emit when the conditions evaluate truthy
+     * @param {object} action - action to emit
+     * @param {string} action.type - event name to emit on
+     * @param {string} action.params - parameters to emit as the argument of the event emission
+     */
+
   }, {
     key: 'setAction',
     value: function setAction(action) {
       this.action = (0, _params2.default)(action).only(['type', 'params']);
       return this;
     }
+
+    /**
+     * Sets the engine to run the rules under
+     * @param {object} engine
+     * @returns {Rule}
+     */
+
+  }, {
+    key: 'setEngine',
+    value: function setEngine(engine) {
+      this.engine = engine;
+      return this;
+    }
+
+    /**
+     * Evaluates the rule conditions
+     * @param  {Condition} condition - condition to evaluate
+     * @return {Promise(true|false)} - resolves with the result of the condition evaluation
+     */
+
   }, {
     key: 'evaluateCondition',
     value: function () {
-      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(condition, engine) {
+      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(condition) {
         var comparisonValue, subConditions, conditionResult;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
@@ -78,7 +131,7 @@ var Rule = function () {
 
                 subConditions = condition[condition.operator];
                 _context.next = 5;
-                return this[condition.operator](subConditions, engine);
+                return this[condition.operator](subConditions);
 
               case 5:
                 comparisonValue = _context.sent;
@@ -87,7 +140,7 @@ var Rule = function () {
 
               case 8:
                 _context.next = 10;
-                return engine.factValue(condition.fact, condition.params);
+                return this.engine.factValue(condition.fact, condition.params);
 
               case 10:
                 comparisonValue = _context.sent;
@@ -96,7 +149,7 @@ var Rule = function () {
                 conditionResult = condition.evaluate(comparisonValue);
 
                 if (!condition.isBooleanOperator()) {
-                  debug('runConditionSet:: <' + comparisonValue + ' ' + condition.operator + ' ' + condition.value + '?> (' + conditionResult + ')');
+                  debug('evaluateConditions:: <' + comparisonValue + ' ' + condition.operator + ' ' + condition.value + '?> (' + conditionResult + ')');
                 }
                 return _context.abrupt('return', conditionResult);
 
@@ -108,19 +161,31 @@ var Rule = function () {
         }, _callee, this);
       }));
 
-      return function evaluateCondition(_x, _x2) {
+      return function evaluateCondition(_x) {
         return ref.apply(this, arguments);
       };
     }()
+
+    /**
+     * Priorizes an array of conditions based on "priority"
+     *   When no explicit priority is provided on the condition itself, the condition's priority is determine by its fact
+     * @param  {Condition[]} conditions
+     * @return {Condition[][]} prioritized two-dimensional array of conditions
+     *    Each outer array element represents a single priority(integer).  Inner array is
+     *    all conditions with that priority.
+     */
+
   }, {
     key: 'prioritizeConditions',
-    value: function prioritizeConditions(conditions, engine) {
+    value: function prioritizeConditions(conditions) {
+      var _this = this;
+
       var factSets = conditions.reduce(function (sets, condition) {
         // if a priority has been set on this specific condition, honor that first
         // otherwise, use the fact's priority
         var priority = condition.priority;
         if (!priority) {
-          var fact = engine.getFact(condition.fact);
+          var fact = _this.engine.getFact(condition.fact);
           if (!fact) {
             throw new Error('Undefined fact: ' + condition.fact);
           }
@@ -136,27 +201,35 @@ var Rule = function () {
         return factSets[priority];
       });
     }
+
+    /**
+     * Evalutes an array of conditions, using an 'every' or 'some' array operation
+     * @param  {Condition[]} conditions
+     * @param  {string(every|some)} array method to call for determining result
+     * @return {Promise(boolean)} whether conditions evaluated truthy or falsey based on condition evaluation + method
+     */
+
   }, {
-    key: 'runConditionSet',
+    key: 'evaluateConditions',
     value: function () {
-      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(set, engine, method) {
-        var _this = this;
+      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(conditions, method) {
+        var _this2 = this;
 
         var conditionResults;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                if (!Array.isArray(set)) set = [set];
+                if (!Array.isArray(conditions)) conditions = [conditions];
                 _context2.next = 3;
-                return Promise.all(set.map(function (condition) {
-                  return _this.evaluateCondition(condition, engine);
+                return Promise.all(conditions.map(function (condition) {
+                  return _this2.evaluateCondition(condition);
                 }));
 
               case 3:
                 conditionResults = _context2.sent;
 
-                debug('runConditionSet::results', conditionResults);
+                debug('evaluateConditions::results', conditionResults);
                 return _context2.abrupt('return', method.call(conditionResults, function (result) {
                   return result === true;
                 }));
@@ -169,15 +242,27 @@ var Rule = function () {
         }, _callee2, this);
       }));
 
-      return function runConditionSet(_x3, _x4, _x5) {
+      return function evaluateConditions(_x2, _x3) {
         return ref.apply(this, arguments);
       };
     }()
+
+    /**
+     * Evaluates a set of conditions based on an 'all' or 'any' operator.
+     *   First, orders the top level conditions based on priority
+     *   Iterates over each priority set, evaluating each condition
+     *   If any condition results in the rule to be guaranteed truthy or falsey,
+     *   it will short-circuit and not bother evaluating any additional rules
+     * @param  {Condition[]} conditions - conditions to be evaluated
+     * @param  {string('all'|'any')} operator
+     * @return {Promise(boolean)} rule evaluation result
+     */
+
   }, {
     key: 'prioritizeAndRun',
     value: function () {
-      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(conditions, engine, operator) {
-        var _this2 = this;
+      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(conditions, operator) {
+        var _this3 = this;
 
         var method, orderedSets, cursor;
         return regeneratorRuntime.wrap(function _callee3$(_context3) {
@@ -189,7 +274,7 @@ var Rule = function () {
                 if (operator === 'all') {
                   method = Array.prototype.every;
                 }
-                orderedSets = this.prioritizeConditions(conditions, engine);
+                orderedSets = this.prioritizeConditions(conditions);
                 cursor = Promise.resolve();
 
                 orderedSets.forEach(function (set) {
@@ -209,7 +294,7 @@ var Rule = function () {
                       return false;
                     }
                     // all conditions passed; proceed with running next set in parallel
-                    return _this2.runConditionSet(set, engine, method);
+                    return _this3.evaluateConditions(set, method);
                   });
                 });
                 return _context3.abrupt('return', cursor);
@@ -222,19 +307,26 @@ var Rule = function () {
         }, _callee3, this);
       }));
 
-      return function prioritizeAndRun(_x6, _x7, _x8) {
+      return function prioritizeAndRun(_x4, _x5) {
         return ref.apply(this, arguments);
       };
     }()
+
+    /**
+     * Runs an 'any' boolean operator on an array of conditions
+     * @param  {Condition[]} conditions to be evaluated
+     * @return {Promise(boolean)} condition evaluation result
+     */
+
   }, {
     key: 'any',
     value: function () {
-      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4(conditions, engine) {
+      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4(conditions) {
         return regeneratorRuntime.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
-                return _context4.abrupt('return', this.prioritizeAndRun(conditions, engine, 'any'));
+                return _context4.abrupt('return', this.prioritizeAndRun(conditions, 'any'));
 
               case 1:
               case 'end':
@@ -244,19 +336,26 @@ var Rule = function () {
         }, _callee4, this);
       }));
 
-      return function any(_x9, _x10) {
+      return function any(_x6) {
         return ref.apply(this, arguments);
       };
     }()
+
+    /**
+     * Runs an 'all' boolean operator on an array of conditions
+     * @param  {Condition[]} conditions to be evaluated
+     * @return {Promise(boolean)} condition evaluation result
+     */
+
   }, {
     key: 'all',
     value: function () {
-      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee5(conditions, engine) {
+      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee5(conditions) {
         return regeneratorRuntime.wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
-                return _context5.abrupt('return', this.prioritizeAndRun(conditions, engine, 'all'));
+                return _context5.abrupt('return', this.prioritizeAndRun(conditions, 'all'));
 
               case 1:
               case 'end':
@@ -266,14 +365,20 @@ var Rule = function () {
         }, _callee5, this);
       }));
 
-      return function all(_x11, _x12) {
+      return function all(_x7) {
         return ref.apply(this, arguments);
       };
     }()
+
+    /**
+     * Evaluates the rule, starting with the root boolean operator and recursing down
+     * @return {Promise(boolean)} rule evaluation result
+     */
+
   }, {
     key: 'evaluate',
     value: function () {
-      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee6(engine) {
+      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee6() {
         return regeneratorRuntime.wrap(function _callee6$(_context6) {
           while (1) {
             switch (_context6.prev = _context6.next) {
@@ -284,14 +389,14 @@ var Rule = function () {
                 }
 
                 _context6.next = 3;
-                return this.any(this.conditions.any, engine);
+                return this.any(this.conditions.any);
 
               case 3:
                 return _context6.abrupt('return', _context6.sent);
 
               case 6:
                 _context6.next = 8;
-                return this.all(this.conditions.all, engine);
+                return this.all(this.conditions.all);
 
               case 8:
                 return _context6.abrupt('return', _context6.sent);
@@ -304,7 +409,7 @@ var Rule = function () {
         }, _callee6, this);
       }));
 
-      return function evaluate(_x13) {
+      return function evaluate() {
         return ref.apply(this, arguments);
       };
     }()
