@@ -37,6 +37,7 @@ _Rule_ - contains a set of _conditions_ and a single _action_.  When the engine 
 
 ```js
 let rule = new Rule({ priority: 25 })  // the higher the priority, the earlier the rule will run.  default=1
+engine.addRule(rule)
 ```
 
 _Rule Condition_ - Each condition consists of a constant _value_, an _operator_, a _fact_, and (optionally) fact _params_.  The _operator_ compares the fact result to the _value_.
@@ -97,7 +98,7 @@ Rules are composed of two components: conditions and actions.  _Conditions_ are 
 ```js
 let action = {
   type: 'young-adult-rocky-mnts',
-  params: {  // optional
+  params: {
     giftCard: 'amazon',
     value: 50
   }
@@ -136,7 +137,7 @@ let rule = new Rule({ conditions, action})
 engine.addRule(rule)
 ```
 
-The example above demonstrates a rule that detects _male_ users between the ages of _18 and 25_.
+The example above demonstrates a rule for finding individuals between _18 and 25_ who live in either _Utah or Colorado_.
 
 More on rules can be found [here](./docs/rules.md)
 
@@ -173,7 +174,7 @@ engine.addFact('age', ageFact)
 
 Now when the engine is run, it will call the methods above whenever it encounters the ```fact: "age"``` or ```fact: "state"```properties.
 
-**Important:** facts should be *pure functions*, meaning their values will always evaluate based on the ```params``` argument.  By establishing facts are pure functions, it allows the rules engine to cache results throughout a ```run()```; if the same fact is called multiple times with the same ```params```, it will trigger the computation once and cache the results for future calls.  If fact caching not desired, this behavior can be turned off via the options; see the [docs](./docs/facts.md).
+**Important:** facts should be *pure functions*; their computed values will vary based on the ```params``` argument.  By establishing facts as pure functions, it allows the rules engine to cache results throughout each ```run()```; facts called multiple times with the same ```params``` will trigger the computation once and cache the results for future calls.  If fact caching not desired, this behavior can be turned off via the options; see the [docs](./docs/facts.md).
 
 More on facts can be found [here](./docs/facts.md)
 
@@ -197,7 +198,7 @@ engine.on('young-adult', (params) => {
 engine.on('action', function (action, engine) {
   // action: {
   //   type: "young-adult",
-  //   params: {  // optional
+  //   params: {
   //     giftCard: 'amazon',
   //     value: 50
   //   }
