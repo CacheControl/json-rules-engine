@@ -36,7 +36,7 @@ describe('Engine', () => {
     engine = engineFactory()
     let rule = factories.rule({ conditions, action })
     engine.addRule(rule)
-    engine.addFact('age', factOptions, factDefinition)
+    engine.addFact('age', factDefinition, factOptions)
     engine.on('action', actionSpy)
   }
 

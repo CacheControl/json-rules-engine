@@ -95,10 +95,10 @@ describe('Rule', () => {
 
     it('orders based on priority', async () => {
       let engine = new Engine()
-      engine.addFact('state', { priority: 500 }, async () => {})
-      engine.addFact('segment', { priority: 50 }, async () => {})
-      engine.addFact('accountType', { priority: 25 }, async () => {})
-      engine.addFact('age', { priority: 100 }, async () => {})
+      engine.addFact('state', async () => {}, { priority: 500 })
+      engine.addFact('segment', async () => {}, { priority: 50 })
+      engine.addFact('accountType', async () => {}, { priority: 25 })
+      engine.addFact('age', async () => {}, { priority: 100 })
       let rule = new Rule()
       rule.setEngine(engine)
 

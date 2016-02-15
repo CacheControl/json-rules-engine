@@ -2,7 +2,7 @@
 
 ## Methods
 
-### constructor([options])
+### constructor([Object options])
 
 Returns a new rule instance
 
@@ -10,7 +10,7 @@ Returns a new rule instance
 let rule = new Rule(options)
 ```
 
-### setConditions(conditions)
+### setConditions(Array conditions)
 
 Assigns the rule conditions to the provided argument.  The root condition must be a boolean operator (```all``` or ```any```)
 
@@ -26,7 +26,7 @@ rule.setConditions({
 })
 ```
 
-### setAction(object)
+### setAction(Object action)
 
 Sets the action the engine should emit when the rule conditions pass.  All actions must have a ```type``` property, which denotes the event name to emit when the rule passes.
 
@@ -39,7 +39,7 @@ rule.setAction({
 })
 ```
 
-### setPriority(integer = 1)
+### setPriority(Integer priority = 1)
 
 Sets the rule priority.  Priority must be a positive, non-zero integer.  The higher the priority, the sooner the rule will run.  If no priority is assigned to a Rule, it will receive a default priority of 1.
 

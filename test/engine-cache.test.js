@@ -28,7 +28,7 @@ describe('Engine: cache', () => {
     engine.addRule(determineCollegeSenior)
     let over20 = factories.rule({ conditions, action: collegeSeniorAction, priority: 50 })
     engine.addRule(over20)
-    engine.addFact('age', factOptions, factSpy)
+    engine.addFact('age', factSpy, factOptions)
     engine.on('action', actionSpy)
   }
 

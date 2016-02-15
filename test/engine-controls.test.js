@@ -37,8 +37,8 @@ describe('Engine: fact priority', () => {
     rule = factories.rule({ conditions, action })
     engine.addRule(rule)
 
-    engine.addFact('age', { priority: 100 }, ageStub)
-    engine.addFact('segment', { priority: 50 }, segmentStub)
+    engine.addFact('age', ageStub, { priority: 100 })
+    engine.addFact('segment', segmentStub, { priority: 50 })
   }
 
   describe('stop()', () => {

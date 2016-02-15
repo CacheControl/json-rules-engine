@@ -10,10 +10,10 @@ let Engine = require('json-rules-engine').Engine
 let engine = new Engine()
 
 // initialize with rules
-let engine = new Engine(ruleArray)
+let engine = new Engine([Array rules])
 ```
 
-### engine.addFact(String id, Object [options], Function [definitionFunc])
+### engine.addFact(String id, Function [definitionFunc], Object [options])
 
 ```js
 // constant facts:
@@ -25,9 +25,9 @@ engine.addFact('account-type', function getAccountType() {
 })
 
 // facts with options:
-engine.addFact('account-type', { cache: false, priority: 500 }, function getAccountType() {
+engine.addFact('account-type', function getAccountType() {
   // ...
-})
+}, { cache: false, priority: 500 })
 ```
 
 ### engine.addRule(Rule instance|Object options)

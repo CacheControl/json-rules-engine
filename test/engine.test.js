@@ -88,7 +88,7 @@ describe('Engine', () => {
 
     it('allows options to be passed', () => {
       let options = { cache: false }
-      engine.addFact(FACT_NAME, options, FACT_VALUE)
+      engine.addFact(FACT_NAME, FACT_VALUE, options)
       assertFact(engine)
       expect(engine.facts.get(FACT_NAME).value).to.equal(FACT_VALUE)
       expect(engine.facts.get(FACT_NAME).options).to.eql(options)
@@ -104,9 +104,9 @@ describe('Engine', () => {
 
     it('allows a lamba fact with options', () => {
       let options = { cache: false }
-      engine.addFact(FACT_NAME, options, async (params, engine) => {
+      engine.addFact(FACT_NAME, async (params, engine) => {
         return FACT_VALUE
-      })
+      }, options)
       assertFact(engine)
       expect(engine.facts.get(FACT_NAME).options).to.eql(options)
       expect(engine.facts.get(FACT_NAME).value).to.be.undefined
@@ -114,7 +114,7 @@ describe('Engine', () => {
 
     it('allows a fact instance', () => {
       let options = { cache: false }
-      let fact = new Fact(FACT_NAME, options)
+      let fact = new Fact(FACT_NAME, 50, options)
       engine.addFact(fact)
       assertFact(engine)
       expect(engine.facts.get(FACT_NAME)).to.exist
@@ -184,10 +184,10 @@ describe('Engine', () => {
       let factSpy = sinon.spy()
       function setup (factOptions) {
         factSpy.reset()
-        engine.addFact('foo', factOptions, async (params, facts) => {
+        engine.addFact('foo', async (params, facts) => {
           factSpy()
           return 'unknown'
-        })
+        }, factOptions)
       }
 
       it('evaluates the fact every time when fact caching is off', () => {

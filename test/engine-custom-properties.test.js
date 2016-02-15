@@ -9,7 +9,7 @@ describe('Engine: custom properties', () => {
   describe('all conditions', () => {
     it('preserves custom properties set on fact', () => {
       engine = engineFactory()
-      let fact = new Fact('age')
+      let fact = new Fact('age', 12)
       fact.customId = 'uuid'
       engine.addFact(fact)
       expect(engine.facts.get('age')).to.have.property('customId')

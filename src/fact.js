@@ -13,13 +13,10 @@ class Fact {
    * @param  {primitive|function} valueOrMethod - constant primitive, or method to call when computing the fact's value
    * @return {Fact}
    */
-  constructor (id, options, valueOrMethod) {
+  constructor (id, valueOrMethod, options) {
     this.id = id
     let defaultOptions = { cache: true }
-    if (typeof options === 'function') {
-      valueOrMethod = options
-      options = defaultOptions
-    } else if (typeof options === 'undefined') {
+    if (typeof options === 'undefined') {
       options = defaultOptions
     }
     if (typeof valueOrMethod !== 'function') {
@@ -27,6 +24,12 @@ class Fact {
     } else {
       this.calculationMethod = valueOrMethod
     }
+
+    if (!this.id) throw new Error('factId required')
+    if (typeof this.value === 'undefined' && typeof this.calculationMethod === 'undefined') {
+      throw new Error('facts must have a value or method')
+    }
+
     this.priority = parseInt(options.priority || 1, 10)
     this.options = Object.assign({}, defaultOptions, options)
     this.cacheKeyMethod = this.defaultCacheKeys
