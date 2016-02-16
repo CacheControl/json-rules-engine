@@ -1,7 +1,7 @@
 'use strict'
 
-import engineFactory from '../src/json-rules-engine'
-import { Fact } from '../src/json-rules-engine'
+import engineFactory from '../src/index'
+import { Fact } from '../src/index'
 import sinon from 'sinon'
 
 describe('Engine: custom cache keys', () => {

@@ -1,6 +1,6 @@
 'use strict'
 
-import { Fact } from '../src/json-rules-engine'
+import { Fact } from '../src/index'
 
 describe('Fact', () => {
   describe('Fact::constructor', () => {

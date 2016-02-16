@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _jsonRulesEngine = require('./json-rules-engine');
+var _jsonRulesEngine = require('./index');
 
 var _jsonRulesEngine2 = _interopRequireDefault(_jsonRulesEngine);
 
