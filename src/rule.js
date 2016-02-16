@@ -151,6 +151,9 @@ class Rule {
    * @return {Promise(boolean)} rule evaluation result
    */
   async prioritizeAndRun (conditions, operator) {
+    if (conditions.length === 0) {
+      return true
+    }
     let method = Array.prototype.some
     if (operator === 'all') {
       method = Array.prototype.every

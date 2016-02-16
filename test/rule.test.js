@@ -2,6 +2,7 @@
 
 import Engine from '../src/index'
 import Rule from '../src/rule'
+import sinon from 'sinon'
 
 describe('Rule', () => {
   let rule = new Rule()
@@ -108,6 +109,21 @@ describe('Rule', () => {
       expect(prioritizedConditions[1][0].fact).to.equal('age')
       expect(prioritizedConditions[2][0].fact).to.equal('segment')
       expect(prioritizedConditions[3][0].fact).to.equal('accountType')
+    })
+  })
+
+  describe('evaluate()', () => {
+    it('evalutes truthy when there are no conditions', async () => {
+      let eventSpy = sinon.spy()
+      let engine = new Engine()
+      let rule = new Rule()
+      rule.setConditions({
+        all: []
+      })
+      engine.addRule(rule)
+      engine.on('event', eventSpy)
+      await engine.run()
+      expect(eventSpy).to.have.been.calledOnce
     })
   })
 })
