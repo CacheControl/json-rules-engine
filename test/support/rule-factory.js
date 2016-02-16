@@ -16,7 +16,7 @@ module.exports = (options) => {
         'value': 1000
       }]
     },
-    action: options.action || {
+    event: options.event || {
       type: 'pointCapReached',
       params: {
         currency: 'points',

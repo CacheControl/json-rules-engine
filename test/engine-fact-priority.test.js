@@ -5,9 +5,9 @@ import sinon from 'sinon'
 
 describe('Engine: fact priority', () => {
   let engine
-  let action = { type: 'adult-human-admins' }
+  let event = { type: 'adult-human-admins' }
 
-  let actionSpy = sinon.spy()
+  let eventSpy = sinon.spy()
   let failureSpy = sinon.spy()
   let ageStub = sinon.stub()
   let segmentStub = sinon.stub()
@@ -17,16 +17,16 @@ describe('Engine: fact priority', () => {
     ageStub.reset()
     segmentStub.reset()
     accountTypeStub.reset()
-    actionSpy.reset()
+    eventSpy.reset()
     failureSpy.reset()
 
     engine = engineFactory()
-    let rule = factories.rule({ conditions, action })
+    let rule = factories.rule({ conditions, event })
     engine.addRule(rule)
     engine.addFact('age', ageStub, { priority: 100 })
     engine.addFact('segment', segmentStub, { priority: 50 })
     engine.addFact('accountType', accountTypeStub, { priority: 25 })
-    engine.on('action', actionSpy)
+    engine.on('event', eventSpy)
     engine.on('failure', failureSpy)
   }
 
@@ -52,7 +52,7 @@ describe('Engine: fact priority', () => {
       ageStub.returns(10) // fail
       await engine.run()
       expect(failureSpy).to.have.been.called
-      expect(actionSpy).to.not.have.been.called
+      expect(eventSpy).to.not.have.been.called
       expect(ageStub).to.have.been.calledOnce
       expect(segmentStub).to.not.have.been.called
       expect(accountTypeStub).to.not.have.been.called
@@ -64,7 +64,7 @@ describe('Engine: fact priority', () => {
       segmentStub.returns('android') // fail
       await engine.run()
       expect(failureSpy).to.have.been.called
-      expect(actionSpy).to.not.have.been.called
+      expect(eventSpy).to.not.have.been.called
       expect(ageStub).to.have.been.calledOnce
       expect(segmentStub).to.have.been.calledOnce
       expect(accountTypeStub).to.not.have.been.called
@@ -97,7 +97,7 @@ describe('Engine: fact priority', () => {
         segmentStub.returns('android') // fail
         await engine.run()
         expect(failureSpy).to.have.been.called
-        expect(actionSpy).to.not.have.been.called
+        expect(eventSpy).to.not.have.been.called
         expect(ageStub).to.have.been.calledOnce
         expect(segmentStub).to.have.been.calledOnce
         expect(accountTypeStub).to.not.have.been.called
@@ -125,7 +125,7 @@ describe('Engine: fact priority', () => {
       setup(anyCondition)
       ageStub.returns(20) // succeed
       await engine.run()
-      expect(actionSpy).to.have.been.calledOnce
+      expect(eventSpy).to.have.been.calledOnce
       expect(failureSpy).to.not.have.been.called
       expect(ageStub).to.have.been.calledOnce
       expect(segmentStub).to.not.have.been.called
@@ -137,7 +137,7 @@ describe('Engine: fact priority', () => {
       ageStub.returns(10) // fail
       segmentStub.returns('human') // pass
       await engine.run()
-      expect(actionSpy).to.have.been.calledOnce
+      expect(eventSpy).to.have.been.calledOnce
       expect(failureSpy).to.not.have.been.called
       expect(ageStub).to.have.been.calledOnce
       expect(segmentStub).to.have.been.calledOnce
@@ -171,7 +171,7 @@ describe('Engine: fact priority', () => {
         segmentStub.returns('human') // success
         await engine.run()
         expect(failureSpy).to.not.have.been.called
-        expect(actionSpy).to.have.been.called
+        expect(eventSpy).to.have.been.called
         expect(ageStub).to.have.been.calledOnce
         expect(segmentStub).to.have.been.calledOnce
         expect(accountTypeStub).to.not.have.been.called

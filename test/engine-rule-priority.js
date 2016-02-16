@@ -6,8 +6,8 @@ import sinon from 'sinon'
 describe('Engine: cache', () => {
   let engine
 
-  let action = { type: 'setDrinkingFlag' }
-  let collegeSeniorAction = { type: 'isCollegeSenior' }
+  let event = { type: 'setDrinkingFlag' }
+  let collegeSeniorEvent = { type: 'isCollegeSenior' }
   let conditions = {
     any: [{
       fact: 'age',
@@ -17,19 +17,19 @@ describe('Engine: cache', () => {
   }
 
   let factSpy = sinon.stub().returns(22)
-  let actionSpy = sinon.spy()
+  let eventSpy = sinon.spy()
   function setup () {
     factSpy.reset()
-    actionSpy.reset()
+    eventSpy.reset()
     engine = engineFactory()
-    let over20 = factories.rule({ conditions, action: collegeSeniorAction, priority: 50 })
+    let over20 = factories.rule({ conditions, event: collegeSeniorEvent, priority: 50 })
     engine.addRule(over20)
-    let determineDrinkingAge = factories.rule({ conditions, action, priority: 100 })
+    let determineDrinkingAge = factories.rule({ conditions, event, priority: 100 })
     engine.addRule(determineDrinkingAge)
-    let determineCollegeSenior = factories.rule({ conditions, action: collegeSeniorAction, priority: 1 })
+    let determineCollegeSenior = factories.rule({ conditions, event: collegeSeniorEvent, priority: 1 })
     engine.addRule(determineCollegeSenior)
     engine.addFact('age', factSpy)
-    engine.on('action', actionSpy)
+    engine.on('event', eventSpy)
   }
 
   it('runs the rules in order of priority', () => {

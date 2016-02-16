@@ -5,7 +5,7 @@ import engineFactory from '../src/json-rules-engine'
 describe('Engine: failure', () => {
   let engine
 
-  let action = { type: 'generic' }
+  let event = { type: 'generic' }
   let conditions = {
     any: [{
       fact: 'age',
@@ -15,7 +15,7 @@ describe('Engine: failure', () => {
   }
   beforeEach(() => {
     engine = engineFactory()
-    let determineDrinkingAgeRule = factories.rule({ conditions, action })
+    let determineDrinkingAgeRule = factories.rule({ conditions, event })
     engine.addRule(determineDrinkingAgeRule)
     engine.addFact('age', function (params, engine) {
       throw new Error('problem occurred')

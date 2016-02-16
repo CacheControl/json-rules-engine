@@ -6,8 +6,8 @@ import sinon from 'sinon'
 describe('Engine: cache', () => {
   let engine
 
-  let action = { type: 'setDrinkingFlag' }
-  let collegeSeniorAction = { type: 'isCollegeSenior' }
+  let event = { type: 'setDrinkingFlag' }
+  let collegeSeniorEvent = { type: 'isCollegeSenior' }
   let conditions = {
     any: [{
       fact: 'age',
@@ -17,32 +17,32 @@ describe('Engine: cache', () => {
   }
 
   let factSpy = sinon.stub().returns(22)
-  let actionSpy = sinon.spy()
+  let eventSpy = sinon.spy()
   function setup (factOptions) {
     factSpy.reset()
-    actionSpy.reset()
+    eventSpy.reset()
     engine = engineFactory()
-    let determineDrinkingAge = factories.rule({ conditions, action, priority: 100 })
+    let determineDrinkingAge = factories.rule({ conditions, event, priority: 100 })
     engine.addRule(determineDrinkingAge)
-    let determineCollegeSenior = factories.rule({ conditions, action: collegeSeniorAction, priority: 1 })
+    let determineCollegeSenior = factories.rule({ conditions, event: collegeSeniorEvent, priority: 1 })
     engine.addRule(determineCollegeSenior)
-    let over20 = factories.rule({ conditions, action: collegeSeniorAction, priority: 50 })
+    let over20 = factories.rule({ conditions, event: collegeSeniorEvent, priority: 50 })
     engine.addRule(over20)
     engine.addFact('age', factSpy, factOptions)
-    engine.on('action', actionSpy)
+    engine.on('event', eventSpy)
   }
 
   it('loads facts once and caches the results for future use', async () => {
     setup({cache: true})
     await engine.run()
-    expect(actionSpy).to.have.been.calledThrice
+    expect(eventSpy).to.have.been.calledThrice
     expect(factSpy).to.have.been.calledOnce
   })
 
   it('allows caching to be turned off', async () => {
     setup({cache: false})
     await engine.run()
-    expect(actionSpy).to.have.been.calledThrice
+    expect(eventSpy).to.have.been.calledThrice
     expect(factSpy).to.have.been.calledThrice
   })
 })

@@ -11,7 +11,7 @@ describe('Rule', () => {
   })
 
   describe('constructor()', () => {
-    it('can be initialized with priority, conditions, and action', () => {
+    it('can be initialized with priority, conditions, and event', () => {
       let condition = {
         all: [ Object.assign({}, conditionBase) ]
       }
@@ -20,14 +20,14 @@ describe('Rule', () => {
       let opts = {
         priority: 50,
         conditions: condition,
-        action: {
+        event: {
           type: 'awesome'
         }
       }
       let rule = new Rule(opts)
       expect(rule.priority).to.eql(opts.priority)
       expect(rule.conditions).to.eql(opts.conditions)
-      expect(rule.action).to.eql(opts.action)
+      expect(rule.event).to.eql(opts.event)
     })
 
     it('it can be initialized with a json string', () => {
@@ -39,7 +39,7 @@ describe('Rule', () => {
       let opts = {
         priority: 50,
         conditions: condition,
-        action: {
+        event: {
           type: 'awesome'
         }
       }
@@ -47,7 +47,7 @@ describe('Rule', () => {
       let rule = new Rule(json)
       expect(rule.priority).to.eql(opts.priority)
       expect(rule.conditions).to.eql(opts.conditions)
-      expect(rule.action).to.eql(opts.action)
+      expect(rule.event).to.eql(opts.event)
     })
   })
 

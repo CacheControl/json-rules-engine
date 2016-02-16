@@ -40,7 +40,7 @@ let Rule = require('json-rules-engine').Rule
 // via rule properties:
 engine.addRule({
   conditions: {},
-  action: {},
+  event: {},
   priority: 1
 })
 
@@ -68,10 +68,10 @@ async run ({}, { clearfactResultsCache: true })
 ### engine.stop() -> Engine
 
 Stops the rules engine from running the next priority set of Rules.  All remaining rules will be resolved as undefined,
-and no further actions emitted.
+and no further events emitted.
 
 Be aware that since rules of the *same* priority are evaluated in parallel(not series), other rules of
-the same priority may still emit actions, even though the engine has been told to stop.
+the same priority may still emit events, even though the engine has been told to stop.
 
 ```js
 engine.stop()

@@ -29,13 +29,13 @@ class Engine extends EventEmitter {
    * Add a rule definition to the engine
    * @param {object|Rule} properties - rule definition.  can be JSON representation, or instance of Rule
    * @param {integer} properties.priority (>1) - higher runs sooner.
-   * @param {Object} properties.action - action to fire when rule evaluates as successful
-   * @param {string} properties.action.type - name of action to emit
-   * @param {string} properties.action.params - parameters to pass to the action listener
+   * @param {Object} properties.event - event to fire when rule evaluates as successful
+   * @param {string} properties.event.type - name of event to emit
+   * @param {string} properties.event.params - parameters to pass to the event listener
    * @param {Object} properties.conditions - conditions to evaluate when processing this rule
    */
   addRule (properties) {
-    params(properties).require(['conditions', 'action'])
+    params(properties).require(['conditions', 'event'])
 
     let rule
     if (properties instanceof Rule) {
@@ -128,8 +128,8 @@ class Engine extends EventEmitter {
 
   /**
    * Stops the rules engine from running the next priority set of Rules.  All remaining rules will be resolved as undefined,
-   * and no further actions emitted.  Since rules of the same priority are evaluated in parallel(not series), other rules of
-   * the same priority may still emit actions, even though the engine is in a "finished" state.
+   * and no further events emitted.  Since rules of the same priority are evaluated in parallel(not series), other rules of
+   * the same priority may still emit events, even though the engine is in a "finished" state.
    * @return {Engine}
    */
   stop () {
@@ -151,8 +151,8 @@ class Engine extends EventEmitter {
       return rule.evaluate(this).then((rulePasses) => {
         debug(`engine::run ruleResult:${rulePasses}`)
         if (rulePasses) {
-          this.emit('action', rule.action, this)
-          this.emit(rule.action.type, rule.action.params, this)
+          this.emit('event', rule.event, this)
+          this.emit(rule.event.type, rule.event.params, this)
         }
         if (!rulePasses) this.emit('failure', rule, this)
       })

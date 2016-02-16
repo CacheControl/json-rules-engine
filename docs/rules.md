@@ -26,14 +26,14 @@ rule.setConditions({
 })
 ```
 
-### setAction(Object action)
+### setEvent(Object event)
 
-Sets the action the engine should emit when the rule conditions pass.  All actions must have a ```type``` property, which denotes the event name to emit when the rule passes.
+Sets the event the engine should emit when the rule conditions pass.  All events must have a ```type``` property, which denotes the event name to emit when the rule passes.
 
 Optionally, a ```params``` property may be provided as well.  ```params``` will be passed to the event as an argument.
 
 ```js
-rule.setAction({
+rule.setEvent({
   type: 'string', //required
   params: 'object' //optional
 })

@@ -5,16 +5,16 @@ import sinon from 'sinon'
 
 describe('Engine: fact priority', () => {
   let engine
-  let action = { type: 'adult-human-admins' }
+  let event = { type: 'adult-human-admins' }
 
-  let actionSpy = sinon.spy()
+  let eventSpy = sinon.spy()
   let ageStub = sinon.stub()
   let segmentStub = sinon.stub()
 
   function setup () {
     ageStub.reset()
     segmentStub.reset()
-    actionSpy.reset()
+    eventSpy.reset()
     engine = engineFactory()
 
     let conditions = {
@@ -24,7 +24,7 @@ describe('Engine: fact priority', () => {
         value: 18
       }]
     }
-    let rule = factories.rule({ conditions, action, priority: 100 })
+    let rule = factories.rule({ conditions, event, priority: 100 })
     engine.addRule(rule)
 
     conditions = {
@@ -34,7 +34,7 @@ describe('Engine: fact priority', () => {
         value: 'human'
       }]
     }
-    rule = factories.rule({ conditions, action })
+    rule = factories.rule({ conditions, event })
     engine.addRule(rule)
 
     engine.addFact('age', ageStub, { priority: 100 })
@@ -45,12 +45,12 @@ describe('Engine: fact priority', () => {
     it('stops the rules from executing', async () => {
       setup()
       ageStub.returns(20) // success
-      engine.on('action', (action, engine) => {
-        actionSpy()
+      engine.on('event', (event, engine) => {
+        eventSpy()
         engine.stop()
       })
       await engine.run()
-      expect(actionSpy).to.have.been.calledOnce
+      expect(eventSpy).to.have.been.calledOnce
       expect(ageStub).to.have.been.calledOnce
       expect(segmentStub).to.not.have.been.called
     })

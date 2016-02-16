@@ -10,9 +10,9 @@ class Rule {
    * returns a new Rule instance
    * @param {object,string} options, or json string that can be parsed into options
    * @param {integer} options.priority (>1) - higher runs sooner.
-   * @param {Object} options.action - action to fire when rule evaluates as successful
-   * @param {string} options.action.type - name of action to emit
-   * @param {string} options.action.params - parameters to pass to the action listener
+   * @param {Object} options.event - event to fire when rule evaluates as successful
+   * @param {string} options.event.type - name of event to emit
+   * @param {string} options.event.params - parameters to pass to the event listener
    * @param {Object} options.conditions - conditions to evaluate when processing this rule
    * @return {Rule} instance
    */
@@ -27,8 +27,8 @@ class Rule {
     let priority = (options && options.priority) || 1
     this.setPriority(priority)
 
-    let action = (options && options.action) || { type: 'unknown' }
-    this.setAction(action)
+    let event = (options && options.event) || { type: 'unknown' }
+    this.setEvent(event)
   }
 
   /**
@@ -55,13 +55,13 @@ class Rule {
   }
 
   /**
-   * Sets the action to emit when the conditions evaluate truthy
-   * @param {object} action - action to emit
-   * @param {string} action.type - event name to emit on
-   * @param {string} action.params - parameters to emit as the argument of the event emission
+   * Sets the event to emit when the conditions evaluate truthy
+   * @param {object} event - event to emit
+   * @param {string} event.type - event name to emit on
+   * @param {string} event.params - parameters to emit as the argument of the event emission
    */
-  setAction (action) {
-    this.action = params(action).only(['type', 'params'])
+  setEvent (event) {
+    this.event = params(event).only(['type', 'params'])
     return this
   }
 

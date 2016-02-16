@@ -17,7 +17,7 @@ async function eligibility (params, engine) {
 
 describe('Engine: fact evaluation', () => {
   let engine
-  let action = {
+  let event = {
     type: 'ageTrigger',
     params: {
       demographic: 'under50'
@@ -34,21 +34,21 @@ describe('Engine: fact evaluation', () => {
       value: 50
     }]
   }
-  let actionSpy = sinon.spy()
+  let eventSpy = sinon.spy()
   function setup (conditions = baseConditions) {
-    actionSpy.reset()
+    eventSpy.reset()
     engine = engineFactory()
-    let rule = factories.rule({ conditions, action })
+    let rule = factories.rule({ conditions, event })
     engine.addRule(rule)
     engine.addFact('eligibility', eligibility)
-    engine.on('action', actionSpy)
+    engine.on('event', eventSpy)
   }
 
   describe('params', () => {
     it('emits when the condition is met', async () => {
       setup()
       await engine.run()
-      expect(actionSpy).to.have.been.calledWith(action)
+      expect(eventSpy).to.have.been.calledWith(event)
     })
 
     it('does not emit when the condition fails', async () => {
@@ -56,7 +56,7 @@ describe('Engine: fact evaluation', () => {
       conditions.any[0].params.eligibilityId = 2
       setup(conditions)
       await engine.run()
-      expect(actionSpy).to.not.have.been.called
+      expect(eventSpy).to.not.have.been.called
     })
   })
 
@@ -72,7 +72,7 @@ describe('Engine: fact evaluation', () => {
       }
       engine.addFact('eligibility', eligibility)
       await engine.run()
-      expect(actionSpy).to.have.been.called
+      expect(eventSpy).to.have.been.called
     })
   })
 
@@ -84,7 +84,7 @@ describe('Engine: fact evaluation', () => {
       }
       engine.addFact('eligibility', eligibility)
       await engine.run()
-      expect(actionSpy).to.have.been.called
+      expect(eventSpy).to.have.been.called
     })
 
     it('works with synchronous, non-promise evaluations that are falsey', async () => {
@@ -94,7 +94,7 @@ describe('Engine: fact evaluation', () => {
       }
       engine.addFact('eligibility', eligibility)
       await engine.run()
-      expect(actionSpy).to.not.have.been.called
+      expect(eventSpy).to.not.have.been.called
     })
   })
 })

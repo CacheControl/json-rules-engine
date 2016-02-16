@@ -61,12 +61,12 @@ describe('Engine', () => {
         }).to.throw(/Missing key "conditions"/)
       })
 
-      it('.action', () => {
+      it('.event', () => {
         let rule = factories.rule()
-        delete rule.action
+        delete rule.event
         expect(() => {
           engine.addRule(rule)
-        }).to.throw(/Missing key "action"/)
+        }).to.throw(/Missing key "event"/)
       })
     })
   })
@@ -131,8 +131,8 @@ describe('Engine', () => {
           value: 18
         }]
       }
-      let action = { type: 'generic' }
-      let rule = factories.rule({ conditions, action })
+      let event = { type: 'generic' }
+      let rule = factories.rule({ conditions, event })
       engine.addRule(rule)
       engine.addFact('age', 20)
     })
@@ -143,9 +143,9 @@ describe('Engine', () => {
     })
 
     it('changes the status to "RUNNING"', () => {
-      let actionSpy = sinon.spy()
-      engine.on('action', (action, engine) => {
-        actionSpy()
+      let eventSpy = sinon.spy()
+      engine.on('event', (event, engine) => {
+        eventSpy()
         expect(engine.status).to.equal('RUNNING')
       })
       return engine.run()

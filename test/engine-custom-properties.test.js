@@ -4,7 +4,7 @@ import engineFactory, { Fact, Rule } from '../src/json-rules-engine'
 
 describe('Engine: custom properties', () => {
   let engine
-  let action = { type: 'generic' }
+  let event = { type: 'generic' }
 
   describe('all conditions', () => {
     it('preserves custom properties set on fact', () => {
@@ -27,7 +27,7 @@ describe('Engine: custom properties', () => {
             value: 18
           }]
         }
-        let rule = factories.rule({ conditions, action })
+        let rule = factories.rule({ conditions, event })
         engine.addRule(rule)
         expect(engine.rules[0].conditions).to.have.property('customId')
       })
@@ -42,7 +42,7 @@ describe('Engine: custom properties', () => {
             value: 18
           }]
         }
-        let rule = factories.rule({ conditions, action })
+        let rule = factories.rule({ conditions, event })
         engine.addRule(rule)
         expect(engine.rules[0].conditions['all'][0]).to.have.property('customId')
         expect(engine.rules[0].conditions['all'][0].customId).equal('uuid')
@@ -55,7 +55,7 @@ describe('Engine: custom properties', () => {
       let ruleProperties = factories.rule()
       rule.setPriority(ruleProperties.priority)
           .setConditions(ruleProperties.conditions)
-          .setAction(ruleProperties.action)
+          .setEvent(ruleProperties.event)
       rule.customId = 'uuid'
       engine.addRule(rule)
       expect(engine.rules[0]).to.have.property('customId')

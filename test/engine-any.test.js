@@ -7,7 +7,7 @@ describe('Engine: "any" conditions', () => {
   let engine
 
   describe('supports a single "any" condition', () => {
-    let action = {
+    let event = {
       type: 'ageTrigger',
       params: {
         demographic: 'under50'
@@ -20,27 +20,27 @@ describe('Engine: "any" conditions', () => {
         'value': 50
       }]
     }
-    let actionSpy = sinon.spy()
+    let eventSpy = sinon.spy()
     let ageSpy = sinon.stub()
     beforeEach(() => {
-      actionSpy.reset()
-      let rule = factories.rule({ conditions, action })
+      eventSpy.reset()
+      let rule = factories.rule({ conditions, event })
       engine = engineFactory()
       engine.addRule(rule)
       engine.addFact('age', ageSpy)
-      engine.on('action', actionSpy)
+      engine.on('event', eventSpy)
     })
 
     it('emits when the condition is met', async () => {
       ageSpy.returns(10)
       await engine.run()
-      expect(actionSpy).to.have.been.calledWith(action)
+      expect(eventSpy).to.have.been.calledWith(event)
     })
 
     it('does not emit when the condition fails', () => {
       ageSpy.returns(75)
       engine.run()
-      expect(actionSpy).to.not.have.been.calledWith(action)
+      expect(eventSpy).to.not.have.been.calledWith(event)
     })
   })
 
@@ -56,44 +56,44 @@ describe('Engine: "any" conditions', () => {
         'value': 'european'
       }]
     }
-    let action = {
+    let event = {
       type: 'ageTrigger',
       params: {
         demographic: 'under50'
       }
     }
-    let actionSpy = sinon.spy()
+    let eventSpy = sinon.spy()
     let ageSpy = sinon.stub()
     let segmentSpy = sinon.stub()
     beforeEach(() => {
-      actionSpy.reset()
+      eventSpy.reset()
       ageSpy.reset()
       segmentSpy.reset()
-      let rule = factories.rule({ conditions, action })
+      let rule = factories.rule({ conditions, event })
       engine = engineFactory()
       engine.addRule(rule)
       engine.addFact('segment', segmentSpy)
       engine.addFact('age', ageSpy)
-      engine.on('action', actionSpy)
+      engine.on('event', eventSpy)
     })
 
-    it('emits an action when any condition is met', async () => {
+    it('emits an event when any condition is met', async () => {
       segmentSpy.returns('north-american')
       ageSpy.returns(25)
       await engine.run()
-      expect(actionSpy).to.have.been.calledWith(action)
+      expect(eventSpy).to.have.been.calledWith(event)
 
       segmentSpy.returns('european')
       ageSpy.returns(100)
       await engine.run()
-      expect(actionSpy).to.have.been.calledWith(action)
+      expect(eventSpy).to.have.been.calledWith(event)
     })
 
     it('does not emit when all conditions fail', async () => {
       segmentSpy.returns('north-american')
       ageSpy.returns(100)
       await engine.run()
-      expect(actionSpy).to.not.have.been.calledWith(action)
+      expect(eventSpy).to.not.have.been.calledWith(event)
     })
   })
 })

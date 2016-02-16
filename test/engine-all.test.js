@@ -19,7 +19,7 @@ describe('Engine: "all" conditions', () => {
   let engine
 
   describe('supports a single "all" condition', () => {
-    let action = {
+    let event = {
       type: 'ageTrigger',
       params: {
         demographic: 'under50'
@@ -32,25 +32,25 @@ describe('Engine: "all" conditions', () => {
         'value': 50
       }]
     }
-    let actionSpy = sinon.spy()
+    let eventSpy = sinon.spy()
     beforeEach(() => {
-      actionSpy.reset()
-      let rule = factories.rule({ conditions, action })
+      eventSpy.reset()
+      let rule = factories.rule({ conditions, event })
       engine = engineFactory()
       engine.addRule(rule)
-      engine.on('action', actionSpy)
+      engine.on('event', eventSpy)
     })
 
     it('emits when the condition is met', async () => {
       engine.addFact('age', factChild)
       await engine.run()
-      expect(actionSpy).to.have.been.calledWith(action)
+      expect(eventSpy).to.have.been.calledWith(event)
     })
 
     it('does not emit when the condition fails', () => {
       engine.addFact('age', factSenior)
       engine.run()
-      expect(actionSpy).to.not.have.been.calledWith(action)
+      expect(eventSpy).to.not.have.been.calledWith(event)
     })
   })
 
@@ -66,38 +66,38 @@ describe('Engine: "all" conditions', () => {
         'value': 21
       }]
     }
-    let action = {
+    let event = {
       type: 'ageTrigger',
       params: {
         demographic: 'adult'
       }
     }
-    let actionSpy = sinon.spy()
+    let eventSpy = sinon.spy()
     beforeEach(() => {
-      actionSpy.reset()
-      let rule = factories.rule({ conditions, action })
+      eventSpy.reset()
+      let rule = factories.rule({ conditions, event })
       engine = engineFactory()
       engine.addRule(rule)
-      engine.on('action', actionSpy)
+      engine.on('event', eventSpy)
     })
 
-    it('emits an action when every condition is met', async () => {
+    it('emits an event when every condition is met', async () => {
       engine.addFact('age', factAdult)
       await engine.run()
-      expect(actionSpy).to.have.been.calledWith(action)
+      expect(eventSpy).to.have.been.calledWith(event)
     })
 
     describe('a condition fails', () => {
       it('does not emit when the first condition fails', async () => {
         engine.addFact('age', factChild)
         await engine.run()
-        expect(actionSpy).to.not.have.been.calledWith(action)
+        expect(eventSpy).to.not.have.been.calledWith(event)
       })
 
       it('does not emit when the second condition', async () => {
         engine.addFact('age', factSenior)
         await engine.run()
-        expect(actionSpy).to.not.have.been.calledWith(action)
+        expect(eventSpy).to.not.have.been.calledWith(event)
       })
     })
   })

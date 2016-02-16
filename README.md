@@ -10,7 +10,7 @@ A rules engine expressed in JSON
 
 ## Features
 
-* Rules and Actions expressed in JSON
+* Rules and Events expressed in JSON
 * Facts provide the mechanism for pulling data asynchronously during runtime
 * Priority levels can be set at the rule, fact, and condition levels to optimize performance
 * Full support for ```ALL``` and ```ANY``` boolean operators, including recursive nesting
@@ -25,15 +25,15 @@ $ npm install json-rules-engine
 
 ## Conceptual Overview
 
-An _engine_ is composed of 4 basic building blocks: *rules*, *rule conditions*, *rule actions*, and *facts*.
+An _engine_ is composed of 4 basic building blocks: *rules*, *rule conditions*, *rule events*, and *facts*.
 
-_Engine_ - executes rules, emits actions, and maintains state.  Most applications will have a single instance.
+_Engine_ - executes rules, emits events, and maintains state.  Most applications will have a single instance.
 
 ```js
 let engine = new Engine()
 ```
 
-_Rule_ - contains a set of _conditions_ and a single _action_.  When the engine is run, each rule condition is evaluated.  If the results are truthy, the rule's _action_ is triggered.
+_Rule_ - contains a set of _conditions_ and a single _event_.  When the engine is run, each rule condition is evaluated.  If the results are truthy, the rule's _event_ is triggered.
 
 ```js
 let rule = new Rule({ priority: 25 })  // the higher the priority, the earlier the rule will run.  default=1
@@ -54,10 +54,10 @@ rule.setConditions({
 })
 ```
 
-_Rule Action_ - Actions are event emissions triggered by the engine when conditions are met.  Actions must have a _type_ property which acts as an identifier.  Optionally, actions may also have _params_.
+_Rule Event_ - Defines an event emitter that is triggered when conditions are met.  Events must have a _type_ property which acts as an identifier.  Optionally, events may also have _params_.
 
 ```js
-rule.setAction({
+rule.setEvent({
   type: 'celebrate',
   params: {
     balloons: true,
@@ -65,7 +65,7 @@ rule.setAction({
   }
 })
 engine.on('celebrate', function (params) {
-  // handle action business logic
+  // handle event business logic
   // params = { balloons: true, cake: false }
 })
 ```
@@ -93,10 +93,10 @@ More on engines can be found [here](./docs/engine.md)
 
 ### Step 2: Add Rules
 
-Rules are composed of two components: conditions and actions.  _Conditions_ are a set of requirements that must be met to trigger the rule's _action_.  Actions are emitted as events and may subscribed to by the application (see step 4).
+Rules are composed of two components: conditions and events.  _Conditions_ are a set of requirements that must be met to trigger the rule's _event_.
 
 ```js
-let action = {
+let event = {
   type: 'young-adult-rocky-mnts',
   params: {
     giftCard: 'amazon',
@@ -133,7 +133,7 @@ let conditions = {
     ]
   ]
 }
-let rule = new Rule({ conditions, action})
+let rule = new Rule({ conditions, event})
 engine.addRule(rule)
 ```
 
@@ -179,12 +179,12 @@ Now when the engine is run, it will call the methods above whenever it encounter
 More on facts can be found [here](./docs/facts.md)
 
 
-### Step 4: Handing Actions
+### Step 4: Handing Events
 
-When rule conditions are met, the application needs to respond to the action that is emitted.
+When rule conditions are met, the application needs to respond to the event that is emitted.
 
 ```js
-// subscribe directly to the 'young-adult' action from Step 1
+// subscribe directly to the 'young-adult' event from Step 1
 engine.on('young-adult', (params) => {
   // params: {
   //   giftCard: 'amazon',
@@ -194,9 +194,9 @@ engine.on('young-adult', (params) => {
 
 // - OR -
 
-// subscribe to any action emitted by the engine
-engine.on('action', function (action, engine) {
-  // action: {
+// subscribe to any event emitted by the engine
+engine.on('event', function (event, engine) {
+  // event: {
   //   type: "young-adult",
   //   params: {
   //     giftCard: 'amazon',
@@ -208,7 +208,7 @@ engine.on('action', function (action, engine) {
 
 ### Step 5: Run the engine
 
-Running an engine executes the rules, and fires off action events for conditions that were met.  The fact results cache will be cleared with each ```run()```
+Running an engine executes the rules, and fires off event events for conditions that were met.  The fact results cache will be cleared with each ```run()```
 
 ```js
 // evaluate the rules

@@ -6,7 +6,7 @@ import sinon from 'sinon'
 
 describe('Engine: custom cache keys', () => {
   let engine
-  let action = { type: 'early-twenties' }
+  let event = { type: 'early-twenties' }
   let conditions = {
     all: [{
       fact: 'demographics',
@@ -25,13 +25,13 @@ describe('Engine: custom cache keys', () => {
     }]
   }
 
-  let actionSpy = sinon.spy()
+  let eventSpy = sinon.spy()
   let demographicDataSpy = sinon.spy()
   let demographicSpy = sinon.spy()
   beforeEach(() => {
     demographicSpy.reset()
     demographicDataSpy.reset()
-    actionSpy.reset()
+    eventSpy.reset()
 
     let demographicsDataDefinition = async (params, engine) => {
       demographicDataSpy()
@@ -50,17 +50,17 @@ describe('Engine: custom cache keys', () => {
     let demographicsDataFact = new Fact('demographic-data', demographicsDataDefinition)
 
     engine = engineFactory()
-    let rule = factories.rule({ conditions, action })
+    let rule = factories.rule({ conditions, event })
     engine.addRule(rule)
     engine.addFact(demographicsFact)
     engine.addFact(demographicsDataFact)
-    engine.on('action', actionSpy)
+    engine.on('event', eventSpy)
   })
 
   describe('1 rule', () => {
     it('allows a fact to retrieve other fact values', async () => {
       await engine.run()
-      expect(actionSpy).to.have.been.calledOnce
+      expect(eventSpy).to.have.been.calledOnce
       expect(demographicDataSpy).to.have.been.calledOnce
       expect(demographicSpy).to.have.been.calledTwice
     })
@@ -78,11 +78,11 @@ describe('Engine: custom cache keys', () => {
           value: 20
         }]
       }
-      let rule = factories.rule({ conditions, action })
+      let rule = factories.rule({ conditions, event })
       engine.addRule(rule)
 
       await engine.run()
-      expect(actionSpy).to.have.been.calledTwice
+      expect(eventSpy).to.have.been.calledTwice
       expect(demographicDataSpy).to.have.been.calledOnce
       expect(demographicSpy).to.have.been.calledTwice
       expect(demographicDataSpy).to.have.been.calledOnce
