@@ -184,8 +184,8 @@ More on facts can be found [here](./docs/facts.md)
 When rule conditions are met, the application needs to respond to the event that is emitted.
 
 ```js
-// subscribe directly to the 'young-adult' event from Step 1
-engine.on('young-adult', (params) => {
+// subscribe directly to the 'young-adult' event
+engine.on('young-adult-rocky-mnts', (params) => {
   // params: {
   //   giftCard: 'amazon',
   //   value: 50
@@ -197,7 +197,7 @@ engine.on('young-adult', (params) => {
 // subscribe to any event emitted by the engine
 engine.on('event', function (event, engine) {
   // event: {
-  //   type: "young-adult",
+  //   type: "young-adult-rocky-mnts",
   //   params: {
   //     giftCard: 'amazon',
   //     value: 50
