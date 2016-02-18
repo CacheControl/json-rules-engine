@@ -32,6 +32,27 @@ export default class Condition {
     }
   }
 
+  toJSON (stringify = true) {
+    let props = {}
+    if (this.priority) {
+      props.priority = this.priority
+    }
+    if (this.isBooleanOperator()) {
+      props[this.booleanOperator()] = this[this.booleanOperator()].map((c) => c.toJSON(stringify))
+    } else {
+      props.operator = this.operator
+      props.value = this.value
+      props.fact = this.fact
+      if (this.params) {
+        props.params = this.params
+      }
+    }
+    if (stringify) {
+      return JSON.stringify(props)
+    }
+    return props
+  }
+
   evaluate (comparisonValue) {
     switch (this.operator) {
       case 'equal':
@@ -57,6 +78,14 @@ export default class Condition {
         return comparisonValue === true
       default:
         throw new Error(`Unknown operator: ${this.operator}`)
+    }
+  }
+
+  booleanOperator () {
+    if (this.hasOwnProperty('any')) {
+      return 'any'
+    } else if (this.hasOwnProperty('all')) {
+      return 'all'
     }
   }
 

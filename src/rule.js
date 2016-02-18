@@ -75,6 +75,18 @@ class Rule {
     return this
   }
 
+  toJSON (stringify = true) {
+    let props = {
+      conditions: this.conditions.toJSON(false),
+      priority: this.priority,
+      event: this.event
+    }
+    if (stringify) {
+      return JSON.stringify(props)
+    }
+    return props
+  }
+
   /**
    * Evaluates the rule conditions
    * @param  {Condition} condition - condition to evaluate

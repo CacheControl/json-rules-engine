@@ -126,4 +126,68 @@ describe('Rule', () => {
       expect(eventSpy).to.have.been.calledOnce
     })
   })
+
+  describe('toJSON() and fromJSON()', () => {
+    let priority = 50
+    let event = {
+      type: 'to-json!',
+      params: { id: 1 }
+    }
+    let conditions = {
+      priority: 1,
+      all: [{
+        value: 10,
+        operator: 'equals',
+        fact: 'userId',
+        params: {
+          foo: true
+        }
+      }]
+    }
+    let rule
+    beforeEach(() => {
+      rule = new Rule()
+      rule.setConditions(conditions)
+      rule.setPriority(priority)
+      rule.setEvent(event)
+    })
+
+    it('serializes itself', () => {
+      let json = rule.toJSON(false)
+      expect(Object.keys(json).length).to.equal(3)
+      expect(json.conditions).to.eql(conditions)
+      expect(json.priority).to.eql(priority)
+      expect(json.event).to.eql(event)
+    })
+
+    it('serializes itself as json', () => {
+      let jsonString = rule.toJSON()
+      expect(jsonString).to.be.a('string')
+      console.log(jsonString)
+      let json = JSON.parse(jsonString)
+      expect(Object.keys(json).length).to.equal(3)
+      expect(json.conditions).to.eql(conditions)
+      expect(json.priority).to.eql(priority)
+      expect(json.event).to.eql(event)
+    })
+
+    it('rehydrates itself using a JSON string', () => {
+      let jsonString = rule.toJSON()
+      expect(jsonString).to.be.a('string')
+      let hydratedRule = new Rule(jsonString)
+      expect(hydratedRule.conditions).to.eql(rule.conditions)
+      expect(hydratedRule.priority).to.eql(rule.priority)
+      expect(hydratedRule.event).to.eql(rule.event)
+    })
+
+    it('rehydrates itself using an object from JSON.parse()', () => {
+      let jsonString = rule.toJSON()
+      expect(jsonString).to.be.a('string')
+      let json = JSON.parse(jsonString)
+      let hydratedRule = new Rule(json)
+      expect(hydratedRule.conditions).to.eql(rule.conditions)
+      expect(hydratedRule.priority).to.eql(rule.priority)
+      expect(hydratedRule.event).to.eql(rule.event)
+    })
+  })
 })

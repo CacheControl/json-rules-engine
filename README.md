@@ -223,6 +223,20 @@ engine.run().then(() => {
 })
 ```
 
+## Persisting Rules
+
+Rules may be easily converted to JSON and persisted to a database, file system, or elsewhere.  To convert a rule to JSON, simply call the ```rule.toJSON()``` method.  Later, a rule may be restored by feeding the json into the Rule constructor.
+
+```js
+// save somewhere...
+let jsonString = rule.toJSON()
+
+// ...later:
+let rule = new Rule(jsonString)
+```
+
+_Why aren't "fact" methods persistable?_  This is by design, for several reasons.  Firstly, facts are by definition business logic bespoke to your application, and therefore lie outside the scope of this library.  Secondly, many times this request indicates a design smell; try thinking of other ways to compose the rules and facts to accomplish the same objective. Finally, persisting fact methods would involve serializing javascript code, and restoring it later via ``eval()``.  If you have a strong desire for this feature, the [node-rules](https://github.com/mithunsatheesh/node-rules) project supports this (though be aware the capability is enabled via ``eval()``.
+
 ## Debugging
 
 To see what the engine is doing under the hood, debug output can be turned on via:

@@ -2,7 +2,7 @@
 
 ## Methods
 
-### constructor([Object options])
+### constructor([Object options|String json])
 
 Returns a new rule instance
 
@@ -45,6 +45,19 @@ Sets the rule priority.  Priority must be a positive, non-zero integer.  The hig
 
 ```js
 rule.setPriority(100)
+```
+
+### toJSON(Boolean stringify = true)
+
+Serializes the rule into a JSON string.  Usually used when persisting rules.
+
+```js
+let jsonString = rule.toJSON() // string: '{"conditions":{"all":[]},"priority":50 ...
+
+let rule = new Rule(jsonString) // restored rule; same conditions, priority, event
+
+// without stringifying
+let jsonObject = rule.toJSON(false) // object: {conditions:{ all: [] }, priority: 50 ...
 ```
 
 ## Conditions
