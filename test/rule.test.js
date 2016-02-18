@@ -163,7 +163,6 @@ describe('Rule', () => {
     it('serializes itself as json', () => {
       let jsonString = rule.toJSON()
       expect(jsonString).to.be.a('string')
-      console.log(jsonString)
       let json = JSON.parse(jsonString)
       expect(Object.keys(json).length).to.equal(3)
       expect(json.conditions).to.eql(conditions)

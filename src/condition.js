@@ -4,12 +4,7 @@ import params from 'params'
 
 export default class Condition {
   constructor (properties) {
-    let booleanOperator
-    if (properties.hasOwnProperty('any')) {
-      booleanOperator = 'any'
-    } else if (properties.hasOwnProperty('all')) {
-      booleanOperator = 'all'
-    }
+    let booleanOperator = Condition.booleanOperator(properties)
     Object.assign(this, properties)
     if (booleanOperator) {
       let subConditions = properties[booleanOperator]
@@ -37,8 +32,9 @@ export default class Condition {
     if (this.priority) {
       props.priority = this.priority
     }
-    if (this.isBooleanOperator()) {
-      props[this.booleanOperator()] = this[this.booleanOperator()].map((c) => c.toJSON(stringify))
+    let oper = Condition.booleanOperator(this)
+    if (oper) {
+      props[oper] = this[oper].map((c) => c.toJSON(stringify))
     } else {
       props.operator = this.operator
       props.value = this.value
@@ -81,15 +77,20 @@ export default class Condition {
     }
   }
 
-  booleanOperator () {
-    if (this.hasOwnProperty('any')) {
+  /**
+   * Returns the boolean operator for the condition
+   * If the condition is not a boolean condition, the result will be 'undefined'
+   * @return {string 'all' or 'any'}
+   */
+  static booleanOperator (condition) {
+    if (condition.hasOwnProperty('any')) {
       return 'any'
-    } else if (this.hasOwnProperty('all')) {
+    } else if (condition.hasOwnProperty('all')) {
       return 'all'
     }
   }
 
   isBooleanOperator () {
-    return this.any !== undefined || this.all !== undefined
+    return Condition.booleanOperator(this) !== undefined
   }
 }

@@ -143,7 +143,7 @@ More on rules can be found [here](./docs/rules.md)
 
 ### Step 3: Define Facts
 
-Facts are constants or pure functions that may return different results during run-time.  Using the current example, if the engine were to be run, it would throw an error: "Undefined fact: 'age'".  So let's define some facts!
+Facts are constant values or pure functions.  Using the current example, if the engine were to be run, it would throw an error: "Undefined fact: 'age'".  So let's define some facts!
 
 ```js
 
