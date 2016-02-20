@@ -15,7 +15,8 @@
   },
   "keywords": [
     "rules",
-    "engine"
+    "engine",
+    "rules engine"
   ],
   "standard": {
     "parser": "babel-eslint",
