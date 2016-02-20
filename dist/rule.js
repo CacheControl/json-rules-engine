@@ -27,9 +27,9 @@ var Rule = function () {
    * returns a new Rule instance
    * @param {object,string} options, or json string that can be parsed into options
    * @param {integer} options.priority (>1) - higher runs sooner.
-   * @param {Object} options.action - action to fire when rule evaluates as successful
-   * @param {string} options.action.type - name of action to emit
-   * @param {string} options.action.params - parameters to pass to the action listener
+   * @param {Object} options.event - event to fire when rule evaluates as successful
+   * @param {string} options.event.type - name of event to emit
+   * @param {string} options.event.params - parameters to pass to the event listener
    * @param {Object} options.conditions - conditions to evaluate when processing this rule
    * @return {Rule} instance
    */
@@ -47,8 +47,8 @@ var Rule = function () {
     var priority = options && options.priority || 1;
     this.setPriority(priority);
 
-    var action = options && options.action || { type: 'unknown' };
-    this.setAction(action);
+    var event = options && options.event || { type: 'unknown' };
+    this.setEvent(event);
   }
 
   /**
@@ -81,16 +81,16 @@ var Rule = function () {
     }
 
     /**
-     * Sets the action to emit when the conditions evaluate truthy
-     * @param {object} action - action to emit
-     * @param {string} action.type - event name to emit on
-     * @param {string} action.params - parameters to emit as the argument of the event emission
+     * Sets the event to emit when the conditions evaluate truthy
+     * @param {object} event - event to emit
+     * @param {string} event.type - event name to emit on
+     * @param {string} event.params - parameters to emit as the argument of the event emission
      */
 
   }, {
-    key: 'setAction',
-    value: function setAction(action) {
-      this.action = (0, _params2.default)(action).only(['type', 'params']);
+    key: 'setEvent',
+    value: function setEvent(event) {
+      this.event = (0, _params2.default)(event).only(['type', 'params']);
       return this;
     }
 
@@ -105,6 +105,21 @@ var Rule = function () {
     value: function setEngine(engine) {
       this.engine = engine;
       return this;
+    }
+  }, {
+    key: 'toJSON',
+    value: function toJSON() {
+      var stringify = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+
+      var props = {
+        conditions: this.conditions.toJSON(false),
+        priority: this.priority,
+        event: this.event
+      };
+      if (stringify) {
+        return JSON.stringify(props);
+      }
+      return props;
     }
 
     /**
@@ -161,7 +176,7 @@ var Rule = function () {
         }, _callee, this);
       }));
 
-      return function evaluateCondition(_x) {
+      return function evaluateCondition(_x2) {
         return ref.apply(this, arguments);
       };
     }()
@@ -242,7 +257,7 @@ var Rule = function () {
         }, _callee2, this);
       }));
 
-      return function evaluateConditions(_x2, _x3) {
+      return function evaluateConditions(_x3, _x4) {
         return ref.apply(this, arguments);
       };
     }()
@@ -269,6 +284,14 @@ var Rule = function () {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
+                if (!(conditions.length === 0)) {
+                  _context3.next = 2;
+                  break;
+                }
+
+                return _context3.abrupt('return', true);
+
+              case 2:
                 method = Array.prototype.some;
 
                 if (operator === 'all') {
@@ -299,7 +322,7 @@ var Rule = function () {
                 });
                 return _context3.abrupt('return', cursor);
 
-              case 6:
+              case 8:
               case 'end':
                 return _context3.stop();
             }
@@ -307,7 +330,7 @@ var Rule = function () {
         }, _callee3, this);
       }));
 
-      return function prioritizeAndRun(_x4, _x5) {
+      return function prioritizeAndRun(_x5, _x6) {
         return ref.apply(this, arguments);
       };
     }()
@@ -336,7 +359,7 @@ var Rule = function () {
         }, _callee4, this);
       }));
 
-      return function any(_x6) {
+      return function any(_x7) {
         return ref.apply(this, arguments);
       };
     }()
@@ -365,7 +388,7 @@ var Rule = function () {
         }, _callee5, this);
       }));
 
-      return function all(_x7) {
+      return function all(_x8) {
         return ref.apply(this, arguments);
       };
     }()

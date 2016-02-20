@@ -26,15 +26,12 @@ var Fact = function () {
    * @return {Fact}
    */
 
-  function Fact(id, options, valueOrMethod) {
+  function Fact(id, valueOrMethod, options) {
     _classCallCheck(this, Fact);
 
     this.id = id;
     var defaultOptions = { cache: true };
-    if (typeof options === 'function') {
-      valueOrMethod = options;
-      options = defaultOptions;
-    } else if (typeof options === 'undefined') {
+    if (typeof options === 'undefined') {
       options = defaultOptions;
     }
     if (typeof valueOrMethod !== 'function') {
@@ -42,6 +39,12 @@ var Fact = function () {
     } else {
       this.calculationMethod = valueOrMethod;
     }
+
+    if (!this.id) throw new Error('factId required');
+    if (typeof this.value === 'undefined' && typeof this.calculationMethod === 'undefined') {
+      throw new Error('facts must have a value or method');
+    }
+
     this.priority = parseInt(options.priority || 1, 10);
     this.options = Object.assign({}, defaultOptions, options);
     this.cacheKeyMethod = this.defaultCacheKeys;

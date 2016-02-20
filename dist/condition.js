@@ -18,12 +18,7 @@ var Condition = function () {
   function Condition(properties) {
     _classCallCheck(this, Condition);
 
-    var booleanOperator = undefined;
-    if (properties.hasOwnProperty('any')) {
-      booleanOperator = 'any';
-    } else if (properties.hasOwnProperty('all')) {
-      booleanOperator = 'all';
-    }
+    var booleanOperator = Condition.booleanOperator(properties);
     Object.assign(this, properties);
     if (booleanOperator) {
       var subConditions = properties[booleanOperator];
@@ -47,6 +42,33 @@ var Condition = function () {
   }
 
   _createClass(Condition, [{
+    key: 'toJSON',
+    value: function toJSON() {
+      var stringify = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+
+      var props = {};
+      if (this.priority) {
+        props.priority = this.priority;
+      }
+      var oper = Condition.booleanOperator(this);
+      if (oper) {
+        props[oper] = this[oper].map(function (c) {
+          return c.toJSON(stringify);
+        });
+      } else {
+        props.operator = this.operator;
+        props.value = this.value;
+        props.fact = this.fact;
+        if (this.params) {
+          props.params = this.params;
+        }
+      }
+      if (stringify) {
+        return JSON.stringify(props);
+      }
+      return props;
+    }
+  }, {
     key: 'evaluate',
     value: function evaluate(comparisonValue) {
       switch (this.operator) {
@@ -75,10 +97,26 @@ var Condition = function () {
           throw new Error('Unknown operator: ' + this.operator);
       }
     }
+
+    /**
+     * Returns the boolean operator for the condition
+     * If the condition is not a boolean condition, the result will be 'undefined'
+     * @return {string 'all' or 'any'}
+     */
+
   }, {
     key: 'isBooleanOperator',
     value: function isBooleanOperator() {
-      return this.any !== undefined || this.all !== undefined;
+      return Condition.booleanOperator(this) !== undefined;
+    }
+  }], [{
+    key: 'booleanOperator',
+    value: function booleanOperator(condition) {
+      if (condition.hasOwnProperty('any')) {
+        return 'any';
+      } else if (condition.hasOwnProperty('all')) {
+        return 'all';
+      }
     }
   }]);
 

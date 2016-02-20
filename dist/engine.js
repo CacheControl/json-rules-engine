@@ -66,16 +66,16 @@ var Engine = function (_EventEmitter) {
    * Add a rule definition to the engine
    * @param {object|Rule} properties - rule definition.  can be JSON representation, or instance of Rule
    * @param {integer} properties.priority (>1) - higher runs sooner.
-   * @param {Object} properties.action - action to fire when rule evaluates as successful
-   * @param {string} properties.action.type - name of action to emit
-   * @param {string} properties.action.params - parameters to pass to the action listener
+   * @param {Object} properties.event - event to fire when rule evaluates as successful
+   * @param {string} properties.event.type - name of event to emit
+   * @param {string} properties.event.params - parameters to pass to the event listener
    * @param {Object} properties.conditions - conditions to evaluate when processing this rule
    */
 
   _createClass(Engine, [{
     key: 'addRule',
     value: function addRule(properties) {
-      (0, _params2.default)(properties).require(['conditions', 'action']);
+      (0, _params2.default)(properties).require(['conditions', 'event']);
 
       var rule = undefined;
       if (properties instanceof _rule2.default) {
@@ -93,23 +93,20 @@ var Engine = function (_EventEmitter) {
     /**
      * Add a fact definition to the engine.  Facts are called by rules as they are evaluated.
      * @param {object|Fact} id - fact identifier or instance of Fact
-     * @param {Object} options - options to initialize the fact with. used when "id" is not a Fact instance
      * @param {function} definitionFunc - function to be called when computing the fact value for a given rule
+     * @param {Object} options - options to initialize the fact with. used when "id" is not a Fact instance
      */
 
   }, {
     key: 'addFact',
-    value: function addFact(id, options, definitionFunc) {
+    value: function addFact(id, valueOrMethod, options) {
       var factId = id;
       var fact = undefined;
       if (id instanceof _fact2.default) {
         factId = id.id;
         fact = id;
       } else {
-        if (arguments.length === 2) {
-          definitionFunc = options;
-        }
-        fact = new _fact2.default(id, options, definitionFunc);
+        fact = new _fact2.default(id, valueOrMethod, options);
       }
       debug('engine::addFact id:' + factId);
       this.facts.set(factId, fact);
@@ -220,8 +217,8 @@ var Engine = function (_EventEmitter) {
 
     /**
      * Stops the rules engine from running the next priority set of Rules.  All remaining rules will be resolved as undefined,
-     * and no further actions emitted.  Since rules of the same priority are evaluated in parallel(not series), other rules of
-     * the same priority may still emit actions, even though the engine is in a "finished" state.
+     * and no further events emitted.  Since rules of the same priority are evaluated in parallel(not series), other rules of
+     * the same priority may still emit events, even though the engine is in a "finished" state.
      * @return {Engine}
      */
 
@@ -256,8 +253,8 @@ var Engine = function (_EventEmitter) {
                   return rule.evaluate(_this3).then(function (rulePasses) {
                     debug('engine::run ruleResult:' + rulePasses);
                     if (rulePasses) {
-                      _this3.emit('action', rule.action, _this3);
-                      _this3.emit(rule.action.type, rule.action.params, _this3);
+                      _this3.emit('event', rule.event, _this3);
+                      _this3.emit(rule.event.type, rule.event.params, _this3);
                     }
                     if (!rulePasses) _this3.emit('failure', rule, _this3);
                   });
