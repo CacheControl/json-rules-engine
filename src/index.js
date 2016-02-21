@@ -1,5 +1,6 @@
 'use strict'
 
+import 'babel-polyfill'
 import Engine from './engine'
 import Fact from './fact'
 import Rule from './rule'

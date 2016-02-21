@@ -59,6 +59,7 @@
     "standard": "^5.4.1"
   },
   "dependencies": {
+    "babel-polyfill": "~6.5.0",
     "debug": "^2.2.0",
     "object-hash": "^1.1.0",
     "params": "0.1.1"
