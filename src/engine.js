@@ -151,7 +151,7 @@ class Engine extends EventEmitter {
       return rule.evaluate(this).then((rulePasses) => {
         debug(`engine::run ruleResult:${rulePasses}`)
         if (rulePasses) {
-          this.emit('event', rule.event, this)
+          this.emit('success', rule.event, this)
           this.emit(rule.event.type, rule.event.params, this)
         }
         if (!rulePasses) this.emit('failure', rule, this)

@@ -42,7 +42,7 @@ describe('Engine: recursive rules', () => {
     engine = engineFactory()
     let rule = factories.rule({ conditions, event })
     engine.addRule(rule)
-    engine.on('event', eventSpy)
+    engine.on('success', eventSpy)
   }
 
   describe('"all" with nested "any"', () => {

@@ -28,7 +28,7 @@ describe('Engine: "any" conditions', () => {
       engine = engineFactory()
       engine.addRule(rule)
       engine.addFact('age', ageSpy)
-      engine.on('event', eventSpy)
+      engine.on('success', eventSpy)
     })
 
     it('emits when the condition is met', async () => {
@@ -74,7 +74,7 @@ describe('Engine: "any" conditions', () => {
       engine.addRule(rule)
       engine.addFact('segment', segmentSpy)
       engine.addFact('age', ageSpy)
-      engine.on('event', eventSpy)
+      engine.on('success', eventSpy)
     })
 
     it('emits an event when any condition is met', async () => {

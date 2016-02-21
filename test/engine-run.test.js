@@ -29,7 +29,7 @@ describe('Engine: run', () => {
     let rule = factories.rule({ conditions, event })
     engine.addRule(rule)
     engine.addFact('age', factDefinition)
-    engine.on('event', eventSpy)
+    engine.on('success', eventSpy)
   })
 
   it('resets the fact cache with each run', async () => {

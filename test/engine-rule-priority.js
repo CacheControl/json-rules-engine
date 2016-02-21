@@ -29,7 +29,7 @@ describe('Engine: cache', () => {
     let determineCollegeSenior = factories.rule({ conditions, event: collegeSeniorEvent, priority: 1 })
     engine.addRule(determineCollegeSenior)
     engine.addFact('age', factSpy)
-    engine.on('event', eventSpy)
+    engine.on('success', eventSpy)
   }
 
   it('runs the rules in order of priority', () => {

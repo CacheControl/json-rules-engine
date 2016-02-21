@@ -26,7 +26,7 @@ describe('Engine: fact priority', () => {
     engine.addFact('age', ageStub, { priority: 100 })
     engine.addFact('segment', segmentStub, { priority: 50 })
     engine.addFact('accountType', accountTypeStub, { priority: 25 })
-    engine.on('event', eventSpy)
+    engine.on('success', eventSpy)
     engine.on('failure', failureSpy)
   }
 

@@ -196,7 +196,7 @@ engine.on('young-adult-rocky-mnts', (params) => {
 // - OR -
 
 // subscribe to any event emitted by the engine
-engine.on('event', function (event, engine) {
+engine.on('success', function (event, engine) {
   // event: {
   //   type: "young-adult-rocky-mnts",
   //   params: {

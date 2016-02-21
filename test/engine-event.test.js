@@ -26,7 +26,7 @@ describe('Engine: event', () => {
   })
 
   it('passes the event type and params', (done) => {
-    engine.on('event', function (a, engine) {
+    engine.on('success', function (a, engine) {
       try {
         expect(a).to.eql(event)
         expect(engine).to.eql(engine)
@@ -66,7 +66,7 @@ describe('Engine: event', () => {
       priority: 1
     })
     engine.addRule(drinkOrderRule)
-    engine.on('event', function (a, e) {
+    engine.on('success', function (a, e) {
       try {
         switch (a.type) {
           case 'setDrinkingFlag':

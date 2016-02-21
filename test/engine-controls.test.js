@@ -45,7 +45,7 @@ describe('Engine: fact priority', () => {
     it('stops the rules from executing', async () => {
       setup()
       ageStub.returns(20) // success
-      engine.on('event', (event, engine) => {
+      engine.on('success', (event, engine) => {
         eventSpy()
         engine.stop()
       })

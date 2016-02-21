@@ -38,7 +38,7 @@ describe('Engine: "all" conditions', () => {
       let rule = factories.rule({ conditions, event })
       engine = engineFactory()
       engine.addRule(rule)
-      engine.on('event', eventSpy)
+      engine.on('success', eventSpy)
     })
 
     it('emits when the condition is met', async () => {
@@ -78,7 +78,7 @@ describe('Engine: "all" conditions', () => {
       let rule = factories.rule({ conditions, event })
       engine = engineFactory()
       engine.addRule(rule)
-      engine.on('event', eventSpy)
+      engine.on('success', eventSpy)
     })
 
     it('emits an event when every condition is met', async () => {

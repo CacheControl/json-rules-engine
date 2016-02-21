@@ -144,7 +144,7 @@ describe('Engine', () => {
 
     it('changes the status to "RUNNING"', () => {
       let eventSpy = sinon.spy()
-      engine.on('event', (event, engine) => {
+      engine.on('success', (event, engine) => {
         eventSpy()
         expect(engine.status).to.equal('RUNNING')
       })

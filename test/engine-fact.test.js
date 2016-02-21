@@ -41,7 +41,7 @@ describe('Engine: fact evaluation', () => {
     let rule = factories.rule({ conditions, event })
     engine.addRule(rule)
     engine.addFact('eligibility', eligibility)
-    engine.on('event', eventSpy)
+    engine.on('success', eventSpy)
   }
 
   describe('params', () => {

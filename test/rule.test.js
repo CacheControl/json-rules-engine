@@ -121,7 +121,7 @@ describe('Rule', () => {
         all: []
       })
       engine.addRule(rule)
-      engine.on('event', eventSpy)
+      engine.on('success', eventSpy)
       await engine.run()
       expect(eventSpy).to.have.been.calledOnce
     })

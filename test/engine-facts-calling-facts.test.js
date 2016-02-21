@@ -54,7 +54,7 @@ describe('Engine: custom cache keys', () => {
     engine.addRule(rule)
     engine.addFact(demographicsFact)
     engine.addFact(demographicsDataFact)
-    engine.on('event', eventSpy)
+    engine.on('success', eventSpy)
   })
 
   describe('1 rule', () => {

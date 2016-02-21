@@ -37,7 +37,7 @@ describe('Engine', () => {
     let rule = factories.rule({ conditions, event })
     engine.addRule(rule)
     engine.addFact('age', factDefinition, factOptions)
-    engine.on('event', eventSpy)
+    engine.on('success', eventSpy)
   }
 
   describe('1 rule with parallel conditions', () => {

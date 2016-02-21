@@ -29,7 +29,7 @@ describe('Engine: cache', () => {
     let over20 = factories.rule({ conditions, event: collegeSeniorEvent, priority: 50 })
     engine.addRule(over20)
     engine.addFact('age', factSpy, factOptions)
-    engine.on('event', eventSpy)
+    engine.on('success', eventSpy)
   }
 
   it('loads facts once and caches the results for future use', async () => {
