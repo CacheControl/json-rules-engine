@@ -14,7 +14,6 @@ describe('Engine', () => {
   it('has methods for managing facts and rules, and running itself', () => {
     expect(engine).to.have.property('addRule')
     expect(engine).to.have.property('addFact')
-    expect(engine).to.have.property('factValue')
     expect(engine).to.have.property('run')
     expect(engine).to.have.property('stop')
   })
@@ -137,11 +136,6 @@ describe('Engine', () => {
       engine.addFact('age', 20)
     })
 
-    it('allows facts to be added when run', () => {
-      engine.run({modelId: 'XYZ'})
-      expect(engine.facts.get('modelId').value).to.equal('XYZ')
-    })
-
     it('changes the status to "RUNNING"', () => {
       let eventSpy = sinon.spy()
       engine.on('success', (event, engine) => {
@@ -155,56 +149,6 @@ describe('Engine', () => {
       expect(engine.status).to.equal('READY')
       await engine.run()
       expect(engine.status).to.equal('FINISHED')
-    })
-  })
-
-  describe('factValue', () => {
-    describe('arguments', () => {
-      beforeEach(() => {
-        engine.addFact('foo', async (params, facts) => {
-          if (params.userId) return params.userId
-          return 'unknown'
-        })
-      })
-
-      it('allows parameters to be passed to the fact', async () => {
-        return expect(engine.factValue('foo')).to.eventually.equal('unknown')
-      })
-
-      it('allows parameters to be passed to the fact', async () => {
-        return expect(engine.factValue('foo', { userId: 1 })).to.eventually.equal(1)
-      })
-
-      it('throws an exception if it encounters an undefined fact', () => {
-        expect(engine.factValue('foo')).to.be.rejectedWith(/Undefined fact: foo/)
-      })
-    })
-
-    describe('caching', () => {
-      let factSpy = sinon.spy()
-      function setup (factOptions) {
-        factSpy.reset()
-        engine.addFact('foo', async (params, facts) => {
-          factSpy()
-          return 'unknown'
-        }, factOptions)
-      }
-
-      it('evaluates the fact every time when fact caching is off', () => {
-        setup({ cache: false })
-        engine.factValue('foo')
-        engine.factValue('foo')
-        engine.factValue('foo')
-        expect(factSpy).to.have.been.calledThrice
-      })
-
-      it('evaluates the fact once when fact caching is on', () => {
-        setup({ cache: true })
-        engine.factValue('foo')
-        engine.factValue('foo')
-        engine.factValue('foo')
-        expect(factSpy).to.have.been.calledOnce
-      })
     })
   })
 })

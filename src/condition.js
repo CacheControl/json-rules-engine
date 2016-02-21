@@ -90,6 +90,10 @@ export default class Condition {
     }
   }
 
+  booleanOperator () {
+    return Condition.booleanOperator(this)
+  }
+
   isBooleanOperator () {
     return Condition.booleanOperator(this) !== undefined
   }

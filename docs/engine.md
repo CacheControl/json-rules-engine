@@ -59,10 +59,6 @@ engine.run()
 
 // with constant facts
 engine.run({ userId: 1 })
-
-// run with all fact caching turned off
-async run ({}, { clearFactResultsCache: true })
-
 ```
 
 ### engine.stop() -> Engine

@@ -88,27 +88,6 @@ class Rule {
   }
 
   /**
-   * Evaluates the rule conditions
-   * @param  {Condition} condition - condition to evaluate
-   * @return {Promise(true|false)} - resolves with the result of the condition evaluation
-   */
-  async evaluateCondition (condition) {
-    let comparisonValue
-    if (condition.isBooleanOperator()) {
-      let subConditions = condition[condition.operator]
-      comparisonValue = await this[condition.operator](subConditions)
-    } else {
-      comparisonValue = await this.engine.factValue(condition.fact, condition.params)
-    }
-
-    let conditionResult = condition.evaluate(comparisonValue)
-    if (!condition.isBooleanOperator()) {
-      debug(`evaluateConditions:: <${comparisonValue} ${condition.operator} ${condition.value}?> (${conditionResult})`)
-    }
-    return conditionResult
-  }
-
-  /**
    * Priorizes an array of conditions based on "priority"
    *   When no explicit priority is provided on the condition itself, the condition's priority is determine by its fact
    * @param  {Condition[]} conditions
@@ -123,10 +102,7 @@ class Rule {
       let priority = condition.priority
       if (!priority) {
         let fact = this.engine.getFact(condition.fact)
-        if (!fact) {
-          throw new Error(`Undefined fact: ${condition.fact}`)
-        }
-        priority = fact.priority
+        priority = fact && fact.priority || 1
       }
       if (!sets[priority]) sets[priority] = []
       sets[priority].push(condition)
@@ -138,15 +114,36 @@ class Rule {
   }
 
   /**
+   * Evaluates the rule conditions
+   * @param  {Condition} condition - condition to evaluate
+   * @return {Promise(true|false)} - resolves with the result of the condition evaluation
+   */
+  async evaluateCondition (condition, almanac) {
+    let comparisonValue
+    if (condition.isBooleanOperator()) {
+      let subConditions = condition[condition.operator]
+      comparisonValue = await this[condition.operator](subConditions, almanac)
+    } else {
+      comparisonValue = await almanac.factValue(condition.fact, condition.params)
+    }
+
+    let conditionResult = condition.evaluate(comparisonValue)
+    if (!condition.isBooleanOperator()) {
+      debug(`evaluateConditions:: <${comparisonValue} ${condition.operator} ${condition.value}?> (${conditionResult})`)
+    }
+    return conditionResult
+  }
+
+  /**
    * Evalutes an array of conditions, using an 'every' or 'some' array operation
    * @param  {Condition[]} conditions
    * @param  {string(every|some)} array method to call for determining result
    * @return {Promise(boolean)} whether conditions evaluated truthy or falsey based on condition evaluation + method
    */
-  async evaluateConditions (conditions, method) {
+  async evaluateConditions (conditions, method, almanac) {
     if (!(Array.isArray(conditions))) conditions = [ conditions ]
     let conditionResults = await Promise.all(conditions.map((condition) => {
-      return this.evaluateCondition(condition)
+      return this.evaluateCondition(condition, almanac)
     }))
     debug(`evaluateConditions::results`, conditionResults)
     return method.call(conditionResults, (result) => result === true)
@@ -162,7 +159,7 @@ class Rule {
    * @param  {string('all'|'any')} operator
    * @return {Promise(boolean)} rule evaluation result
    */
-  async prioritizeAndRun (conditions, operator) {
+  async prioritizeAndRun (conditions, operator, almanac) {
     if (conditions.length === 0) {
       return true
     }
@@ -170,7 +167,7 @@ class Rule {
     if (operator === 'all') {
       method = Array.prototype.every
     }
-    let orderedSets = this.prioritizeConditions(conditions)
+    let orderedSets = this.prioritizeConditions(conditions, almanac)
     let cursor = Promise.resolve()
     orderedSets.forEach((set) => {
       let stop = false
@@ -189,7 +186,7 @@ class Rule {
           return false
         }
         // all conditions passed; proceed with running next set in parallel
-        return this.evaluateConditions(set, method)
+        return this.evaluateConditions(set, method, almanac)
       })
     })
     return cursor
@@ -200,8 +197,8 @@ class Rule {
    * @param  {Condition[]} conditions to be evaluated
    * @return {Promise(boolean)} condition evaluation result
    */
-  async any (conditions) {
-    return this.prioritizeAndRun(conditions, 'any')
+  async any (conditions, almanac) {
+    return this.prioritizeAndRun(conditions, 'any', almanac)
   }
 
   /**
@@ -209,19 +206,19 @@ class Rule {
    * @param  {Condition[]} conditions to be evaluated
    * @return {Promise(boolean)} condition evaluation result
    */
-  async all (conditions) {
-    return this.prioritizeAndRun(conditions, 'all')
+  async all (conditions, almanac) {
+    return this.prioritizeAndRun(conditions, 'all', almanac)
   }
 
   /**
    * Evaluates the rule, starting with the root boolean operator and recursing down
    * @return {Promise(boolean)} rule evaluation result
    */
-  async evaluate () {
+  async evaluate (almanac) {
     if (this.conditions.any) {
-      return await this.any(this.conditions.any)
+      return await this.any(this.conditions.any, almanac)
     } else {
-      return await this.all(this.conditions.all)
+      return await this.all(this.conditions.all, almanac)
     }
   }
 }

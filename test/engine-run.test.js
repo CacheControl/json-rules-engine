@@ -15,36 +15,18 @@ describe('Engine: run', () => {
     }]
   }
   let eventSpy = sinon.spy()
-  let factSpy = sinon.spy()
   beforeEach(() => {
-    factSpy.reset()
     eventSpy.reset()
-
-    let factDefinition = () => {
-      factSpy()
-      return 24
-    }
-
     engine = engineFactory()
     let rule = factories.rule({ conditions, event })
     engine.addRule(rule)
-    engine.addFact('age', factDefinition)
     engine.on('success', eventSpy)
   })
 
-  it('resets the fact cache with each run', async () => {
-    await engine.run()
-    await engine.run()
-    await engine.run()
-    expect(eventSpy).to.have.been.calledThrice
-    expect(factSpy).to.have.been.calledThrice
-  })
-
-  it('does not reset the fact cache if specified', async () => {
-    await engine.run()
-    await engine.run({}, { clearFactCache: false })
-    await engine.run()
-    expect(eventSpy).to.have.been.calledThrice
-    expect(factSpy).to.have.been.calledTwice
+  describe('independent runs', () => {
+    it('treats each run() independently', async () => {
+      await Promise.all([50, 10, 12, 30, 14, 15, 25].map((age) => engine.run({age})))
+      expect(eventSpy).to.have.been.calledThrice
+    })
   })
 })
