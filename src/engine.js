@@ -44,7 +44,6 @@ class Engine extends EventEmitter {
       rule = new Rule(properties)
     }
     rule.setEngine(this)
-    debug(`engine::addRule`, rule)
 
     this.rules.push(rule)
     this.prioritizedRules = null
@@ -165,10 +164,10 @@ class Engine extends EventEmitter {
    * @param  {Object} runOptions - run options
    * @return {Promise} resolves when the engine has completed running
    */
-  async run (initialFacts = {}, runOptions = { clearfactResultsCache: true }) {
+  async run (initialFacts = {}, runOptions = { clearFactResultsCache: true }) {
     debug(`engine::run initialFacts:`, initialFacts)
     this.status = RUNNING
-    if (runOptions.clearfactResultsCache) {
+    if (runOptions.clearFactResultsCache) {
       this.factResultsCache.clear()
     }
     for (let key in initialFacts) {

@@ -84,7 +84,6 @@ var Engine = function (_EventEmitter) {
         rule = new _rule2.default(properties);
       }
       rule.setEngine(this);
-      debug('engine::addRule', rule);
 
       this.rules.push(rule);
       this.prioritizedRules = null;
@@ -253,7 +252,7 @@ var Engine = function (_EventEmitter) {
                   return rule.evaluate(_this3).then(function (rulePasses) {
                     debug('engine::run ruleResult:' + rulePasses);
                     if (rulePasses) {
-                      _this3.emit('event', rule.event, _this3);
+                      _this3.emit('success', rule.event, _this3);
                       _this3.emit(rule.event.type, rule.event.params, _this3);
                     }
                     if (!rulePasses) _this3.emit('failure', rule, _this3);
@@ -287,7 +286,7 @@ var Engine = function (_EventEmitter) {
         var _this4 = this;
 
         var initialFacts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-        var runOptions = arguments.length <= 1 || arguments[1] === undefined ? { clearfactResultsCache: true } : arguments[1];
+        var runOptions = arguments.length <= 1 || arguments[1] === undefined ? { clearFactResultsCache: true } : arguments[1];
         var key, orderedSets, cursor;
         return regeneratorRuntime.wrap(function _callee3$(_context3) {
           while (1) {
@@ -295,7 +294,7 @@ var Engine = function (_EventEmitter) {
               case 0:
                 debug('engine::run initialFacts:', initialFacts);
                 this.status = RUNNING;
-                if (runOptions.clearfactResultsCache) {
+                if (runOptions.clearFactResultsCache) {
                   this.factResultsCache.clear();
                 }
                 for (key in initialFacts) {

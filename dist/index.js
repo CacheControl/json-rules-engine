@@ -9,6 +9,8 @@ exports.default = function (rules) {
   return new _engine2.default(rules);
 };
 
+require('babel-polyfill');
+
 var _engine = require('./engine');
 
 var _engine2 = _interopRequireDefault(_engine);

@@ -61,7 +61,7 @@ engine.run()
 engine.run({ userId: 1 })
 
 // run with all fact caching turned off
-async run ({}, { clearfactResultsCache: true })
+async run ({}, { clearFactResultsCache: true })
 
 ```
 
