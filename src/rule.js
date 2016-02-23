@@ -114,111 +114,116 @@ class Rule {
   }
 
   /**
-   * Evaluates the rule conditions
-   * @param  {Condition} condition - condition to evaluate
-   * @return {Promise(true|false)} - resolves with the result of the condition evaluation
-   */
-  async evaluateCondition (condition, almanac) {
-    let comparisonValue
-    if (condition.isBooleanOperator()) {
-      let subConditions = condition[condition.operator]
-      comparisonValue = await this[condition.operator](subConditions, almanac)
-    } else {
-      comparisonValue = await almanac.factValue(condition.fact, condition.params)
-    }
-
-    let conditionResult = condition.evaluate(comparisonValue)
-    if (!condition.isBooleanOperator()) {
-      debug(`evaluateConditions:: <${comparisonValue} ${condition.operator} ${condition.value}?> (${conditionResult})`)
-    }
-    return conditionResult
-  }
-
-  /**
-   * Evalutes an array of conditions, using an 'every' or 'some' array operation
-   * @param  {Condition[]} conditions
-   * @param  {string(every|some)} array method to call for determining result
-   * @return {Promise(boolean)} whether conditions evaluated truthy or falsey based on condition evaluation + method
-   */
-  async evaluateConditions (conditions, method, almanac) {
-    if (!(Array.isArray(conditions))) conditions = [ conditions ]
-    let conditionResults = await Promise.all(conditions.map((condition) => {
-      return this.evaluateCondition(condition, almanac)
-    }))
-    debug(`evaluateConditions::results`, conditionResults)
-    return method.call(conditionResults, (result) => result === true)
-  }
-
-  /**
-   * Evaluates a set of conditions based on an 'all' or 'any' operator.
-   *   First, orders the top level conditions based on priority
-   *   Iterates over each priority set, evaluating each condition
-   *   If any condition results in the rule to be guaranteed truthy or falsey,
-   *   it will short-circuit and not bother evaluating any additional rules
-   * @param  {Condition[]} conditions - conditions to be evaluated
-   * @param  {string('all'|'any')} operator
-   * @return {Promise(boolean)} rule evaluation result
-   */
-  async prioritizeAndRun (conditions, operator, almanac) {
-    if (conditions.length === 0) {
-      return true
-    }
-    let method = Array.prototype.some
-    if (operator === 'all') {
-      method = Array.prototype.every
-    }
-    let orderedSets = this.prioritizeConditions(conditions, almanac)
-    let cursor = Promise.resolve()
-    orderedSets.forEach((set) => {
-      let stop = false
-      cursor = cursor.then((setResult) => {
-        // after the first set succeeds, don't fire off the remaining promises
-        if ((operator === 'any' && setResult === true) || stop) {
-          debug(`prioritizeAndRun::detected truthy result; skipping remaining conditions`)
-          stop = true
-          return true
-        }
-
-        // after the first set fails, don't fire off the remaining promises
-        if ((operator === 'all' && setResult === false) || stop) {
-          debug(`prioritizeAndRun::detected falsey result; skipping remaining conditions`)
-          stop = true
-          return false
-        }
-        // all conditions passed; proceed with running next set in parallel
-        return this.evaluateConditions(set, method, almanac)
-      })
-    })
-    return cursor
-  }
-
-  /**
-   * Runs an 'any' boolean operator on an array of conditions
-   * @param  {Condition[]} conditions to be evaluated
-   * @return {Promise(boolean)} condition evaluation result
-   */
-  async any (conditions, almanac) {
-    return this.prioritizeAndRun(conditions, 'any', almanac)
-  }
-
-  /**
-   * Runs an 'all' boolean operator on an array of conditions
-   * @param  {Condition[]} conditions to be evaluated
-   * @return {Promise(boolean)} condition evaluation result
-   */
-  async all (conditions, almanac) {
-    return this.prioritizeAndRun(conditions, 'all', almanac)
-  }
-
-  /**
    * Evaluates the rule, starting with the root boolean operator and recursing down
+   * All evaluation is done within the context of an almanac
    * @return {Promise(boolean)} rule evaluation result
    */
   async evaluate (almanac) {
+    /**
+     * Evaluates the rule conditions
+     * @param  {Condition} condition - condition to evaluate
+     * @return {Promise(true|false)} - resolves with the result of the condition evaluation
+     */
+    let evaluateCondition = async (condition) => {
+      let comparisonValue
+      if (condition.isBooleanOperator()) {
+        let subConditions = condition[condition.operator]
+        if (condition.operator === 'all') {
+          comparisonValue = await all(subConditions)
+        } else {
+          comparisonValue = await any(subConditions)
+        }
+      } else {
+        comparisonValue = await almanac.factValue(condition.fact, condition.params)
+      }
+
+      let conditionResult = condition.evaluate(comparisonValue)
+      if (!condition.isBooleanOperator()) {
+        debug(`evaluateConditions:: <${comparisonValue} ${condition.operator} ${condition.value}?> (${conditionResult})`)
+      }
+      return conditionResult
+    }
+
+    /**
+     * Evalutes an array of conditions, using an 'every' or 'some' array operation
+     * @param  {Condition[]} conditions
+     * @param  {string(every|some)} array method to call for determining result
+     * @return {Promise(boolean)} whether conditions evaluated truthy or falsey based on condition evaluation + method
+     */
+    let evaluateConditions = async (conditions, method) => {
+      if (!(Array.isArray(conditions))) conditions = [ conditions ]
+      let conditionResults = await Promise.all(conditions.map((condition) => {
+        return evaluateCondition(condition)
+      }))
+      debug(`evaluateConditions::results`, conditionResults)
+      return method.call(conditionResults, (result) => result === true)
+    }
+
+    /**
+     * Evaluates a set of conditions based on an 'all' or 'any' operator.
+     *   First, orders the top level conditions based on priority
+     *   Iterates over each priority set, evaluating each condition
+     *   If any condition results in the rule to be guaranteed truthy or falsey,
+     *   it will short-circuit and not bother evaluating any additional rules
+     * @param  {Condition[]} conditions - conditions to be evaluated
+     * @param  {string('all'|'any')} operator
+     * @return {Promise(boolean)} rule evaluation result
+     */
+    let prioritizeAndRun = async (conditions, operator) => {
+      if (conditions.length === 0) {
+        return true
+      }
+      let method = Array.prototype.some
+      if (operator === 'all') {
+        method = Array.prototype.every
+      }
+      let orderedSets = this.prioritizeConditions(conditions)
+      let cursor = Promise.resolve()
+      orderedSets.forEach((set) => {
+        let stop = false
+        cursor = cursor.then((setResult) => {
+          // after the first set succeeds, don't fire off the remaining promises
+          if ((operator === 'any' && setResult === true) || stop) {
+            debug(`prioritizeAndRun::detected truthy result; skipping remaining conditions`)
+            stop = true
+            return true
+          }
+
+          // after the first set fails, don't fire off the remaining promises
+          if ((operator === 'all' && setResult === false) || stop) {
+            debug(`prioritizeAndRun::detected falsey result; skipping remaining conditions`)
+            stop = true
+            return false
+          }
+          // all conditions passed; proceed with running next set in parallel
+          return evaluateConditions(set, method)
+        })
+      })
+      return cursor
+    }
+
+    /**
+     * Runs an 'any' boolean operator on an array of conditions
+     * @param  {Condition[]} conditions to be evaluated
+     * @return {Promise(boolean)} condition evaluation result
+     */
+    let any = async (conditions) => {
+      return prioritizeAndRun(conditions, 'any')
+    }
+
+    /**
+     * Runs an 'all' boolean operator on an array of conditions
+     * @param  {Condition[]} conditions to be evaluated
+     * @return {Promise(boolean)} condition evaluation result
+     */
+    let all = async (conditions) => {
+      return prioritizeAndRun(conditions, 'all')
+    }
+
     if (this.conditions.any) {
-      return await this.any(this.conditions.any, almanac)
+      return await any(this.conditions.any)
     } else {
-      return await this.all(this.conditions.all, almanac)
+      return await all(this.conditions.all)
     }
   }
 }
