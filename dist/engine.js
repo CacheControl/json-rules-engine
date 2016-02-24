@@ -19,6 +19,10 @@ var _rule = require('./rule');
 
 var _rule2 = _interopRequireDefault(_rule);
 
+var _almanac = require('./almanac');
+
+var _almanac2 = _interopRequireDefault(_almanac);
+
 var _events = require('events');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -57,7 +61,6 @@ var Engine = function (_EventEmitter) {
       return _this.addRule(r);
     });
     _this.facts = new Map();
-    _this.factResultsCache = new Map();
     _this.status = READY;
     return _this;
   }
@@ -112,79 +115,6 @@ var Engine = function (_EventEmitter) {
     }
 
     /**
-     * Returns a fact from the engine, by fact-id
-     * @param  {string} factId - fact identifier
-     * @return {Fact} fact instance, or undefined if no such fact exists
-     */
-
-  }, {
-    key: 'getFact',
-    value: function getFact(factId) {
-      return this.facts.get(factId);
-    }
-
-    /**
-     * Returns the value of a fact, based on the given parameters.  Utilizes the 'factResultsCache' maintained
-     * by the engine, which cache's fact computations based on parameters provided
-     * @param  {string} factId - fact identifier
-     * @param  {Object} params - parameters to feed into the fact.  By default, these will also be used to compute the cache key
-     * @return {Promise} a promise which will resolve with the fact computation.
-     */
-
-  }, {
-    key: 'factValue',
-    value: function () {
-      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(factId) {
-        var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-        var fact, cacheKey, cacheVal;
-        return regeneratorRuntime.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                fact = this.facts.get(factId);
-
-                if (fact) {
-                  _context.next = 3;
-                  break;
-                }
-
-                throw new Error('Undefined fact: ' + factId);
-
-              case 3:
-                cacheKey = fact.getCacheKey(params);
-                cacheVal = cacheKey && this.factResultsCache.get(cacheKey);
-
-                if (!cacheVal) {
-                  _context.next = 8;
-                  break;
-                }
-
-                debug('engine::factValue cache hit for \'' + factId + '\' cacheKey:' + cacheKey);
-                return _context.abrupt('return', cacheVal);
-
-              case 8:
-                debug('engine::factValue cache miss for \'' + factId + '\' using cacheKey:' + cacheKey + '; calculating');
-                cacheVal = fact.calculate(params, this);
-                debug('engine::factValue \'' + factId + '\' calculated as: ' + cacheVal);
-                if (cacheKey) {
-                  this.factResultsCache.set(cacheKey, cacheVal);
-                }
-                return _context.abrupt('return', cacheVal);
-
-              case 13:
-              case 'end':
-                return _context.stop();
-            }
-          }
-        }, _callee, this);
-      }));
-
-      return function factValue(_x2, _x3) {
-        return ref.apply(this, arguments);
-      };
-    }()
-
-    /**
      * Iterates over the engine rules, organizing them by highest -> lowest priority
      * @return {Rule[][]} two dimensional array of Rules.
      *    Each outer array element represents a single priority(integer).  Inner array is
@@ -229,6 +159,18 @@ var Engine = function (_EventEmitter) {
     }
 
     /**
+     * Returns a fact by fact-id
+     * @param  {string} factId - fact identifier
+     * @return {Fact} fact instance, or undefined if no such fact exists
+     */
+
+  }, {
+    key: 'getFact',
+    value: function getFact(factId) {
+      return this.facts.get(factId);
+    }
+
+    /**
      * Runs an array of rules
      * @param  {Rule[]} array of rules to be evaluated
      * @return {Promise} resolves when all rules in the array have been evaluated
@@ -237,19 +179,19 @@ var Engine = function (_EventEmitter) {
   }, {
     key: 'evaluateRules',
     value: function () {
-      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(ruleArray) {
+      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(ruleArray, almanac) {
         var _this3 = this;
 
-        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+        return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
-            switch (_context2.prev = _context2.next) {
+            switch (_context.prev = _context.next) {
               case 0:
-                return _context2.abrupt('return', Promise.all(ruleArray.map(function (rule) {
+                return _context.abrupt('return', Promise.all(ruleArray.map(function (rule) {
                   if (_this3.status !== RUNNING) {
                     debug('engine::run status:' + _this3.status + '; skipping remaining rules');
                     return;
                   }
-                  return rule.evaluate(_this3).then(function (rulePasses) {
+                  return rule.evaluate(almanac).then(function (rulePasses) {
                     debug('engine::run ruleResult:' + rulePasses);
                     if (rulePasses) {
                       _this3.emit('success', rule.event, _this3);
@@ -261,20 +203,20 @@ var Engine = function (_EventEmitter) {
 
               case 1:
               case 'end':
-                return _context2.stop();
+                return _context.stop();
             }
           }
-        }, _callee2, this);
+        }, _callee, this);
       }));
 
-      return function evaluateRules(_x5) {
+      return function evaluateRules(_x2, _x3) {
         return ref.apply(this, arguments);
       };
     }()
 
     /**
      * Runs the rules engine
-     * @param  {Object} initialFacts - fact values known at runtime
+     * @param  {Object} runtimeFacts - fact values known at runtime
      * @param  {Object} runOptions - run options
      * @return {Promise} resolves when the engine has completed running
      */
@@ -282,34 +224,27 @@ var Engine = function (_EventEmitter) {
   }, {
     key: 'run',
     value: function () {
-      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3() {
+      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2() {
         var _this4 = this;
 
-        var initialFacts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-        var runOptions = arguments.length <= 1 || arguments[1] === undefined ? { clearFactResultsCache: true } : arguments[1];
-        var key, orderedSets, cursor;
-        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+        var runtimeFacts = arguments.length <= 0 || arguments[0] === undefined ? new Map() : arguments[0];
+        var almanac, orderedSets, cursor;
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
-            switch (_context3.prev = _context3.next) {
+            switch (_context2.prev = _context2.next) {
               case 0:
-                debug('engine::run initialFacts:', initialFacts);
+                debug('engine::run runtimeFacts:', runtimeFacts);
                 this.status = RUNNING;
-                if (runOptions.clearFactResultsCache) {
-                  this.factResultsCache.clear();
-                }
-                for (key in initialFacts) {
-                  this.addFact(key, initialFacts[key]);
-                }
-
+                almanac = new _almanac2.default(this.facts, runtimeFacts);
                 orderedSets = this.prioritizeRules();
                 cursor = Promise.resolve();
                 // for each rule set, evaluate in parallel,
                 // before proceeding to the next priority set.
 
-                return _context3.abrupt('return', new Promise(function (resolve, reject) {
+                return _context2.abrupt('return', new Promise(function (resolve, reject) {
                   orderedSets.map(function (set) {
                     cursor = cursor.then(function () {
-                      return _this4.evaluateRules(set);
+                      return _this4.evaluateRules(set, almanac);
                     }).catch(reject);
                     return cursor;
                   });
@@ -319,15 +254,15 @@ var Engine = function (_EventEmitter) {
                   }).catch(reject);
                 }));
 
-              case 7:
+              case 6:
               case 'end':
-                return _context3.stop();
+                return _context2.stop();
             }
           }
-        }, _callee3, this);
+        }, _callee2, this);
       }));
 
-      return function run(_x6, _x7) {
+      return function run(_x4) {
         return ref.apply(this, arguments);
       };
     }()

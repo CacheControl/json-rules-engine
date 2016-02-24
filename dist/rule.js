@@ -123,65 +123,6 @@ var Rule = function () {
     }
 
     /**
-     * Evaluates the rule conditions
-     * @param  {Condition} condition - condition to evaluate
-     * @return {Promise(true|false)} - resolves with the result of the condition evaluation
-     */
-
-  }, {
-    key: 'evaluateCondition',
-    value: function () {
-      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(condition) {
-        var comparisonValue, subConditions, conditionResult;
-        return regeneratorRuntime.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                comparisonValue = undefined;
-
-                if (!condition.isBooleanOperator()) {
-                  _context.next = 8;
-                  break;
-                }
-
-                subConditions = condition[condition.operator];
-                _context.next = 5;
-                return this[condition.operator](subConditions);
-
-              case 5:
-                comparisonValue = _context.sent;
-                _context.next = 11;
-                break;
-
-              case 8:
-                _context.next = 10;
-                return this.engine.factValue(condition.fact, condition.params);
-
-              case 10:
-                comparisonValue = _context.sent;
-
-              case 11:
-                conditionResult = condition.evaluate(comparisonValue);
-
-                if (!condition.isBooleanOperator()) {
-                  debug('evaluateConditions:: <' + comparisonValue + ' ' + condition.operator + ' ' + condition.value + '?> (' + conditionResult + ')');
-                }
-                return _context.abrupt('return', conditionResult);
-
-              case 14:
-              case 'end':
-                return _context.stop();
-            }
-          }
-        }, _callee, this);
-      }));
-
-      return function evaluateCondition(_x2) {
-        return ref.apply(this, arguments);
-      };
-    }()
-
-    /**
      * Priorizes an array of conditions based on "priority"
      *   When no explicit priority is provided on the condition itself, the condition's priority is determine by its fact
      * @param  {Condition[]} conditions
@@ -201,10 +142,7 @@ var Rule = function () {
         var priority = condition.priority;
         if (!priority) {
           var fact = _this.engine.getFact(condition.fact);
-          if (!fact) {
-            throw new Error('Undefined fact: ' + condition.fact);
-          }
-          priority = fact.priority;
+          priority = fact && fact.priority || 1;
         }
         if (!sets[priority]) sets[priority] = [];
         sets[priority].push(condition);
@@ -218,213 +156,284 @@ var Rule = function () {
     }
 
     /**
-     * Evalutes an array of conditions, using an 'every' or 'some' array operation
-     * @param  {Condition[]} conditions
-     * @param  {string(every|some)} array method to call for determining result
-     * @return {Promise(boolean)} whether conditions evaluated truthy or falsey based on condition evaluation + method
-     */
-
-  }, {
-    key: 'evaluateConditions',
-    value: function () {
-      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(conditions, method) {
-        var _this2 = this;
-
-        var conditionResults;
-        return regeneratorRuntime.wrap(function _callee2$(_context2) {
-          while (1) {
-            switch (_context2.prev = _context2.next) {
-              case 0:
-                if (!Array.isArray(conditions)) conditions = [conditions];
-                _context2.next = 3;
-                return Promise.all(conditions.map(function (condition) {
-                  return _this2.evaluateCondition(condition);
-                }));
-
-              case 3:
-                conditionResults = _context2.sent;
-
-                debug('evaluateConditions::results', conditionResults);
-                return _context2.abrupt('return', method.call(conditionResults, function (result) {
-                  return result === true;
-                }));
-
-              case 6:
-              case 'end':
-                return _context2.stop();
-            }
-          }
-        }, _callee2, this);
-      }));
-
-      return function evaluateConditions(_x3, _x4) {
-        return ref.apply(this, arguments);
-      };
-    }()
-
-    /**
-     * Evaluates a set of conditions based on an 'all' or 'any' operator.
-     *   First, orders the top level conditions based on priority
-     *   Iterates over each priority set, evaluating each condition
-     *   If any condition results in the rule to be guaranteed truthy or falsey,
-     *   it will short-circuit and not bother evaluating any additional rules
-     * @param  {Condition[]} conditions - conditions to be evaluated
-     * @param  {string('all'|'any')} operator
-     * @return {Promise(boolean)} rule evaluation result
-     */
-
-  }, {
-    key: 'prioritizeAndRun',
-    value: function () {
-      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(conditions, operator) {
-        var _this3 = this;
-
-        var method, orderedSets, cursor;
-        return regeneratorRuntime.wrap(function _callee3$(_context3) {
-          while (1) {
-            switch (_context3.prev = _context3.next) {
-              case 0:
-                if (!(conditions.length === 0)) {
-                  _context3.next = 2;
-                  break;
-                }
-
-                return _context3.abrupt('return', true);
-
-              case 2:
-                method = Array.prototype.some;
-
-                if (operator === 'all') {
-                  method = Array.prototype.every;
-                }
-                orderedSets = this.prioritizeConditions(conditions);
-                cursor = Promise.resolve();
-
-                orderedSets.forEach(function (set) {
-                  var stop = false;
-                  cursor = cursor.then(function (setResult) {
-                    // after the first set succeeds, don't fire off the remaining promises
-                    if (operator === 'any' && setResult === true || stop) {
-                      debug('prioritizeAndRun::detected truthy result; skipping remaining conditions');
-                      stop = true;
-                      return true;
-                    }
-
-                    // after the first set fails, don't fire off the remaining promises
-                    if (operator === 'all' && setResult === false || stop) {
-                      debug('prioritizeAndRun::detected falsey result; skipping remaining conditions');
-                      stop = true;
-                      return false;
-                    }
-                    // all conditions passed; proceed with running next set in parallel
-                    return _this3.evaluateConditions(set, method);
-                  });
-                });
-                return _context3.abrupt('return', cursor);
-
-              case 8:
-              case 'end':
-                return _context3.stop();
-            }
-          }
-        }, _callee3, this);
-      }));
-
-      return function prioritizeAndRun(_x5, _x6) {
-        return ref.apply(this, arguments);
-      };
-    }()
-
-    /**
-     * Runs an 'any' boolean operator on an array of conditions
-     * @param  {Condition[]} conditions to be evaluated
-     * @return {Promise(boolean)} condition evaluation result
-     */
-
-  }, {
-    key: 'any',
-    value: function () {
-      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4(conditions) {
-        return regeneratorRuntime.wrap(function _callee4$(_context4) {
-          while (1) {
-            switch (_context4.prev = _context4.next) {
-              case 0:
-                return _context4.abrupt('return', this.prioritizeAndRun(conditions, 'any'));
-
-              case 1:
-              case 'end':
-                return _context4.stop();
-            }
-          }
-        }, _callee4, this);
-      }));
-
-      return function any(_x7) {
-        return ref.apply(this, arguments);
-      };
-    }()
-
-    /**
-     * Runs an 'all' boolean operator on an array of conditions
-     * @param  {Condition[]} conditions to be evaluated
-     * @return {Promise(boolean)} condition evaluation result
-     */
-
-  }, {
-    key: 'all',
-    value: function () {
-      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee5(conditions) {
-        return regeneratorRuntime.wrap(function _callee5$(_context5) {
-          while (1) {
-            switch (_context5.prev = _context5.next) {
-              case 0:
-                return _context5.abrupt('return', this.prioritizeAndRun(conditions, 'all'));
-
-              case 1:
-              case 'end':
-                return _context5.stop();
-            }
-          }
-        }, _callee5, this);
-      }));
-
-      return function all(_x8) {
-        return ref.apply(this, arguments);
-      };
-    }()
-
-    /**
      * Evaluates the rule, starting with the root boolean operator and recursing down
+     * All evaluation is done within the context of an almanac
      * @return {Promise(boolean)} rule evaluation result
      */
 
   }, {
     key: 'evaluate',
     value: function () {
-      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee6() {
+      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee6(almanac) {
+        var _this2 = this;
+
+        var evaluateCondition, evaluateConditions, prioritizeAndRun, any, all;
         return regeneratorRuntime.wrap(function _callee6$(_context6) {
           while (1) {
             switch (_context6.prev = _context6.next) {
               case 0:
+                /**
+                 * Evaluates the rule conditions
+                 * @param  {Condition} condition - condition to evaluate
+                 * @return {Promise(true|false)} - resolves with the result of the condition evaluation
+                 */
+
+                evaluateCondition = function () {
+                  var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(condition) {
+                    var comparisonValue, subConditions, conditionResult;
+                    return regeneratorRuntime.wrap(function _callee$(_context) {
+                      while (1) {
+                        switch (_context.prev = _context.next) {
+                          case 0:
+                            comparisonValue = undefined;
+
+                            if (!condition.isBooleanOperator()) {
+                              _context.next = 14;
+                              break;
+                            }
+
+                            subConditions = condition[condition.operator];
+
+                            if (!(condition.operator === 'all')) {
+                              _context.next = 9;
+                              break;
+                            }
+
+                            _context.next = 6;
+                            return all(subConditions);
+
+                          case 6:
+                            comparisonValue = _context.sent;
+                            _context.next = 12;
+                            break;
+
+                          case 9:
+                            _context.next = 11;
+                            return any(subConditions);
+
+                          case 11:
+                            comparisonValue = _context.sent;
+
+                          case 12:
+                            _context.next = 17;
+                            break;
+
+                          case 14:
+                            _context.next = 16;
+                            return almanac.factValue(condition.fact, condition.params);
+
+                          case 16:
+                            comparisonValue = _context.sent;
+
+                          case 17:
+                            conditionResult = condition.evaluate(comparisonValue);
+
+                            if (!condition.isBooleanOperator()) {
+                              debug('evaluateConditions:: <' + comparisonValue + ' ' + condition.operator + ' ' + condition.value + '?> (' + conditionResult + ')');
+                            }
+                            return _context.abrupt('return', conditionResult);
+
+                          case 20:
+                          case 'end':
+                            return _context.stop();
+                        }
+                      }
+                    }, _callee, _this2);
+                  })),
+                      _this = _this2;
+
+                  return function evaluateCondition(_x3) {
+                    return ref.apply(_this, arguments);
+                  };
+                }();
+
+                /**
+                 * Evalutes an array of conditions, using an 'every' or 'some' array operation
+                 * @param  {Condition[]} conditions
+                 * @param  {string(every|some)} array method to call for determining result
+                 * @return {Promise(boolean)} whether conditions evaluated truthy or falsey based on condition evaluation + method
+                 */
+
+                evaluateConditions = function () {
+                  var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(conditions, method) {
+                    var conditionResults;
+                    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+                      while (1) {
+                        switch (_context2.prev = _context2.next) {
+                          case 0:
+                            if (!Array.isArray(conditions)) conditions = [conditions];
+                            _context2.next = 3;
+                            return Promise.all(conditions.map(function (condition) {
+                              return evaluateCondition(condition);
+                            }));
+
+                          case 3:
+                            conditionResults = _context2.sent;
+
+                            debug('evaluateConditions::results', conditionResults);
+                            return _context2.abrupt('return', method.call(conditionResults, function (result) {
+                              return result === true;
+                            }));
+
+                          case 6:
+                          case 'end':
+                            return _context2.stop();
+                        }
+                      }
+                    }, _callee2, _this2);
+                  })),
+                      _this = _this2;
+
+                  return function evaluateConditions(_x4, _x5) {
+                    return ref.apply(_this, arguments);
+                  };
+                }();
+
+                /**
+                 * Evaluates a set of conditions based on an 'all' or 'any' operator.
+                 *   First, orders the top level conditions based on priority
+                 *   Iterates over each priority set, evaluating each condition
+                 *   If any condition results in the rule to be guaranteed truthy or falsey,
+                 *   it will short-circuit and not bother evaluating any additional rules
+                 * @param  {Condition[]} conditions - conditions to be evaluated
+                 * @param  {string('all'|'any')} operator
+                 * @return {Promise(boolean)} rule evaluation result
+                 */
+
+                prioritizeAndRun = function () {
+                  var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(conditions, operator) {
+                    var method, orderedSets, cursor;
+                    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+                      while (1) {
+                        switch (_context3.prev = _context3.next) {
+                          case 0:
+                            if (!(conditions.length === 0)) {
+                              _context3.next = 2;
+                              break;
+                            }
+
+                            return _context3.abrupt('return', true);
+
+                          case 2:
+                            method = Array.prototype.some;
+
+                            if (operator === 'all') {
+                              method = Array.prototype.every;
+                            }
+                            orderedSets = _this2.prioritizeConditions(conditions);
+                            cursor = Promise.resolve();
+
+                            orderedSets.forEach(function (set) {
+                              var stop = false;
+                              cursor = cursor.then(function (setResult) {
+                                // after the first set succeeds, don't fire off the remaining promises
+                                if (operator === 'any' && setResult === true || stop) {
+                                  debug('prioritizeAndRun::detected truthy result; skipping remaining conditions');
+                                  stop = true;
+                                  return true;
+                                }
+
+                                // after the first set fails, don't fire off the remaining promises
+                                if (operator === 'all' && setResult === false || stop) {
+                                  debug('prioritizeAndRun::detected falsey result; skipping remaining conditions');
+                                  stop = true;
+                                  return false;
+                                }
+                                // all conditions passed; proceed with running next set in parallel
+                                return evaluateConditions(set, method);
+                              });
+                            });
+                            return _context3.abrupt('return', cursor);
+
+                          case 8:
+                          case 'end':
+                            return _context3.stop();
+                        }
+                      }
+                    }, _callee3, _this2);
+                  })),
+                      _this = _this2;
+
+                  return function prioritizeAndRun(_x6, _x7) {
+                    return ref.apply(_this, arguments);
+                  };
+                }();
+
+                /**
+                 * Runs an 'any' boolean operator on an array of conditions
+                 * @param  {Condition[]} conditions to be evaluated
+                 * @return {Promise(boolean)} condition evaluation result
+                 */
+
+                any = function () {
+                  var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4(conditions) {
+                    return regeneratorRuntime.wrap(function _callee4$(_context4) {
+                      while (1) {
+                        switch (_context4.prev = _context4.next) {
+                          case 0:
+                            return _context4.abrupt('return', prioritizeAndRun(conditions, 'any'));
+
+                          case 1:
+                          case 'end':
+                            return _context4.stop();
+                        }
+                      }
+                    }, _callee4, _this2);
+                  })),
+                      _this = _this2;
+
+                  return function any(_x8) {
+                    return ref.apply(_this, arguments);
+                  };
+                }();
+
+                /**
+                 * Runs an 'all' boolean operator on an array of conditions
+                 * @param  {Condition[]} conditions to be evaluated
+                 * @return {Promise(boolean)} condition evaluation result
+                 */
+
+                all = function () {
+                  var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee5(conditions) {
+                    return regeneratorRuntime.wrap(function _callee5$(_context5) {
+                      while (1) {
+                        switch (_context5.prev = _context5.next) {
+                          case 0:
+                            return _context5.abrupt('return', prioritizeAndRun(conditions, 'all'));
+
+                          case 1:
+                          case 'end':
+                            return _context5.stop();
+                        }
+                      }
+                    }, _callee5, _this2);
+                  })),
+                      _this = _this2;
+
+                  return function all(_x9) {
+                    return ref.apply(_this, arguments);
+                  };
+                }();
+
                 if (!this.conditions.any) {
-                  _context6.next = 6;
+                  _context6.next = 11;
                   break;
                 }
 
-                _context6.next = 3;
-                return this.any(this.conditions.any);
-
-              case 3:
-                return _context6.abrupt('return', _context6.sent);
-
-              case 6:
                 _context6.next = 8;
-                return this.all(this.conditions.all);
+                return any(this.conditions.any);
 
               case 8:
                 return _context6.abrupt('return', _context6.sent);
 
-              case 9:
+              case 11:
+                _context6.next = 13;
+                return all(this.conditions.all);
+
+              case 13:
+                return _context6.abrupt('return', _context6.sent);
+
+              case 14:
               case 'end':
                 return _context6.stop();
             }
@@ -432,7 +441,7 @@ var Rule = function () {
         }, _callee6, this);
       }));
 
-      return function evaluate() {
+      return function evaluate(_x2) {
         return ref.apply(this, arguments);
       };
     }()

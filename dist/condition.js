@@ -105,6 +105,11 @@ var Condition = function () {
      */
 
   }, {
+    key: 'booleanOperator',
+    value: function booleanOperator() {
+      return Condition.booleanOperator(this);
+    }
+  }, {
     key: 'isBooleanOperator',
     value: function isBooleanOperator() {
       return Condition.booleanOperator(this) !== undefined;
