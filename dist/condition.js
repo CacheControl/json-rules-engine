@@ -80,6 +80,10 @@ var Condition = function () {
           return this.value.includes(comparisonValue);
         case 'notIn':
           return !this.value.includes(comparisonValue);
+        case 'contains':
+          return comparisonValue.includes(this.value);
+        case 'doesNotContain':
+          return !comparisonValue.includes(this.value);
         case 'lessThan':
           return comparisonValue < this.value;
         case 'lessThanInclusive':

@@ -46,6 +46,24 @@ describe('Condition', () => {
       expect(condition.evaluate(99)).to.equal(false)
     })
 
+    it('evaluates "contains"', () => {
+      setup({
+        operator: 'contains',
+        value: 10
+      })
+      expect(condition.evaluate([5, 10, 15])).to.equal(true)
+      expect(condition.evaluate([1, 2, 3])).to.equal(false)
+    })
+
+    it('evaluates "doesNotContain"', () => {
+      setup({
+        operator: 'doesNotContain',
+        value: 10
+      })
+      expect(condition.evaluate([5, 10, 15])).to.equal(false)
+      expect(condition.evaluate([1, 2, 3])).to.equal(true)
+    })
+
     it('evaluates "notIn"', () => {
       setup({
         operator: 'notIn',

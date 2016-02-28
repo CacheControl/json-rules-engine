@@ -1,6 +1,6 @@
 {
   "name": "json-rules-engine",
-  "version": "1.0.0-beta6",
+  "version": "1.0.0-beta8",
   "description": "Rules Engine expressed in simple json",
   "main": "dist/index.js",
   "scripts": {
@@ -59,7 +59,6 @@
     "standard": "^5.4.1"
   },
   "dependencies": {
-    "babel-polyfill": "~6.5.0",
     "debug": "^2.2.0",
     "object-hash": "^1.1.0",
     "params": "0.1.1"

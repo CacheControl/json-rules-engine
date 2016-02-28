@@ -74,6 +74,10 @@ The _operator_ compares the value returned by the "fact" to what is stored in th
 
   ```notIn```  - _fact_ must not be included in _value_, which is an array
 
+  ```contains```  - _fact_ is an array, which must include _value_
+
+  ```doesNotContain```  - _fact_ is an array, which must not include _value_
+
   ```lessThan``` - _fact_ must be less than _value_;
 
   ```lessThanInclusive```- _fact_ must be less than or equal to _value_
