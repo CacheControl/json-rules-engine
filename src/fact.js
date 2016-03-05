@@ -39,15 +39,15 @@ class Fact {
   /**
    * Return the fact value, based on provided parameters
    * @param  {object} params
-   * @param  {Engine} engine
+   * @param  {Almanac} almanac
    * @return {any} calculation method results
    */
-  calculate (params, engine) {
+  calculate (params, almanac) {
     // if constant fact w/set value, return immediately
     if (this.hasOwnProperty('value')) {
       return this.value
     }
-    return this.calculationMethod(params, engine)
+    return this.calculationMethod(params, almanac)
   }
 
   /**

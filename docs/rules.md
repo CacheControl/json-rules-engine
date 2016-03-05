@@ -35,7 +35,7 @@ Optionally, a ```params``` property may be provided as well.  ```params``` will 
 ```js
 rule.setEvent({
   type: 'string', //required
-  params: 'object' //optional
+  params: { object } //optional
 })
 ```
 

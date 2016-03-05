@@ -151,20 +151,21 @@ Facts are constant values or pure functions.  Using the current example, if the 
 /*
  * Define the 'state' fact
  */
-let stateFact = function(params, engine) {
+let stateFact = function(params, almanac) {
   // rule "params" value is passed to the fact
-  // other fact values accessible via engine.factValue()
-  return stateLookupByZip(params.country, engine.factValue('zip-code'))
+  // 'almanac' can be used to lookup other facts
+  // via almanac.factValue()
+  return stateLookupByZip(params.country, almanac.factValue('zip-code'))
 }
 engine.addFact('state', stateFact)
 
 /*
  * Define the 'age' fact
  */
-let ageFact = function(params, engine) {
+let ageFact = function(params, almanac) {
   // facts may return a promise when performing asynchronous operations
   // such as database calls, http requests, etc to gather data
-  return engine.factValue('userId').then((userId) => {
+  return almanac.factValue('userId').then((userId) => {
     return db.getUser(userId)
   }).then((user) => {
     return user.age

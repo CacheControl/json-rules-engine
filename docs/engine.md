@@ -72,3 +72,43 @@ the same priority may still emit events, even though the engine has been told to
 ```js
 engine.stop()
 ```
+
+### engine.on(String event, Function callback) -> Engine
+
+Listens for events emitted as rules are being evaluated.  "event" is determined by [rule.setEvent](./rules.md#seteventobject-event).
+
+```js
+rule.setEvent({
+  type: 'my-event',
+  params: {
+    id: 1
+  }
+})
+
+// whenever rule is evaluated and the conditions pass, 'my-event' will trigger
+engine.on('my-event', function(params) {
+  console.log(params) // id: 1
+})
+```
+
+There are two generic event emissions that trigger automatically:
+
+#### ```engine.on('success', cb)```
+
+Fires when *any* rule passes.  In this case the callback will receive the entire event object.
+
+```js
+engine.on('success', function(event) {
+  console.log(event) // { type: 'my-event', params: { id: 1 } }
+})
+```
+
+#### ```engine.on('failure', cb)```
+
+Companion to 'success', except fires when any rule fails.
+
+```js
+engine.on('failure', function(event) {
+  console.log(event) // { type: 'my-event', params: { id: 1 } }
+})
+```
