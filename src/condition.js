@@ -49,7 +49,25 @@ export default class Condition {
     return props
   }
 
+  validateComparisonValue (comparisonValue) {
+    switch (this.operator) {
+      case 'contains':
+      case 'doesNotContain':
+        return Array.isArray(comparisonValue)
+      case 'lessThan':
+      case 'lessThanInclusive':
+      case 'greaterThan':
+      case 'greaterThanInclusive':
+        return Number.parseFloat(comparisonValue).toString() !== 'NaN'
+      default:
+        return true
+    }
+  }
+
   evaluate (comparisonValue) {
+    if (!this.validateComparisonValue(comparisonValue)) {
+      return false
+    }
     switch (this.operator) {
       case 'equal':
         return comparisonValue === this.value

@@ -98,6 +98,37 @@ describe('Condition', () => {
       expect(condition.evaluate(50)).to.equal(true)
       expect(condition.evaluate(49)).to.equal(false)
     })
+
+    describe('invalid comparisonValues', () => {
+      it('returns false when using contains or doesNotContain with a non-array', () => {
+        setup({operator: 'contains'})
+        expect(condition.evaluate(null)).to.equal(false)
+        setup({operator: 'doesNotContain'})
+        expect(condition.evaluate(null)).to.equal(false)
+      })
+
+      it('returns false when using comparison operators with null', () => {
+        setup({operator: 'lessThan'})
+        expect(condition.evaluate(null)).to.equal(false)
+        setup({operator: 'lessThanInclusive'})
+        expect(condition.evaluate(null)).to.equal(false)
+        setup({operator: 'greaterThan'})
+        expect(condition.evaluate(null)).to.equal(false)
+        setup({operator: 'greaterThanInclusive'})
+        expect(condition.evaluate(null)).to.equal(false)
+      })
+
+      it('returns false when using comparison operators with non-numbers', () => {
+        setup({operator: 'lessThan'})
+        expect(condition.evaluate('non-number')).to.equal(false)
+        setup({operator: 'lessThan'})
+        expect(condition.evaluate(undefined)).to.equal(false)
+        setup({operator: 'lessThan'})
+        expect(condition.evaluate([])).to.equal(false)
+        setup({operator: 'lessThan'})
+        expect(condition.evaluate({})).to.equal(false)
+      })
+    })
   })
 
   describe('boolean operators', () => {
