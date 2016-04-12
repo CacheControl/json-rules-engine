@@ -42,12 +42,13 @@ export default class Almanac {
     let cacheKey = fact.getCacheKey(params)
     let cacheVal = cacheKey && this.factResultsCache.get(cacheKey)
     if (cacheVal) {
-      debug(`almanac::factValue cache hit for fact:${factId} cacheKey:${cacheKey}`)
+      cacheVal = Promise.resolve(cacheVal)
+      cacheVal.then(val => debug(`almanac::factValue cache hit for fact:${factId} cacheKey:${cacheKey} value:${val}`))
       return cacheVal
     }
     debug(`almanac::factValue cache miss for fact:${factId} using cacheKey:${cacheKey}; calculating`)
-    cacheVal = fact.calculate(params, this)
-    debug(`almanac::factValue fact:${factId} calculated as: ${cacheVal}`)
+    cacheVal = Promise.resolve(fact.calculate(params, this))
+    cacheVal.then(val => debug(`almanac::factValue fact:${factId} calculated as: ${val}`))
     if (cacheKey) {
       this.factResultsCache.set(cacheKey, cacheVal)
     }
