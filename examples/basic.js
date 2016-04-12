@@ -63,10 +63,10 @@ engine.addRule(educationRule)
  */
 var facts
 engine
-  .on('success', function (event, almanac) {
+  .on('success', function (event) {
     console.log(facts.username + ' DID '.green + 'meet conditions for the ' + event.type.underline + ' rule. params: ' + JSON.stringify(event.params))
   })
-  .on('failure', function (rule, almanac) {
+  .on('failure', function (rule) {
     console.log(facts.username + ' did ' + 'NOT'.red + ' meet conditions for the ' + rule.event.type.underline + ' rule.')
   })
 
@@ -90,3 +90,12 @@ engine
     return engine.run(facts) // second run, using jefferson's facts; facts & evaluation are independent of the first run
   })
   .catch(console.log)
+
+/*
+ * OUTPUT:
+ *
+ * washington DID meet conditions for the income rule
+ * washington did NOT meet conditions for the education rule
+ * jefferson did NOT meet conditions for the income rule
+ * jefferson DID meet conditions for the education rule
+ */
