@@ -19,7 +19,7 @@ export default class Almanac {
       let fact = new Fact(factId, runtimeFacts[factId])
       this.factResultsCache.set(fact.id, fact.value)
       this.runtimeFacts.set(fact.id, fact)
-      debug(`almanac::constructor initialized runtime fact '${fact.id}' with '${fact.value}'`)
+      debug(`almanac::constructor initialized runtime fact '${fact.id}' with ${fact.value}<${typeof fact.value}>`)
     }
   }
 
@@ -43,12 +43,12 @@ export default class Almanac {
     let cacheVal = cacheKey && this.factResultsCache.get(cacheKey)
     if (cacheVal) {
       cacheVal = Promise.resolve(cacheVal)
-      cacheVal.then(val => debug(`almanac::factValue cache hit for fact:${factId} cacheKey:${cacheKey} value:${val}`))
+      cacheVal.then(val => debug(`almanac::factValue cache hit for fact:${factId} cacheKey:${cacheKey} value: ${JSON.stringify(val)}<${typeof val}>`))
       return cacheVal
     }
     debug(`almanac::factValue cache miss for fact:${factId} using cacheKey:${cacheKey}; calculating`)
     cacheVal = Promise.resolve(fact.calculate(params, this))
-    cacheVal.then(val => debug(`almanac::factValue fact:${factId} calculated as: ${val}`))
+    cacheVal.then(val => debug(`almanac::factValue fact:${factId} calculated as: ${JSON.stringify(val)}<${typeof val}>`))
     if (cacheKey) {
       this.factResultsCache.set(cacheKey, cacheVal)
     }
