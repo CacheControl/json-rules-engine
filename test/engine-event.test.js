@@ -66,14 +66,14 @@ describe('Engine: event', () => {
       priority: 1
     })
     engine.addRule(drinkOrderRule)
-    engine.on('success', function (a, e) {
+    engine.on('success', function (event, almanac) {
       try {
-        switch (a.type) {
+        switch (event.type) {
           case 'setDrinkingFlag':
-            e.addFact('canOrderDrinks', a.params.canOrderDrinks)
+            engine.addFact('canOrderDrinks', event.params.canOrderDrinks)
             break
           case 'offerDrink':
-            expect(a.params).to.eql(drinkOrderParams)
+            expect(event.params).to.eql(drinkOrderParams)
             done()
             break
           default:

@@ -98,7 +98,7 @@ There are two generic event emissions that trigger automatically:
 Fires when *any* rule passes.  In this case the callback will receive the entire event object.
 
 ```js
-engine.on('success', function(event) {
+engine.on('success', function(event, almanac) {
   console.log(event) // { type: 'my-event', params: { id: 1 } }
 })
 ```
@@ -108,7 +108,7 @@ engine.on('success', function(event) {
 Companion to 'success', except fires when any rule fails.
 
 ```js
-engine.on('failure', function(event) {
+engine.on('failure', function(event, almanac) {
   console.log(event) // { type: 'my-event', params: { id: 1 } }
 })
 ```

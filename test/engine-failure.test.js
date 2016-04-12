@@ -25,7 +25,7 @@ describe('Engine: failure', () => {
     let failureSpy = sinon.spy()
     engine.on('failure', failureSpy)
     await engine.run()
-    expect(failureSpy).to.have.been.calledWith(engine.rules[0], engine)
+    expect(failureSpy).to.have.been.calledWith(engine.rules[0])
   })
 
   it('does not emit when a rule passes', async () => {

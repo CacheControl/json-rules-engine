@@ -123,10 +123,10 @@ class Engine extends EventEmitter {
       return rule.evaluate(almanac).then((rulePasses) => {
         debug(`engine::run ruleResult:${rulePasses}`)
         if (rulePasses) {
-          this.emit('success', rule.event, this)
+          this.emit('success', rule.event, almanac)
           this.emit(rule.event.type, rule.event.params, this)
         }
-        if (!rulePasses) this.emit('failure', rule, this)
+        if (!rulePasses) this.emit('failure', rule, almanac)
       })
     }))
   }
