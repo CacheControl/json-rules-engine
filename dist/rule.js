@@ -1,10 +1,10 @@
 'use strict';
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _params = require('params');
 
@@ -55,6 +55,7 @@ var Rule = function () {
    * Sets the priority of the rule
    * @param {integer} priority (>=1) - increasing the priority causes the rule to be run prior to other rules
    */
+
 
   _createClass(Rule, [{
     key: 'setPriority',
@@ -185,7 +186,7 @@ var Rule = function () {
                       while (1) {
                         switch (_context.prev = _context.next) {
                           case 0:
-                            comparisonValue = undefined;
+                            comparisonValue = void 0;
 
                             if (!condition.isBooleanOperator()) {
                               _context.next = 14;
@@ -239,11 +240,10 @@ var Rule = function () {
                         }
                       }
                     }, _callee, _this2);
-                  })),
-                      _this = _this2;
+                  }));
 
                   return function evaluateCondition(_x3) {
-                    return ref.apply(_this, arguments);
+                    return ref.apply(this, arguments);
                   };
                 }();
 
@@ -253,6 +253,7 @@ var Rule = function () {
                  * @param  {string(every|some)} array method to call for determining result
                  * @return {Promise(boolean)} whether conditions evaluated truthy or falsey based on condition evaluation + method
                  */
+
 
                 evaluateConditions = function () {
                   var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(conditions, method) {
@@ -281,11 +282,10 @@ var Rule = function () {
                         }
                       }
                     }, _callee2, _this2);
-                  })),
-                      _this = _this2;
+                  }));
 
                   return function evaluateConditions(_x4, _x5) {
-                    return ref.apply(_this, arguments);
+                    return ref.apply(this, arguments);
                   };
                 }();
 
@@ -299,6 +299,7 @@ var Rule = function () {
                  * @param  {string('all'|'any')} operator
                  * @return {Promise(boolean)} rule evaluation result
                  */
+
 
                 prioritizeAndRun = function () {
                   var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(conditions, operator) {
@@ -351,11 +352,10 @@ var Rule = function () {
                         }
                       }
                     }, _callee3, _this2);
-                  })),
-                      _this = _this2;
+                  }));
 
                   return function prioritizeAndRun(_x6, _x7) {
-                    return ref.apply(_this, arguments);
+                    return ref.apply(this, arguments);
                   };
                 }();
 
@@ -364,6 +364,7 @@ var Rule = function () {
                  * @param  {Condition[]} conditions to be evaluated
                  * @return {Promise(boolean)} condition evaluation result
                  */
+
 
                 any = function () {
                   var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4(conditions) {
@@ -379,11 +380,10 @@ var Rule = function () {
                         }
                       }
                     }, _callee4, _this2);
-                  })),
-                      _this = _this2;
+                  }));
 
                   return function any(_x8) {
-                    return ref.apply(_this, arguments);
+                    return ref.apply(this, arguments);
                   };
                 }();
 
@@ -392,6 +392,7 @@ var Rule = function () {
                  * @param  {Condition[]} conditions to be evaluated
                  * @return {Promise(boolean)} condition evaluation result
                  */
+
 
                 all = function () {
                   var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee5(conditions) {
@@ -407,11 +408,10 @@ var Rule = function () {
                         }
                       }
                     }, _callee5, _this2);
-                  })),
-                      _this = _this2;
+                  }));
 
                   return function all(_x9) {
-                    return ref.apply(_this, arguments);
+                    return ref.apply(this, arguments);
                   };
                 }();
 
@@ -441,9 +441,11 @@ var Rule = function () {
         }, _callee6, this);
       }));
 
-      return function evaluate(_x2) {
+      function evaluate(_x2) {
         return ref.apply(this, arguments);
-      };
+      }
+
+      return evaluate;
     }()
   }]);
 

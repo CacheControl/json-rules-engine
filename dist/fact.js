@@ -1,10 +1,10 @@
 'use strict';
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _objectHash = require('object-hash');
 
@@ -54,18 +54,19 @@ var Fact = function () {
   /**
    * Return the fact value, based on provided parameters
    * @param  {object} params
-   * @param  {Engine} engine
+   * @param  {Almanac} almanac
    * @return {any} calculation method results
    */
 
+
   _createClass(Fact, [{
     key: 'calculate',
-    value: function calculate(params, engine) {
+    value: function calculate(params, almanac) {
       // if constant fact w/set value, return immediately
       if (this.hasOwnProperty('value')) {
         return this.value;
       }
-      return this.calculationMethod(params, engine);
+      return this.calculationMethod(params, almanac);
     }
 
     /**
@@ -76,6 +77,7 @@ var Fact = function () {
 
   }, {
     key: 'defaultCacheKeys',
+
 
     /**
      * Default properties to use when caching a fact

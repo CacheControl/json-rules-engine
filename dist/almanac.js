@@ -1,10 +1,10 @@
 'use strict';
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _fact = require('./fact');
 
@@ -50,6 +50,7 @@ var Almanac = function () {
    * @return {Promise} a promise which will resolve with the fact computation.
    */
 
+
   _createClass(Almanac, [{
     key: 'factValue',
     value: function () {
@@ -88,13 +89,13 @@ var Almanac = function () {
                   break;
                 }
 
-                debug('almanac::factValue cache hit for \'' + factId + '\' cacheKey:' + cacheKey);
+                debug('almanac::factValue cache hit for fact:' + factId + ' cacheKey:' + cacheKey);
                 return _context.abrupt('return', cacheVal);
 
               case 11:
-                debug('almanac::factValue cache miss for \'' + factId + '\' using cacheKey:' + cacheKey + '; calculating');
+                debug('almanac::factValue cache miss for fact:' + factId + ' using cacheKey:' + cacheKey + '; calculating');
                 cacheVal = fact.calculate(params, this);
-                debug('almanac::factValue \'' + factId + '\' calculated as: ' + cacheVal);
+                debug('almanac::factValue fact:' + factId + ' calculated as: ' + cacheVal);
                 if (cacheKey) {
                   this.factResultsCache.set(cacheKey, cacheVal);
                 }
@@ -108,9 +109,11 @@ var Almanac = function () {
         }, _callee, this);
       }));
 
-      return function factValue(_x2, _x3) {
+      function factValue(_x2, _x3) {
         return ref.apply(this, arguments);
-      };
+      }
+
+      return factValue;
     }()
   }]);
 

@@ -1,11 +1,11 @@
 'use strict';
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.FINISHED = exports.RUNNING = exports.READY = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _params = require('params');
 
@@ -75,12 +75,13 @@ var Engine = function (_EventEmitter) {
    * @param {Object} properties.conditions - conditions to evaluate when processing this rule
    */
 
+
   _createClass(Engine, [{
     key: 'addRule',
     value: function addRule(properties) {
       (0, _params2.default)(properties).require(['conditions', 'event']);
 
-      var rule = undefined;
+      var rule = void 0;
       if (properties instanceof _rule2.default) {
         rule = properties;
       } else {
@@ -103,7 +104,7 @@ var Engine = function (_EventEmitter) {
     key: 'addFact',
     value: function addFact(id, valueOrMethod, options) {
       var factId = id;
-      var fact = undefined;
+      var fact = void 0;
       if (id instanceof _fact2.default) {
         factId = id.id;
         fact = id;
@@ -194,10 +195,10 @@ var Engine = function (_EventEmitter) {
                   return rule.evaluate(almanac).then(function (rulePasses) {
                     debug('engine::run ruleResult:' + rulePasses);
                     if (rulePasses) {
-                      _this3.emit('success', rule.event, _this3);
+                      _this3.emit('success', rule.event, almanac);
                       _this3.emit(rule.event.type, rule.event.params, _this3);
                     }
-                    if (!rulePasses) _this3.emit('failure', rule, _this3);
+                    if (!rulePasses) _this3.emit('failure', rule, almanac);
                   });
                 })));
 
@@ -209,9 +210,11 @@ var Engine = function (_EventEmitter) {
         }, _callee, this);
       }));
 
-      return function evaluateRules(_x2, _x3) {
+      function evaluateRules(_x2, _x3) {
         return ref.apply(this, arguments);
-      };
+      }
+
+      return evaluateRules;
     }()
 
     /**
@@ -262,9 +265,11 @@ var Engine = function (_EventEmitter) {
         }, _callee2, this);
       }));
 
-      return function run(_x4) {
+      function run(_x4) {
         return ref.apply(this, arguments);
-      };
+      }
+
+      return run;
     }()
   }]);
 
