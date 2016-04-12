@@ -47,6 +47,7 @@ class Engine extends EventEmitter {
 
     this.rules.push(rule)
     this.prioritizedRules = null
+    return this
   }
 
   /**
@@ -66,6 +67,7 @@ class Engine extends EventEmitter {
     }
     debug(`engine::addFact id:${factId}`)
     this.facts.set(factId, fact)
+    return this
   }
 
   /**
