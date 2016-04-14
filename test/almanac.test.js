@@ -13,8 +13,8 @@ describe('Almanac', () => {
     })
 
     it('adds runtime facts', () => {
-      almanac = new Almanac({}, { modelId: 'XYZ' })
-      expect(almanac.runtimeFacts.get('modelId').value).to.equal('XYZ')
+      almanac = new Almanac(new Map(), { modelId: 'XYZ' })
+      expect(almanac.factMap.get('modelId').value).to.equal('XYZ')
     })
   })
 
@@ -43,7 +43,53 @@ describe('Almanac', () => {
       })
     })
 
-    describe('fact caching', () => {
+    describe('_getFact', _ => {
+      it('retrieves the fact object', () => {
+        let facts = new Map()
+        let fact = new Fact('id', 1)
+        facts.set(fact.id, fact)
+        almanac = new Almanac(facts)
+        expect(almanac._getFact('id')).to.equal(fact)
+      })
+
+      it('raises an exception if fact DNE', () => {
+        almanac = new Almanac(new Map())
+        expect(almanac._getFact.bind(almanac, 'unknown')).to.throw(/Undefined fact/)
+      })
+    })
+
+    describe('_setFactValue()', () => {
+      function expectFactResultsCache (expected) {
+        let promise = almanac.factResultsCache.values().next().value
+        expect(promise).to.be.instanceof(Promise)
+        promise.then(value => expect(value).to.equal(expected))
+        return promise
+      }
+
+      function setup (f = new Fact('id', 1)) {
+        fact = f
+        let facts = new Map()
+        facts.set(fact.id, fact)
+        almanac = new Almanac(facts)
+      }
+      let fact
+      const FACT_VALUE = 2
+
+      it('updates the fact results and returns a promise', (done) => {
+        setup()
+        almanac._setFactValue(fact, {}, FACT_VALUE)
+        expectFactResultsCache(FACT_VALUE).then(_ => done()).catch(done)
+      })
+
+      it('honors facts with caching disabled', (done) => {
+        setup(new Fact('id', 1, { cache: false }))
+        let promise = almanac._setFactValue(fact, {}, FACT_VALUE)
+        expect(almanac.factResultsCache.values().next().value).to.be.undefined
+        promise.then(value => expect(value).to.equal(FACT_VALUE)).then(_ => done()).catch(done)
+      })
+    })
+
+    describe('factValue()', () => {
       function setup (factOptions) {
         factSpy.reset()
         let fact = new Fact('foo', async (params, facts) => {

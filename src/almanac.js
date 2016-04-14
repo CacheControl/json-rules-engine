@@ -12,15 +12,43 @@ import Fact from './fact'
 export default class Almanac {
   constructor (factMap, runtimeFacts = new Map()) {
     this.factMap = factMap
-    this.runtimeFacts = new Map()
     this.factResultsCache = new Map()
 
     for (let factId in runtimeFacts) {
       let fact = new Fact(factId, runtimeFacts[factId])
-      this.factResultsCache.set(fact.id, fact.value)
-      this.runtimeFacts.set(fact.id, fact)
-      debug(`almanac::constructor initialized runtime fact '${fact.id}' with ${fact.value}<${typeof fact.value}>`)
+      this.factMap.set(fact.id, fact)
+      this._setFactValue(fact, {}, fact.value)
+      debug(`almanac::constructor initialized runtime fact:${fact.id} with ${fact.value}<${typeof fact.value}>`)
     }
+  }
+
+  /**
+   * Retrieve fact by id, raising an exception if it DNE
+   * @param  {String} factId
+   * @return {Fact}
+   */
+  _getFact (factId) {
+    let fact = this.factMap.get(factId)
+    if (fact === undefined) {
+      throw new Error(`Undefined fact: ${factId}`)
+    }
+    return fact
+  }
+
+  /**
+   * Sets the computed value of a fact
+   * @param {Fact} fact
+   * @param {Object} params - values for differentiating this fact value from others, used for cache key
+   * @param {Mixed} value - computed value
+   */
+  _setFactValue (fact, params, value) {
+    let cacheKey = fact.getCacheKey(params)
+    let factValue = Promise.resolve(value)
+    factValue.then(val => debug(`almanac::factValue fact:${fact.id} calculated as: ${JSON.stringify(val)}<${typeof val}>`))
+    if (cacheKey) {
+      this.factResultsCache.set(cacheKey, factValue)
+    }
+    return factValue
   }
 
   /**
@@ -31,27 +59,14 @@ export default class Almanac {
    * @return {Promise} a promise which will resolve with the fact computation.
    */
   async factValue (factId, params = {}) {
-    let fact = this.runtimeFacts.get(factId)
-    if (fact !== undefined) {
-      return fact.value
-    }
-    fact = this.factMap.get(factId)
-    if (fact === undefined) {
-      throw new Error(`Undefined fact: ${factId}`)
-    }
+    let fact = this._getFact(factId)
     let cacheKey = fact.getCacheKey(params)
     let cacheVal = cacheKey && this.factResultsCache.get(cacheKey)
     if (cacheVal) {
-      cacheVal = Promise.resolve(cacheVal)
       cacheVal.then(val => debug(`almanac::factValue cache hit for fact:${factId} cacheKey:${cacheKey} value: ${JSON.stringify(val)}<${typeof val}>`))
       return cacheVal
     }
     debug(`almanac::factValue cache miss for fact:${factId} using cacheKey:${cacheKey}; calculating`)
-    cacheVal = Promise.resolve(fact.calculate(params, this))
-    cacheVal.then(val => debug(`almanac::factValue fact:${factId} calculated as: ${JSON.stringify(val)}<${typeof val}>`))
-    if (cacheKey) {
-      this.factResultsCache.set(cacheKey, cacheVal)
-    }
-    return cacheVal
+    return this._setFactValue(fact, params, fact.calculate(params, this))
   }
 }
