@@ -20,7 +20,7 @@ class Engine extends EventEmitter {
   constructor (rules = []) {
     super()
     this.rules = []
-    rules.forEach((r) => this.addRule(r))
+    rules.map(r => this.addRule(r))
     this.facts = new Map()
     this.status = READY
   }

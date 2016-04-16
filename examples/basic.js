@@ -5,7 +5,7 @@
  * two different sets of data.
  *
  * In this example, Facts are passed to run() as constants known at runtime.  For a more
- * complex example demonstrating computed facts, see the computed-facts example.
+ * complex example demonstrating computed facts, see the fact-dependency example.
  *
  * Usage:
  *   node ./examples/basic.js
