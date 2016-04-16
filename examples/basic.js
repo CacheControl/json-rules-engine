@@ -9,6 +9,9 @@
  *
  * Usage:
  *   node ./examples/basic.js
+ *
+ * For detailed output:
+ *   DEBUG=json-rules-engine node ./examples/fact-dependency.js
  */
 
 require('babel-polyfill')
