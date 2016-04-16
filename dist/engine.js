@@ -238,6 +238,7 @@ var Engine = function (_EventEmitter) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
+                debug('engine::run started');
                 debug('engine::run runtimeFacts:', runtimeFacts);
                 this.status = RUNNING;
                 almanac = new _almanac2.default(this.facts, runtimeFacts);
@@ -255,11 +256,12 @@ var Engine = function (_EventEmitter) {
                   });
                   cursor.then(function () {
                     _this4.status = FINISHED;
+                    debug('engine::run completed');
                     resolve();
                   }).catch(reject);
                 }));
 
-              case 6:
+              case 7:
               case 'end':
                 return _context2.stop();
             }

@@ -140,6 +140,7 @@ class Engine extends EventEmitter {
    * @return {Promise} resolves when the engine has completed running
    */
   async run (runtimeFacts = new Map()) {
+    debug(`engine::run started`)
     debug(`engine::run runtimeFacts:`, runtimeFacts)
     this.status = RUNNING
     let almanac = new Almanac(this.facts, runtimeFacts)
@@ -156,6 +157,7 @@ class Engine extends EventEmitter {
       })
       cursor.then(() => {
         this.status = FINISHED
+        debug(`engine::run completed`)
         resolve()
       }).catch(reject)
     })

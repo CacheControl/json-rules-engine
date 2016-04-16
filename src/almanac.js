@@ -1,6 +1,7 @@
 'use strict'
 
 let debug = require('debug')('json-rules-engine')
+let verbose = require('debug')('json-rules-engine-verbose')
 
 import Fact from './fact'
 
@@ -63,10 +64,10 @@ export default class Almanac {
     let cacheKey = fact.getCacheKey(params)
     let cacheVal = cacheKey && this.factResultsCache.get(cacheKey)
     if (cacheVal) {
-      cacheVal.then(val => debug(`almanac::factValue cache hit for fact:${factId} cacheKey:${cacheKey} value: ${JSON.stringify(val)}<${typeof val}>`))
+      cacheVal.then(val => debug(`almanac::factValue cache hit for fact:${factId} value: ${JSON.stringify(val)}<${typeof val}>`))
       return cacheVal
     }
-    debug(`almanac::factValue cache miss for fact:${factId} using cacheKey:${cacheKey}; calculating`)
+    verbose(`almanac::factValue cache miss for fact:${factId}; calculating`)
     return this._setFactValue(fact, params, fact.calculate(params, this))
   }
 }

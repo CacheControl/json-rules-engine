@@ -19,6 +19,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var debug = require('debug')('json-rules-engine');
+var verbose = require('debug')('json-rules-engine-verbose');
 
 /**
  * Fact results lookup
@@ -109,12 +110,12 @@ var Almanac = function () {
                 }
 
                 cacheVal.then(function (val) {
-                  return debug('almanac::factValue cache hit for fact:' + factId + ' cacheKey:' + cacheKey + ' value: ' + JSON.stringify(val) + '<' + (typeof val === 'undefined' ? 'undefined' : _typeof(val)) + '>');
+                  return debug('almanac::factValue cache hit for fact:' + factId + ' value: ' + JSON.stringify(val) + '<' + (typeof val === 'undefined' ? 'undefined' : _typeof(val)) + '>');
                 });
                 return _context.abrupt('return', cacheVal);
 
               case 6:
-                debug('almanac::factValue cache miss for fact:' + factId + ' using cacheKey:' + cacheKey + '; calculating');
+                verbose('almanac::factValue cache miss for fact:' + factId + '; calculating');
                 return _context.abrupt('return', this._setFactValue(fact, params, fact.calculate(params, this)));
 
               case 8:
