@@ -4,9 +4,9 @@ require('colors')
 
 var accountData = {
   washington: {
-     company: 'microsoft',
-     status: 'terminated',
-     createdAt: '2012-02-14'
+    company: 'microsoft',
+    status: 'terminated',
+    createdAt: '2012-02-14'
   },
   jefferson: {
     company: 'apple',
@@ -24,7 +24,7 @@ module.exports = {
     console.log(message.dim)
     return new Promise(function (resolve, reject) {
       setImmediate(function () {
-        resolve({ status: 'success', data: accountData[accountId]})
+        resolve({ status: 'success', data: accountData[accountId] })
       })
     })
   }

@@ -89,7 +89,6 @@ engine.addFact('account-information', function (params, almanac) {
     })
 })
 
-
 /**
  * 'account-tenure' fact retrieves account-information, and computes the number of years
  * since the account was created using 'accountInformation.createdAt'
@@ -122,7 +121,6 @@ engine.addFact('account-information-field', function (params, almanac) {
     })
     .catch(console.log)
 })
-
 
 // define fact(s) known at runtime
 facts = { accountId: 'washington' }
