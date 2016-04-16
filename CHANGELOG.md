@@ -1,3 +1,9 @@
+1.0.0-beta10 / 2016-04-16
+==================
+
+  * Completed the 'fact-dependecy' advanced example
+  * Updated addFact and addRule engine methods to return 'this' for easy chaining
+
 1.0.0-beta9 / 2016-04-11
 ==================
 

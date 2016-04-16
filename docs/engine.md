@@ -99,7 +99,6 @@ Fires when *any* rule passes.  In this case the callback will receive the entire
 
 ```js
 engine.on('success', function(event, almanac) {
-  console.log(event) // { type: 'my-event', params: { id: 1 } }
 })
 ```
 
@@ -108,7 +107,6 @@ engine.on('success', function(event, almanac) {
 Companion to 'success', except fires when any rule fails.
 
 ```js
-engine.on('failure', function(event, almanac) {
-  console.log(event) // { type: 'my-event', params: { id: 1 } }
+engine.on('failure', function(rule, almanac) {
 })
 ```

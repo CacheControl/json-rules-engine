@@ -57,7 +57,7 @@ var Engine = function (_EventEmitter) {
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Engine).call(this));
 
     _this.rules = [];
-    rules.forEach(function (r) {
+    rules.map(function (r) {
       return _this.addRule(r);
     });
     _this.facts = new Map();
@@ -91,6 +91,7 @@ var Engine = function (_EventEmitter) {
 
       this.rules.push(rule);
       this.prioritizedRules = null;
+      return this;
     }
 
     /**
@@ -113,6 +114,7 @@ var Engine = function (_EventEmitter) {
       }
       debug('engine::addFact id:' + factId);
       this.facts.set(factId, fact);
+      return this;
     }
 
     /**

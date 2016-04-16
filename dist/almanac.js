@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _fact = require('./fact');
@@ -31,27 +33,63 @@ var Almanac = function () {
     _classCallCheck(this, Almanac);
 
     this.factMap = factMap;
-    this.runtimeFacts = new Map();
     this.factResultsCache = new Map();
 
     for (var factId in runtimeFacts) {
       var fact = new _fact2.default(factId, runtimeFacts[factId]);
-      this.factResultsCache.set(fact.id, fact.value);
-      this.runtimeFacts.set(fact.id, fact);
-      debug('almanac::constructor initialized runtime fact \'' + fact.id + '\' with \'' + fact.value + '\'');
+      this.factMap.set(fact.id, fact);
+      this._setFactValue(fact, {}, fact.value);
+      debug('almanac::constructor initialized runtime fact:' + fact.id + ' with ' + fact.value + '<' + _typeof(fact.value) + '>');
     }
   }
 
   /**
-   * Returns the value of a fact, based on the given parameters.  Utilizes the 'almanac' maintained
-   * by the engine, which cache's fact computations based on parameters provided
-   * @param  {string} factId - fact identifier
-   * @param  {Object} params - parameters to feed into the fact.  By default, these will also be used to compute the cache key
-   * @return {Promise} a promise which will resolve with the fact computation.
+   * Retrieve fact by id, raising an exception if it DNE
+   * @param  {String} factId
+   * @return {Fact}
    */
 
 
   _createClass(Almanac, [{
+    key: '_getFact',
+    value: function _getFact(factId) {
+      var fact = this.factMap.get(factId);
+      if (fact === undefined) {
+        throw new Error('Undefined fact: ' + factId);
+      }
+      return fact;
+    }
+
+    /**
+     * Sets the computed value of a fact
+     * @param {Fact} fact
+     * @param {Object} params - values for differentiating this fact value from others, used for cache key
+     * @param {Mixed} value - computed value
+     */
+
+  }, {
+    key: '_setFactValue',
+    value: function _setFactValue(fact, params, value) {
+      var cacheKey = fact.getCacheKey(params);
+      var factValue = Promise.resolve(value);
+      factValue.then(function (val) {
+        return debug('almanac::factValue fact:' + fact.id + ' calculated as: ' + JSON.stringify(val) + '<' + (typeof val === 'undefined' ? 'undefined' : _typeof(val)) + '>');
+      });
+      if (cacheKey) {
+        this.factResultsCache.set(cacheKey, factValue);
+      }
+      return factValue;
+    }
+
+    /**
+     * Returns the value of a fact, based on the given parameters.  Utilizes the 'almanac' maintained
+     * by the engine, which cache's fact computations based on parameters provided
+     * @param  {string} factId - fact identifier
+     * @param  {Object} params - parameters to feed into the fact.  By default, these will also be used to compute the cache key
+     * @return {Promise} a promise which will resolve with the fact computation.
+     */
+
+  }, {
     key: 'factValue',
     value: function () {
       var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(factId) {
@@ -61,47 +99,25 @@ var Almanac = function () {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                fact = this.runtimeFacts.get(factId);
-
-                if (!(fact !== undefined)) {
-                  _context.next = 3;
-                  break;
-                }
-
-                return _context.abrupt('return', fact.value);
-
-              case 3:
-                fact = this.factMap.get(factId);
-
-                if (!(fact === undefined)) {
-                  _context.next = 6;
-                  break;
-                }
-
-                throw new Error('Undefined fact: ' + factId);
-
-              case 6:
+                fact = this._getFact(factId);
                 cacheKey = fact.getCacheKey(params);
                 cacheVal = cacheKey && this.factResultsCache.get(cacheKey);
 
                 if (!cacheVal) {
-                  _context.next = 11;
+                  _context.next = 6;
                   break;
                 }
 
-                debug('almanac::factValue cache hit for fact:' + factId + ' cacheKey:' + cacheKey);
+                cacheVal.then(function (val) {
+                  return debug('almanac::factValue cache hit for fact:' + factId + ' cacheKey:' + cacheKey + ' value: ' + JSON.stringify(val) + '<' + (typeof val === 'undefined' ? 'undefined' : _typeof(val)) + '>');
+                });
                 return _context.abrupt('return', cacheVal);
 
-              case 11:
+              case 6:
                 debug('almanac::factValue cache miss for fact:' + factId + ' using cacheKey:' + cacheKey + '; calculating');
-                cacheVal = fact.calculate(params, this);
-                debug('almanac::factValue fact:' + factId + ' calculated as: ' + cacheVal);
-                if (cacheKey) {
-                  this.factResultsCache.set(cacheKey, cacheVal);
-                }
-                return _context.abrupt('return', cacheVal);
+                return _context.abrupt('return', this._setFactValue(fact, params, fact.calculate(params, this)));
 
-              case 16:
+              case 8:
               case 'end':
                 return _context.stop();
             }
