@@ -221,8 +221,8 @@ engine.run()
 engine.run({ userId: 1 })  // any time a rule condition requires 'userId', '1' will be returned
 
 // run() returns a promise
-engine.run().then(() => {
-  console.log('all rules executed')
+engine.run().then((events) => {
+  console.log('all rules executed; the following events were triggered: ', events)
 })
 ```
 

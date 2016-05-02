@@ -11,12 +11,18 @@ import Fact from './fact'
  * A new almanac is used for every engine run()
  */
 export default class Almanac {
-  constructor (factMap, runtimeFacts = new Map()) {
+  constructor (factMap, runtimeFacts = {}) {
     this.factMap = factMap
     this.factResultsCache = new Map()
 
     for (let factId in runtimeFacts) {
-      let fact = new Fact(factId, runtimeFacts[factId])
+      let fact
+      if (runtimeFacts[factId] instanceof Fact) {
+        fact = runtimeFacts[factId]
+      } else {
+        fact = new Fact(factId, runtimeFacts[factId])
+      }
+
       this.factMap.set(fact.id, fact)
       this._setFactValue(fact, {}, fact.value)
       debug(`almanac::constructor initialized runtime fact:${fact.id} with ${fact.value}<${typeof fact.value}>`)

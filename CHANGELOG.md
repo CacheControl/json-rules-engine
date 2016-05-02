@@ -1,3 +1,8 @@
+1.0.0-beta11 / 2016-05-01
+==================
+
+  * engine.run() now returns triggered events
+
 1.0.0-beta10 / 2016-04-16
 ==================
 
