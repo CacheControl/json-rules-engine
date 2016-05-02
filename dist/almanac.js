@@ -29,7 +29,7 @@ var verbose = require('debug')('json-rules-engine-verbose');
 
 var Almanac = function () {
   function Almanac(factMap) {
-    var runtimeFacts = arguments.length <= 1 || arguments[1] === undefined ? new Map() : arguments[1];
+    var runtimeFacts = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
     _classCallCheck(this, Almanac);
 
@@ -37,7 +37,13 @@ var Almanac = function () {
     this.factResultsCache = new Map();
 
     for (var factId in runtimeFacts) {
-      var fact = new _fact2.default(factId, runtimeFacts[factId]);
+      var fact = void 0;
+      if (runtimeFacts[factId] instanceof _fact2.default) {
+        fact = runtimeFacts[factId];
+      } else {
+        fact = new _fact2.default(factId, runtimeFacts[factId]);
+      }
+
       this.factMap.set(fact.id, fact);
       this._setFactValue(fact, {}, fact.value);
       debug('almanac::constructor initialized runtime fact:' + fact.id + ' with ' + fact.value + '<' + _typeof(fact.value) + '>');
