@@ -25,6 +25,8 @@ var _almanac2 = _interopRequireDefault(_almanac);
 
 var _events = require('events');
 
+var _engineFacts = require('./engine-facts');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
@@ -199,6 +201,7 @@ var Engine = function (_EventEmitter) {
                     if (rulePasses) {
                       _this3.emit('success', rule.event, almanac);
                       _this3.emit(rule.event.type, rule.event.params, _this3);
+                      almanac.factValue('success-events', { event: rule.event });
                     }
                     if (!rulePasses) _this3.emit('failure', rule, almanac);
                   });
@@ -232,13 +235,15 @@ var Engine = function (_EventEmitter) {
       var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2() {
         var _this4 = this;
 
-        var runtimeFacts = arguments.length <= 0 || arguments[0] === undefined ? new Map() : arguments[0];
+        var runtimeFacts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
         var almanac, orderedSets, cursor;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
+                debug('engine::run started');
                 debug('engine::run runtimeFacts:', runtimeFacts);
+                runtimeFacts['success-events'] = new _fact2.default('success-events', (0, _engineFacts.SuccessEventFact)(), { cache: false });
                 this.status = RUNNING;
                 almanac = new _almanac2.default(this.facts, runtimeFacts);
                 orderedSets = this.prioritizeRules();
@@ -255,11 +260,12 @@ var Engine = function (_EventEmitter) {
                   });
                   cursor.then(function () {
                     _this4.status = FINISHED;
-                    resolve();
+                    debug('engine::run completed');
+                    resolve(almanac.factValue('success-events'));
                   }).catch(reject);
                 }));
 
-              case 6:
+              case 8:
               case 'end':
                 return _context2.stop();
             }

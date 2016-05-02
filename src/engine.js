@@ -5,6 +5,7 @@ import Fact from './fact'
 import Rule from './rule'
 import Almanac from './almanac'
 import { EventEmitter } from 'events'
+import { SuccessEventFact } from './engine-facts'
 
 let debug = require('debug')('json-rules-engine')
 
@@ -127,6 +128,7 @@ class Engine extends EventEmitter {
         if (rulePasses) {
           this.emit('success', rule.event, almanac)
           this.emit(rule.event.type, rule.event.params, this)
+          almanac.factValue('success-events', { event: rule.event })
         }
         if (!rulePasses) this.emit('failure', rule, almanac)
       })
@@ -139,8 +141,10 @@ class Engine extends EventEmitter {
    * @param  {Object} runOptions - run options
    * @return {Promise} resolves when the engine has completed running
    */
-  async run (runtimeFacts = new Map()) {
+  async run (runtimeFacts = {}) {
+    debug(`engine::run started`)
     debug(`engine::run runtimeFacts:`, runtimeFacts)
+    runtimeFacts['success-events'] = new Fact('success-events', SuccessEventFact(), { cache: false })
     this.status = RUNNING
     let almanac = new Almanac(this.facts, runtimeFacts)
     let orderedSets = this.prioritizeRules()
@@ -156,7 +160,8 @@ class Engine extends EventEmitter {
       })
       cursor.then(() => {
         this.status = FINISHED
-        resolve()
+        debug(`engine::run completed`)
+        resolve(almanac.factValue('success-events'))
       }).catch(reject)
     })
   }

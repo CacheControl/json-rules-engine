@@ -1,6 +1,7 @@
 'use strict'
 
 let debug = require('debug')('json-rules-engine')
+let verbose = require('debug')('json-rules-engine-verbose')
 
 import Fact from './fact'
 
@@ -10,12 +11,18 @@ import Fact from './fact'
  * A new almanac is used for every engine run()
  */
 export default class Almanac {
-  constructor (factMap, runtimeFacts = new Map()) {
+  constructor (factMap, runtimeFacts = {}) {
     this.factMap = factMap
     this.factResultsCache = new Map()
 
     for (let factId in runtimeFacts) {
-      let fact = new Fact(factId, runtimeFacts[factId])
+      let fact
+      if (runtimeFacts[factId] instanceof Fact) {
+        fact = runtimeFacts[factId]
+      } else {
+        fact = new Fact(factId, runtimeFacts[factId])
+      }
+
       this.factMap.set(fact.id, fact)
       this._setFactValue(fact, {}, fact.value)
       debug(`almanac::constructor initialized runtime fact:${fact.id} with ${fact.value}<${typeof fact.value}>`)
@@ -63,10 +70,10 @@ export default class Almanac {
     let cacheKey = fact.getCacheKey(params)
     let cacheVal = cacheKey && this.factResultsCache.get(cacheKey)
     if (cacheVal) {
-      cacheVal.then(val => debug(`almanac::factValue cache hit for fact:${factId} cacheKey:${cacheKey} value: ${JSON.stringify(val)}<${typeof val}>`))
+      cacheVal.then(val => debug(`almanac::factValue cache hit for fact:${factId} value: ${JSON.stringify(val)}<${typeof val}>`))
       return cacheVal
     }
-    debug(`almanac::factValue cache miss for fact:${factId} using cacheKey:${cacheKey}; calculating`)
+    verbose(`almanac::factValue cache miss for fact:${factId}; calculating`)
     return this._setFactValue(fact, params, fact.calculate(params, this))
   }
 }

@@ -18,6 +18,19 @@ describe('Almanac', () => {
     })
   })
 
+  describe('constructor', () => {
+    it('supports runtime facts as key => values', () => {
+      almanac = new Almanac(new Map(), { fact1: 3 })
+      return expect(almanac.factValue('fact1')).to.eventually.equal(3)
+    })
+
+    it('supports runtime fact instances', () => {
+      let fact = new Fact('fact1', 3)
+      almanac = new Almanac(new Map(), { fact1: fact })
+      return expect(almanac.factValue('fact1')).to.eventually.equal(fact.value)
+    })
+  })
+
   describe('factValue', () => {
     describe('arguments', () => {
       beforeEach(() => {

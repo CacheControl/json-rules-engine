@@ -19,6 +19,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var debug = require('debug')('json-rules-engine');
+var verbose = require('debug')('json-rules-engine-verbose');
 
 /**
  * Fact results lookup
@@ -28,7 +29,7 @@ var debug = require('debug')('json-rules-engine');
 
 var Almanac = function () {
   function Almanac(factMap) {
-    var runtimeFacts = arguments.length <= 1 || arguments[1] === undefined ? new Map() : arguments[1];
+    var runtimeFacts = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
     _classCallCheck(this, Almanac);
 
@@ -36,7 +37,13 @@ var Almanac = function () {
     this.factResultsCache = new Map();
 
     for (var factId in runtimeFacts) {
-      var fact = new _fact2.default(factId, runtimeFacts[factId]);
+      var fact = void 0;
+      if (runtimeFacts[factId] instanceof _fact2.default) {
+        fact = runtimeFacts[factId];
+      } else {
+        fact = new _fact2.default(factId, runtimeFacts[factId]);
+      }
+
       this.factMap.set(fact.id, fact);
       this._setFactValue(fact, {}, fact.value);
       debug('almanac::constructor initialized runtime fact:' + fact.id + ' with ' + fact.value + '<' + _typeof(fact.value) + '>');
@@ -109,12 +116,12 @@ var Almanac = function () {
                 }
 
                 cacheVal.then(function (val) {
-                  return debug('almanac::factValue cache hit for fact:' + factId + ' cacheKey:' + cacheKey + ' value: ' + JSON.stringify(val) + '<' + (typeof val === 'undefined' ? 'undefined' : _typeof(val)) + '>');
+                  return debug('almanac::factValue cache hit for fact:' + factId + ' value: ' + JSON.stringify(val) + '<' + (typeof val === 'undefined' ? 'undefined' : _typeof(val)) + '>');
                 });
                 return _context.abrupt('return', cacheVal);
 
               case 6:
-                debug('almanac::factValue cache miss for fact:' + factId + ' using cacheKey:' + cacheKey + '; calculating');
+                verbose('almanac::factValue cache miss for fact:' + factId + '; calculating');
                 return _context.abrupt('return', this._setFactValue(fact, params, fact.calculate(params, this)));
 
               case 8:

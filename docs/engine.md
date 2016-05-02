@@ -49,7 +49,7 @@ let rule = new Rule()
 engine.addRule(rule)
 ```
 
-### engine.run([Object facts], [Object options]) -> Promise
+### engine.run([Object facts], [Object options]) -> Promise (Events)
 
 Runs the rules engine.  Returns a promise which resolves when all rules have been run.
 
@@ -59,6 +59,13 @@ engine.run()
 
 // with constant facts
 engine.run({ userId: 1 })
+
+// returns rule events that were triggered
+engine
+  .run({ userId: 1 })
+  .then(function(events) {
+    console.log(events)
+  })
 ```
 
 ### engine.stop() -> Engine
