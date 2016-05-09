@@ -1,4 +1,5 @@
-# Json Rules Engine
+![json-rules-engine](http://i.imgur.com/MAzq7l2.png)
+
 [![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
 [![Build Status](https://travis-ci.org/CacheControl/json-rules-engine.svg?branch=master)](https://travis-ci.org/CacheControl/json-rules-engine)
 [![npm version](https://badge.fury.io/js/json-rules-engine.svg)](https://badge.fury.io/js/json-rules-engine)
@@ -12,9 +13,9 @@ A rules engine expressed in JSON
 ## Features
 
 * Rules and Events expressed in JSON
-* Facts provide the mechanism for pulling data asynchronously during runtime
-* Priority levels can be set at the rule, fact, and condition levels to optimize performance
 * Full support for ```ALL``` and ```ANY``` boolean operators, including recursive nesting
+* Priority levels and cache settings for fine tuning performance
+* Facts provide the mechanism for pulling data asynchronously during runtime
 * Comparison operators:  ```equal```, ```notEqual```, ```in```, ```notIn```, ```lessThan```, ```lessThanInclusive```, ```greaterThan```, ```greaterThanInclusive```
 * Lightweight & extendable; less than 500 lines of javascript w/few dependencies
 
