@@ -1,10 +1,5 @@
 'use strict'
 
-import Engine from './engine'
-import Fact from './fact'
-import Rule from './rule'
-
-export { Fact, Rule, Engine }
-export default function (rules) {
-  return new Engine(rules)
-}
+require('babel-core/register')
+require('babel-polyfill')
+module.exports = require('./json-rules-engine')
