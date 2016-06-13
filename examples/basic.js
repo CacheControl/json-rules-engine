@@ -14,7 +14,6 @@
  *   DEBUG=json-rules-engine node ./examples/fact-dependency.js
  */
 
-require('babel-polyfill')
 require('colors')
 var Engine = require('../dist').Engine
 
