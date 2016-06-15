@@ -7,7 +7,7 @@
     "test": "mocha && npm run lint --silent",
     "lint": "standard --verbose | snazzy || true",
     "prepublish": "npm run compile",
-    "compile": "babel --stage 1 -d dist/ src/"
+    "compile": "babel --stage 1 -d dist/ src/ && regenerator --no-cache-dir --include-runtime src/generator-runtime.js > dist/generator-runtime.js"
   },
   "repository": {
     "type": "git",
@@ -54,6 +54,7 @@
     "chai-as-promised": "^5.2.0",
     "colors": "~1.1.2",
     "mocha": "2.3.4",
+    "regenerator": "~0.8.46",
     "sinon": "^1.17.2",
     "sinon-chai": "^2.8.0",
     "snazzy": "^2.0.1",

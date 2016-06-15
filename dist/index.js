@@ -1,5 +1,4 @@
 'use strict';
 
-require("babel-core/register");
-require("babel-polyfill");
-module.exports = require("./json-rules-engine");
+require('./generator-runtime');
+module.exports = require('./json-rules-engine');
