@@ -1,3 +1,13 @@
+1.0.4 / 2016-06-18
+==================
+
+  * fix issue #6; runtime facts unique to each run()
+
+1.0.3 / 2016-06-15
+==================
+
+  * fix issue #5; dependency error babel-core/register
+
 1.0.0 / 2016-05-01
 ==================
 
