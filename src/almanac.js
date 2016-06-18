@@ -12,7 +12,7 @@ import Fact from './fact'
  */
 export default class Almanac {
   constructor (factMap, runtimeFacts = {}) {
-    this.factMap = factMap
+    this.factMap = new Map(factMap)
     this.factResultsCache = new Map()
 
     for (let factId in runtimeFacts) {
@@ -23,8 +23,7 @@ export default class Almanac {
         fact = new Fact(factId, runtimeFacts[factId])
       }
 
-      this.factMap.set(fact.id, fact)
-      this._setFactValue(fact, {}, fact.value)
+      this._addConstantFact(fact)
       debug(`almanac::constructor initialized runtime fact:${fact.id} with ${fact.value}<${typeof fact.value}>`)
     }
   }
@@ -43,6 +42,15 @@ export default class Almanac {
   }
 
   /**
+   * Registers fact with the almanac
+   * @param {[type]} fact [description]
+   */
+  _addConstantFact (fact) {
+    this.factMap.set(fact.id, fact)
+    this._setFactValue(fact, {}, fact.value)
+  }
+
+  /**
    * Sets the computed value of a fact
    * @param {Fact} fact
    * @param {Object} params - values for differentiating this fact value from others, used for cache key
@@ -56,6 +64,16 @@ export default class Almanac {
       this.factResultsCache.set(cacheKey, factValue)
     }
     return factValue
+  }
+
+  /**
+   * Adds a constant fact during runtime.  Can be used mid-run() to add additional information
+   * @param {String} fact - fact identifier
+   * @param {Mixed} value - constant value of the fact
+   */
+  addRuntimeFact (factId, value) {
+    let fact = new Fact(factId, value)
+    return this._addConstantFact(fact)
   }
 
   /**

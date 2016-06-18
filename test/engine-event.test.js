@@ -47,7 +47,7 @@ describe('Engine: event', () => {
     engine.run()
   })
 
-  it('allows facts to be added by the event handler, affecting subsequent rules', (done) => {
+  it('allows facts to be added by the event handler, affecting subsequent rules', () => {
     let drinkOrderParams = { wine: 'merlot', quantity: 2 }
     let drinkOrderEvent = {
       type: 'offerDrink',
@@ -66,21 +66,20 @@ describe('Engine: event', () => {
       priority: 1
     })
     engine.addRule(drinkOrderRule)
-    engine.on('success', function (event, almanac) {
-      try {
+    return new Promise((resolve, reject) => {
+      engine.on('success', function (event, almanac) {
         switch (event.type) {
           case 'setDrinkingFlag':
-            engine.addFact('canOrderDrinks', event.params.canOrderDrinks)
+            almanac.addRuntimeFact('canOrderDrinks', event.params.canOrderDrinks)
             break
           case 'offerDrink':
             expect(event.params).to.eql(drinkOrderParams)
-            done()
             break
           default:
-            done(new Error('default case not expected'))
+            reject(new Error('default case not expected'))
         }
-      } catch (err) { done(err) }
+      })
+      engine.run().then(resolve).catch(reject)
     })
-    engine.run().catch((e) => done(e))
   })
 })
