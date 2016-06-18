@@ -33,7 +33,7 @@ var Almanac = function () {
 
     _classCallCheck(this, Almanac);
 
-    this.factMap = factMap;
+    this.factMap = new Map(factMap);
     this.factResultsCache = new Map();
 
     for (var factId in runtimeFacts) {
@@ -44,8 +44,7 @@ var Almanac = function () {
         fact = new _fact2.default(factId, runtimeFacts[factId]);
       }
 
-      this.factMap.set(fact.id, fact);
-      this._setFactValue(fact, {}, fact.value);
+      this._addConstantFact(fact);
       debug('almanac::constructor initialized runtime fact:' + fact.id + ' with ' + fact.value + '<' + _typeof(fact.value) + '>');
     }
   }
@@ -68,6 +67,18 @@ var Almanac = function () {
     }
 
     /**
+     * Registers fact with the almanac
+     * @param {[type]} fact [description]
+     */
+
+  }, {
+    key: '_addConstantFact',
+    value: function _addConstantFact(fact) {
+      this.factMap.set(fact.id, fact);
+      this._setFactValue(fact, {}, fact.value);
+    }
+
+    /**
      * Sets the computed value of a fact
      * @param {Fact} fact
      * @param {Object} params - values for differentiating this fact value from others, used for cache key
@@ -86,6 +97,19 @@ var Almanac = function () {
         this.factResultsCache.set(cacheKey, factValue);
       }
       return factValue;
+    }
+
+    /**
+     * Adds a constant fact during runtime.  Can be used mid-run() to add additional information
+     * @param {String} fact - fact identifier
+     * @param {Mixed} value - constant value of the fact
+     */
+
+  }, {
+    key: 'addRuntimeFact',
+    value: function addRuntimeFact(factId, value) {
+      var fact = new _fact2.default(factId, value);
+      return this._addConstantFact(fact);
     }
 
     /**
