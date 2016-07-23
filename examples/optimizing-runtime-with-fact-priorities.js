@@ -19,7 +19,7 @@ var Engine = require('../dist').Engine
 var engine = new Engine()
 
 /**
- * - Demonstates setting high performance (cpu) facts higher than low performing (network call) facts.
+ * - Demonstrates setting high performance (cpu) facts higher than low performing (network call) facts.
  */
 var microsoftRule = {
   conditions: {
@@ -49,6 +49,11 @@ engine
     console.log(facts.accountId + ' did ' + 'NOT'.red + ' meet conditions for the ' + rule.event.type.underline + ' rule.')
   })
 
+/**
+ * Low and High Priorities.
+ * Facts that do not have a priority set default to 1
+ * @type {Integer} - Facts are run in priority from highest to lowest.
+ */
 var HIGH = 100
 var LOW = 1
 

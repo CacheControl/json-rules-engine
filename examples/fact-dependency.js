@@ -23,8 +23,8 @@ var engine = new Engine()
 
 /**
  * Rule for identifying microsoft employees that have been terminated.
- * - Demonstates re-using a same fact with different parameters
- * - Demonstates calling a base fact, which serves to load data once and reuse later
+ * - Demonstrates re-using a same fact with different parameters
+ * - Demonstrates calling a base fact, which serves to load data once and reuse later
  */
 var microsoftRule = {
   conditions: {
@@ -50,8 +50,8 @@ engine.addRule(microsoftRule)
 
 /**
  * Rule for identifying accounts older than 5 years
- * - Demonstates calling a base fact, also shared by the account-information-field fact
- * - Demonstates performing computations on data retrieved by base fact
+ * - Demonstrates calling a base fact, also shared by the account-information-field fact
+ * - Demonstrates performing computations on data retrieved by base fact
  */
 var tenureRule = {
   conditions: {
@@ -79,7 +79,7 @@ engine
 
 /**
  * 'account-information' fact executes an api call and retrieves account data
- * - Demonstates facts called only by other facts and never mentioned directly in a rule
+ * - Demonstrates facts called only by other facts and never mentioned directly in a rule
  */
 engine.addFact('account-information', function (params, almanac) {
   return accountClient.getAccountInformation(params.accountId)
