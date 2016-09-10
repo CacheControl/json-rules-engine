@@ -3,6 +3,7 @@
 import params from 'params'
 import Fact from './fact'
 import Rule from './rule'
+import Operator from './operator'
 import Almanac from './almanac'
 import { EventEmitter } from 'events'
 import { SuccessEventFact } from './engine-facts'
@@ -22,6 +23,7 @@ class Engine extends EventEmitter {
     super()
     this.rules = []
     rules.map(r => this.addRule(r))
+    this.operators = new Map()
     this.facts = new Map()
     this.status = READY
   }
@@ -49,6 +51,16 @@ class Engine extends EventEmitter {
     this.rules.push(rule)
     this.prioritizedRules = null
     return this
+  }
+
+  /**
+   * Add a custom operator definition
+   * @param {string}   name - operator identifier within the condition; i.e. instead of 'equals', 'greaterThan', etc
+   * @param {function(factValue, jsonValue)} callback - the method to execute when the operator is encountered.
+   */
+  addOperator (name, cb) {
+    debug(`engine::addOperator name:${name}`)
+    this.operators.set(name, new Operator(name, cb))
   }
 
   /**
