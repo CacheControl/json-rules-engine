@@ -7,4 +7,8 @@ export default class Operator {
     if (typeof cb !== 'function') throw new Error('Missing operator callback')
     this.cb = cb
   }
+
+  evaluate (factValue, jsonValue) {
+    return this.cb(factValue, jsonValue)
+  }
 }

@@ -64,7 +64,7 @@ export default class Condition {
     }
   }
 
-  evaluate (comparisonValue) {
+  evaluate (comparisonValue, operatorMap) {
     if (!this.validateComparisonValue(comparisonValue)) {
       return false
     }
@@ -95,6 +95,8 @@ export default class Condition {
       case 'all':
         return comparisonValue === true
       default:
+        let op = operatorMap.get(this.operator)
+        if (op) return op.evaluate(comparisonValue, this.value)
         throw new Error(`Unknown operator: ${this.operator}`)
     }
   }
