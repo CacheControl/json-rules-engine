@@ -1,6 +1,10 @@
 'use strict'
 
 import Condition from '../src/condition'
+import defaultOperators from '../src/engine-default-operators'
+
+let operators = new Map()
+defaultOperators.forEach(o => operators.set(o.name, o))
 
 function condition () {
   return {
@@ -27,14 +31,14 @@ describe('Condition', () => {
 
     it('evaluates "equal"', () => {
       setup({ operator: 'equal' })
-      expect(condition.evaluate(50)).to.equal(true)
-      expect(condition.evaluate(5)).to.equal(false)
+      expect(condition.evaluate(50, operators)).to.equal(true)
+      expect(condition.evaluate(5, operators)).to.equal(false)
     })
 
     it('evaluates "notEqual"', () => {
       setup({ operator: 'notEqual' })
-      expect(condition.evaluate(50)).to.equal(false)
-      expect(condition.evaluate(5)).to.equal(true)
+      expect(condition.evaluate(50, operators)).to.equal(false)
+      expect(condition.evaluate(5, operators)).to.equal(true)
     })
 
     it('evaluates "in"', () => {
@@ -42,8 +46,8 @@ describe('Condition', () => {
         operator: 'in',
         value: [5, 10, 15, 20]
       })
-      expect(condition.evaluate(15)).to.equal(true)
-      expect(condition.evaluate(99)).to.equal(false)
+      expect(condition.evaluate(15, operators)).to.equal(true)
+      expect(condition.evaluate(99, operators)).to.equal(false)
     })
 
     it('evaluates "contains"', () => {
@@ -51,8 +55,8 @@ describe('Condition', () => {
         operator: 'contains',
         value: 10
       })
-      expect(condition.evaluate([5, 10, 15])).to.equal(true)
-      expect(condition.evaluate([1, 2, 3])).to.equal(false)
+      expect(condition.evaluate([5, 10, 15], operators)).to.equal(true)
+      expect(condition.evaluate([1, 2, 3], operators)).to.equal(false)
     })
 
     it('evaluates "doesNotContain"', () => {
@@ -60,8 +64,8 @@ describe('Condition', () => {
         operator: 'doesNotContain',
         value: 10
       })
-      expect(condition.evaluate([5, 10, 15])).to.equal(false)
-      expect(condition.evaluate([1, 2, 3])).to.equal(true)
+      expect(condition.evaluate([5, 10, 15], operators)).to.equal(false)
+      expect(condition.evaluate([1, 2, 3], operators)).to.equal(true)
     })
 
     it('evaluates "notIn"', () => {
@@ -69,64 +73,64 @@ describe('Condition', () => {
         operator: 'notIn',
         value: [5, 10, 15, 20]
       })
-      expect(condition.evaluate(15)).to.equal(false)
-      expect(condition.evaluate(99)).to.equal(true)
+      expect(condition.evaluate(15, operators)).to.equal(false)
+      expect(condition.evaluate(99, operators)).to.equal(true)
     })
 
     it('evaluates "lessThan"', () => {
       setup({ operator: 'lessThan' })
-      expect(condition.evaluate(49)).to.equal(true)
-      expect(condition.evaluate(50)).to.equal(false)
-      expect(condition.evaluate(51)).to.equal(false)
+      expect(condition.evaluate(49, operators)).to.equal(true)
+      expect(condition.evaluate(50, operators)).to.equal(false)
+      expect(condition.evaluate(51, operators)).to.equal(false)
     })
 
     it('evaluates "lessThanInclusive"', () => {
       setup({ operator: 'lessThanInclusive' })
-      expect(condition.evaluate(49)).to.equal(true)
-      expect(condition.evaluate(50)).to.equal(true)
-      expect(condition.evaluate(51)).to.equal(false)
+      expect(condition.evaluate(49, operators)).to.equal(true)
+      expect(condition.evaluate(50, operators)).to.equal(true)
+      expect(condition.evaluate(51, operators)).to.equal(false)
     })
     it('evaluates "greaterThan"', () => {
       setup({ operator: 'greaterThan' })
-      expect(condition.evaluate(51)).to.equal(true)
-      expect(condition.evaluate(49)).to.equal(false)
-      expect(condition.evaluate(50)).to.equal(false)
+      expect(condition.evaluate(51, operators)).to.equal(true)
+      expect(condition.evaluate(49, operators)).to.equal(false)
+      expect(condition.evaluate(50, operators)).to.equal(false)
     })
     it('evaluates "greaterThanInclusive"', () => {
       setup({operator: 'greaterThanInclusive'})
-      expect(condition.evaluate(51)).to.equal(true)
-      expect(condition.evaluate(50)).to.equal(true)
-      expect(condition.evaluate(49)).to.equal(false)
+      expect(condition.evaluate(51, operators)).to.equal(true)
+      expect(condition.evaluate(50, operators)).to.equal(true)
+      expect(condition.evaluate(49, operators)).to.equal(false)
     })
 
     describe('invalid comparisonValues', () => {
       it('returns false when using contains or doesNotContain with a non-array', () => {
         setup({operator: 'contains'})
-        expect(condition.evaluate(null)).to.equal(false)
+        expect(condition.evaluate(null, operators)).to.equal(false)
         setup({operator: 'doesNotContain'})
-        expect(condition.evaluate(null)).to.equal(false)
+        expect(condition.evaluate(null, operators)).to.equal(false)
       })
 
       it('returns false when using comparison operators with null', () => {
         setup({operator: 'lessThan'})
-        expect(condition.evaluate(null)).to.equal(false)
+        expect(condition.evaluate(null, operators)).to.equal(false)
         setup({operator: 'lessThanInclusive'})
-        expect(condition.evaluate(null)).to.equal(false)
+        expect(condition.evaluate(null, operators)).to.equal(false)
         setup({operator: 'greaterThan'})
-        expect(condition.evaluate(null)).to.equal(false)
+        expect(condition.evaluate(null, operators)).to.equal(false)
         setup({operator: 'greaterThanInclusive'})
-        expect(condition.evaluate(null)).to.equal(false)
+        expect(condition.evaluate(null, operators)).to.equal(false)
       })
 
       it('returns false when using comparison operators with non-numbers', () => {
         setup({operator: 'lessThan'})
-        expect(condition.evaluate('non-number')).to.equal(false)
+        expect(condition.evaluate('non-number', operators)).to.equal(false)
         setup({operator: 'lessThan'})
-        expect(condition.evaluate(undefined)).to.equal(false)
+        expect(condition.evaluate(undefined, operators)).to.equal(false)
         setup({operator: 'lessThan'})
-        expect(condition.evaluate([])).to.equal(false)
+        expect(condition.evaluate([], operators)).to.equal(false)
         setup({operator: 'lessThan'})
-        expect(condition.evaluate({})).to.equal(false)
+        expect(condition.evaluate({}, operators)).to.equal(false)
       })
     })
   })

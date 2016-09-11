@@ -137,7 +137,7 @@ class Rule {
         comparisonValue = await almanac.factValue(condition.fact, condition.params)
       }
 
-      let conditionResult = condition.evaluate(comparisonValue)
+      let conditionResult = condition.evaluate(comparisonValue, this.engine.operators)
       if (!condition.isBooleanOperator()) {
         debug(`evaluateConditions:: <${comparisonValue} ${condition.operator} ${condition.value}?> (${conditionResult})`)
       }

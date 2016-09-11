@@ -4,6 +4,7 @@ import sinon from 'sinon'
 import engineFactory from '../src/index'
 import { Fact } from '../src/index'
 import { Rule } from '../src/index'
+import { Operator } from '../src/index'
 
 describe('Engine', () => {
   let engine
@@ -13,14 +14,17 @@ describe('Engine', () => {
 
   it('has methods for managing facts and rules, and running itself', () => {
     expect(engine).to.have.property('addRule')
+    expect(engine).to.have.property('addOperator')
     expect(engine).to.have.property('addFact')
     expect(engine).to.have.property('run')
     expect(engine).to.have.property('stop')
   })
 
   describe('constructor', () => {
-    it('begins in status "READY"', () => {
+    it('initializes with the default state', () => {
       expect(engine.status).to.equal('READY')
+      expect(engine.rules.length).to.equal(0)
+      expect(engine.operators.size).to.equal(10)
     })
 
     it('can be initialized with rules', () => {
@@ -67,6 +71,26 @@ describe('Engine', () => {
           engine.addRule(rule)
         }).to.throw(/Missing key "event"/)
       })
+    })
+  })
+
+  describe('addOperator()', () => {
+    it('adds the operator', () => {
+      expect(engine.operators.size).to.equal(10)
+      engine.addOperator('startsWithLetter', (factValue, jsonValue) => {
+        return factValue[0] === jsonValue
+      })
+      expect(engine.operators.size).to.equal(11)
+      expect(engine.operators.get('startsWithLetter')).to.exist
+      expect(engine.operators.get('startsWithLetter')).to.be.an.instanceof(Operator)
+    })
+
+    it('accepts an operator instance', () => {
+      expect(engine.operators.size).to.equal(10)
+      let op = new Operator('my-operator', _ => true)
+      engine.addOperator(op)
+      expect(engine.operators.size).to.equal(11)
+      expect(engine.operators.get('my-operator')).to.equal(op)
     })
   })
 
