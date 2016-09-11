@@ -26,7 +26,6 @@ var verbose = require('debug')('json-rules-engine-verbose');
  * Triggers fact computations and saves the results
  * A new almanac is used for every engine run()
  */
-
 var Almanac = function () {
   function Almanac(factMap) {
     var runtimeFacts = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
@@ -123,7 +122,7 @@ var Almanac = function () {
   }, {
     key: 'factValue',
     value: function () {
-      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(factId) {
+      var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(factId) {
         var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
         var fact, cacheKey, cacheVal;
         return regeneratorRuntime.wrap(function _callee$(_context) {
@@ -157,7 +156,7 @@ var Almanac = function () {
       }));
 
       function factValue(_x2, _x3) {
-        return ref.apply(this, arguments);
+        return _ref.apply(this, arguments);
       }
 
       return factValue;

@@ -33,7 +33,6 @@ var Rule = function () {
    * @param {Object} options.conditions - conditions to evaluate when processing this rule
    * @return {Rule} instance
    */
-
   function Rule(options) {
     _classCallCheck(this, Rule);
 
@@ -165,7 +164,7 @@ var Rule = function () {
   }, {
     key: 'evaluate',
     value: function () {
-      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee6(almanac) {
+      var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee6(almanac) {
         var _this2 = this;
 
         var evaluateCondition, evaluateConditions, prioritizeAndRun, any, all;
@@ -178,9 +177,8 @@ var Rule = function () {
                  * @param  {Condition} condition - condition to evaluate
                  * @return {Promise(true|false)} - resolves with the result of the condition evaluation
                  */
-
                 evaluateCondition = function () {
-                  var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(condition) {
+                  var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee(condition) {
                     var comparisonValue, subConditions, conditionResult;
                     return regeneratorRuntime.wrap(function _callee$(_context) {
                       while (1) {
@@ -227,7 +225,7 @@ var Rule = function () {
                             comparisonValue = _context.sent;
 
                           case 17:
-                            conditionResult = condition.evaluate(comparisonValue);
+                            conditionResult = condition.evaluate(comparisonValue, _this2.engine.operators);
 
                             if (!condition.isBooleanOperator()) {
                               debug('evaluateConditions:: <' + comparisonValue + ' ' + condition.operator + ' ' + condition.value + '?> (' + conditionResult + ')');
@@ -243,7 +241,7 @@ var Rule = function () {
                   }));
 
                   return function evaluateCondition(_x3) {
-                    return ref.apply(this, arguments);
+                    return _ref2.apply(this, arguments);
                   };
                 }();
 
@@ -256,7 +254,7 @@ var Rule = function () {
 
 
                 evaluateConditions = function () {
-                  var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(conditions, method) {
+                  var _ref3 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(conditions, method) {
                     var conditionResults;
                     return regeneratorRuntime.wrap(function _callee2$(_context2) {
                       while (1) {
@@ -285,7 +283,7 @@ var Rule = function () {
                   }));
 
                   return function evaluateConditions(_x4, _x5) {
-                    return ref.apply(this, arguments);
+                    return _ref3.apply(this, arguments);
                   };
                 }();
 
@@ -302,7 +300,7 @@ var Rule = function () {
 
 
                 prioritizeAndRun = function () {
-                  var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(conditions, operator) {
+                  var _ref4 = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(conditions, operator) {
                     var method, orderedSets, cursor;
                     return regeneratorRuntime.wrap(function _callee3$(_context3) {
                       while (1) {
@@ -355,7 +353,7 @@ var Rule = function () {
                   }));
 
                   return function prioritizeAndRun(_x6, _x7) {
-                    return ref.apply(this, arguments);
+                    return _ref4.apply(this, arguments);
                   };
                 }();
 
@@ -367,7 +365,7 @@ var Rule = function () {
 
 
                 any = function () {
-                  var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee4(conditions) {
+                  var _ref5 = _asyncToGenerator(regeneratorRuntime.mark(function _callee4(conditions) {
                     return regeneratorRuntime.wrap(function _callee4$(_context4) {
                       while (1) {
                         switch (_context4.prev = _context4.next) {
@@ -383,7 +381,7 @@ var Rule = function () {
                   }));
 
                   return function any(_x8) {
-                    return ref.apply(this, arguments);
+                    return _ref5.apply(this, arguments);
                   };
                 }();
 
@@ -395,7 +393,7 @@ var Rule = function () {
 
 
                 all = function () {
-                  var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee5(conditions) {
+                  var _ref6 = _asyncToGenerator(regeneratorRuntime.mark(function _callee5(conditions) {
                     return regeneratorRuntime.wrap(function _callee5$(_context5) {
                       while (1) {
                         switch (_context5.prev = _context5.next) {
@@ -411,7 +409,7 @@ var Rule = function () {
                   }));
 
                   return function all(_x9) {
-                    return ref.apply(this, arguments);
+                    return _ref6.apply(this, arguments);
                   };
                 }();
 
@@ -442,7 +440,7 @@ var Rule = function () {
       }));
 
       function evaluate(_x2) {
-        return ref.apply(this, arguments);
+        return _ref.apply(this, arguments);
       }
 
       return evaluate;

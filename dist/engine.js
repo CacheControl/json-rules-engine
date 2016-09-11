@@ -19,6 +19,10 @@ var _rule = require('./rule');
 
 var _rule2 = _interopRequireDefault(_rule);
 
+var _operator = require('./operator');
+
+var _operator2 = _interopRequireDefault(_operator);
+
 var _almanac = require('./almanac');
 
 var _almanac2 = _interopRequireDefault(_almanac);
@@ -26,6 +30,10 @@ var _almanac2 = _interopRequireDefault(_almanac);
 var _events = require('events');
 
 var _engineFacts = require('./engine-facts');
+
+var _engineDefaultOperators = require('./engine-default-operators');
+
+var _engineDefaultOperators2 = _interopRequireDefault(_engineDefaultOperators);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -50,7 +58,6 @@ var Engine = function (_EventEmitter) {
    * Returns a new Engine instance
    * @param  {Rule[]} rules - array of rules to initialize with
    */
-
   function Engine() {
     var rules = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
 
@@ -59,11 +66,15 @@ var Engine = function (_EventEmitter) {
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Engine).call(this));
 
     _this.rules = [];
+    _this.operators = new Map();
+    _this.facts = new Map();
+    _this.status = READY;
     rules.map(function (r) {
       return _this.addRule(r);
     });
-    _this.facts = new Map();
-    _this.status = READY;
+    _engineDefaultOperators2.default.map(function (o) {
+      return _this.addOperator(o);
+    });
     return _this;
   }
 
@@ -94,6 +105,25 @@ var Engine = function (_EventEmitter) {
       this.rules.push(rule);
       this.prioritizedRules = null;
       return this;
+    }
+
+    /**
+     * Add a custom operator definition
+     * @param {string}   operatorOrName - operator identifier within the condition; i.e. instead of 'equals', 'greaterThan', etc
+     * @param {function(factValue, jsonValue)} callback - the method to execute when the operator is encountered.
+     */
+
+  }, {
+    key: 'addOperator',
+    value: function addOperator(operatorOrName, cb) {
+      debug('engine::addOperator name:' + operatorOrName);
+      var operator = void 0;
+      if (operatorOrName instanceof _operator2.default) {
+        operator = operatorOrName;
+      } else {
+        operator = new _operator2.default(operatorOrName, cb);
+      }
+      this.operators.set(operator.name, operator);
     }
 
     /**
@@ -184,7 +214,7 @@ var Engine = function (_EventEmitter) {
   }, {
     key: 'evaluateRules',
     value: function () {
-      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(ruleArray, almanac) {
+      var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(ruleArray, almanac) {
         var _this3 = this;
 
         return regeneratorRuntime.wrap(function _callee$(_context) {
@@ -216,7 +246,7 @@ var Engine = function (_EventEmitter) {
       }));
 
       function evaluateRules(_x2, _x3) {
-        return ref.apply(this, arguments);
+        return _ref.apply(this, arguments);
       }
 
       return evaluateRules;
@@ -232,7 +262,7 @@ var Engine = function (_EventEmitter) {
   }, {
     key: 'run',
     value: function () {
-      var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee2() {
+      var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2() {
         var _this4 = this;
 
         var runtimeFacts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
@@ -274,7 +304,7 @@ var Engine = function (_EventEmitter) {
       }));
 
       function run(_x4) {
-        return ref.apply(this, arguments);
+        return _ref2.apply(this, arguments);
       }
 
       return run;

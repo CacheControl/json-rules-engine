@@ -25,7 +25,6 @@ var Fact = function () {
    * @param  {primitive|function} valueOrMethod - constant primitive, or method to call when computing the fact's value
    * @return {Fact}
    */
-
   function Fact(id, valueOrMethod, options) {
     _classCallCheck(this, Fact);
 
