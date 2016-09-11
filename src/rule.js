@@ -136,12 +136,7 @@ class Rule {
       } else {
         comparisonValue = await almanac.factValue(condition.fact, condition.params)
       }
-
-      let conditionResult = condition.evaluate(comparisonValue, this.engine.operators)
-      if (!condition.isBooleanOperator()) {
-        debug(`evaluateConditions:: <${comparisonValue} ${condition.operator} ${condition.value}?> (${conditionResult})`)
-      }
-      return conditionResult
+      return condition.evaluate(comparisonValue, this.engine.operators)
     }
 
     /**
@@ -155,7 +150,7 @@ class Rule {
       let conditionResults = await Promise.all(conditions.map((condition) => {
         return evaluateCondition(condition)
       }))
-      debug(`evaluateConditions::results`, conditionResults)
+      debug(`rule::evaluateConditions results`, conditionResults)
       return method.call(conditionResults, (result) => result === true)
     }
 

@@ -1,6 +1,10 @@
 'use strict'
 
 import params from 'params'
+import selectn from 'selectn'
+
+let debug = require('debug')('json-rules-engine')
+let warn = require('debug')('json-rules-engine:warn')
 
 export default class Condition {
   constructor (properties) {
@@ -47,6 +51,9 @@ export default class Condition {
       if (this.params) {
         props.params = this.params
       }
+      if (this.path) {
+        props.path = this.path
+      }
     }
     if (stringify) {
       return JSON.stringify(props)
@@ -64,9 +71,24 @@ export default class Condition {
     // for any/all, simply comparisonValue that the sub-condition array evaluated truthy
     if (this.isBooleanOperator()) return comparisonValue === true
 
+    // if the fact has provided an object, and a path is specified, retrieve the object property
+    if (this.path) {
+      if (typeof comparisonValue === 'object') {
+        comparisonValue = selectn(this.path)(comparisonValue)
+        debug(`condition::evaluate extracting object property ${this.path}, received: ${comparisonValue}`)
+      } else {
+        warn(`condition::evaluate could not compute object path(${this.path}) of non-object: ${comparisonValue} <${typeof comparisonValue}>`)
+      }
+    }
+
     let op = operatorMap.get(this.operator)
     if (!op) throw new Error(`Unknown operator: ${this.operator}`)
-    return op.evaluate(comparisonValue, this.value)
+
+    let evaluationResult = op.evaluate(comparisonValue, this.value)
+    if (!this.isBooleanOperator()) {
+      debug(`condition::evaluate <${comparisonValue} ${this.operator} ${this.value}?> (${evaluationResult})`)
+    }
+    return evaluationResult
   }
 
   /**
