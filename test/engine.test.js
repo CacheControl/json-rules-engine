@@ -24,7 +24,7 @@ describe('Engine', () => {
     it('initializes with the default state', () => {
       expect(engine.status).to.equal('READY')
       expect(engine.rules.length).to.equal(0)
-      expect(engine.operators.size).to.equal(0)
+      expect(engine.operators.size).to.equal(10)
     })
 
     it('can be initialized with rules', () => {
@@ -77,11 +77,11 @@ describe('Engine', () => {
   describe('addOperator()', () => {
     describe('engine instance', () => {
       it('adds the operator', () => {
-        expect(engine.operators.size).to.equal(0)
+        expect(engine.operators.size).to.equal(10)
         engine.addOperator('startsWithLetter', (factValue, jsonValue) => {
           return factValue[0] === jsonValue
         })
-        expect(engine.operators.size).to.equal(1)
+        expect(engine.operators.size).to.equal(11)
         expect(engine.operators.get('startsWithLetter')).to.exist
         expect(engine.operators.get('startsWithLetter')).to.be.an.instanceof(Operator)
       })
