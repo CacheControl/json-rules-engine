@@ -63,6 +63,7 @@ export default class Condition {
   evaluate (comparisonValue, operatorMap) {
     // for any/all, simply comparisonValue that the sub-condition array evaluated truthy
     if (this.isBooleanOperator()) return comparisonValue === true
+
     let op = operatorMap.get(this.operator)
     if (!op) throw new Error(`Unknown operator: ${this.operator}`)
     return op.evaluate(comparisonValue, this.value)

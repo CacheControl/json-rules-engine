@@ -49,6 +49,34 @@ let rule = new Rule()
 engine.addRule(rule)
 ```
 
+### engine.addOperator(String operatorName, Function evaluateFunc(factValue, jsonValue))
+
+Adds a custom operator to the engine.  For situations that require going beyond the generic, built-in operators (`equal`, `greaterThan`, etc).
+
+```js
+/*
+ * operatorName - operator identifier mentioned in the rule condition
+ * evaluateFunc(factValue, jsonValue) - compares fact result to the condition 'value', returning boolean
+ *    factValue - the value returned from the fact
+ *    jsonValue - the "value" property stored in the condition itself
+ */
+engine.addOperator('startsWithLetter', (factValue, jsonValue) => {
+  if (!factValue.length) return false
+  return factValue[0].toLowerCase() === jsonValue.toLowerCase()
+})
+
+// and to use the operator...
+rule.setConditions({
+  all: [
+    {
+      fact: 'username',
+      operator: 'startsWithLetter' // reference the operator name in the rule
+      value: 'a'
+    }
+  ]
+})
+```
+
 ### engine.run([Object facts], [Object options]) -> Promise (Events)
 
 Runs the rules engine.  Returns a promise which resolves when all rules have been run.

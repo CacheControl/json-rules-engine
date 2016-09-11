@@ -75,16 +75,22 @@ describe('Engine', () => {
   })
 
   describe('addOperator()', () => {
-    describe('engine instance', () => {
-      it('adds the operator', () => {
-        expect(engine.operators.size).to.equal(10)
-        engine.addOperator('startsWithLetter', (factValue, jsonValue) => {
-          return factValue[0] === jsonValue
-        })
-        expect(engine.operators.size).to.equal(11)
-        expect(engine.operators.get('startsWithLetter')).to.exist
-        expect(engine.operators.get('startsWithLetter')).to.be.an.instanceof(Operator)
+    it('adds the operator', () => {
+      expect(engine.operators.size).to.equal(10)
+      engine.addOperator('startsWithLetter', (factValue, jsonValue) => {
+        return factValue[0] === jsonValue
       })
+      expect(engine.operators.size).to.equal(11)
+      expect(engine.operators.get('startsWithLetter')).to.exist
+      expect(engine.operators.get('startsWithLetter')).to.be.an.instanceof(Operator)
+    })
+
+    it('accepts an operator instance', () => {
+      expect(engine.operators.size).to.equal(10)
+      let op = new Operator('my-operator', _ => true)
+      engine.addOperator(op)
+      expect(engine.operators.size).to.equal(11)
+      expect(engine.operators.get('my-operator')).to.equal(op)
     })
   })
 
