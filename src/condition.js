@@ -77,7 +77,7 @@ export default class Condition {
         comparisonValue = selectn(this.path)(comparisonValue)
         debug(`condition::evaluate extracting object property ${this.path}, received: ${comparisonValue}`)
       } else {
-        warn(`condition::evaluate could not compute object path(${this.path}) of non-object: ${comparisonValue} <${typeof comparisonValue}>`)
+        warn(`condition::evaluate could not compute object path(${this.path}) of non-object: ${comparisonValue} <${typeof comparisonValue}>; continuing with ${comparisonValue}`)
       }
     }
 

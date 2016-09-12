@@ -24,7 +24,21 @@ rule.setConditions({
     }
   ]
 })
+
+// if fact returns an object or array, providing a "path" key can be used for property traversal
+rule.setConditions({
+  all: [
+    {
+      fact: 'userData',    // 'userData' fact returns { profile: { addresses: [{ city: 'new york' }]}}
+      operator: 'equal'
+      value: 'new york',
+      path: '.profile.addresses[0].city'  // "path" navigates the data structure, down to the "city" property
+    }
+  ]
+})
 ```
+
+See the [fact dependency example](../examples/fact-dependency.js)
 
 ### setEvent(Object event)
 
