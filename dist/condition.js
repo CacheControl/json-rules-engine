@@ -4,15 +4,24 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _params = require('params');
 
 var _params2 = _interopRequireDefault(_params);
 
+var _selectn = require('selectn');
+
+var _selectn2 = _interopRequireDefault(_selectn);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var debug = require('debug')('json-rules-engine');
+var warn = require('debug')('json-rules-engine:warn');
 
 var Condition = function () {
   function Condition(properties) {
@@ -69,6 +78,9 @@ var Condition = function () {
         if (this.params) {
           props.params = this.params;
         }
+        if (this.path) {
+          props.path = this.path;
+        }
       }
       if (stringify) {
         return JSON.stringify(props);
@@ -89,9 +101,24 @@ var Condition = function () {
       // for any/all, simply comparisonValue that the sub-condition array evaluated truthy
       if (this.isBooleanOperator()) return comparisonValue === true;
 
+      // if the fact has provided an object, and a path is specified, retrieve the object property
+      if (this.path) {
+        if ((typeof comparisonValue === 'undefined' ? 'undefined' : _typeof(comparisonValue)) === 'object') {
+          comparisonValue = (0, _selectn2.default)(this.path)(comparisonValue);
+          debug('condition::evaluate extracting object property ' + this.path + ', received: ' + comparisonValue);
+        } else {
+          warn('condition::evaluate could not compute object path(' + this.path + ') of non-object: ' + comparisonValue + ' <' + (typeof comparisonValue === 'undefined' ? 'undefined' : _typeof(comparisonValue)) + '>; continuing with ' + comparisonValue);
+        }
+      }
+
       var op = operatorMap.get(this.operator);
       if (!op) throw new Error('Unknown operator: ' + this.operator);
-      return op.evaluate(comparisonValue, this.value);
+
+      var evaluationResult = op.evaluate(comparisonValue, this.value);
+      if (!this.isBooleanOperator()) {
+        debug('condition::evaluate <' + comparisonValue + ' ' + this.operator + ' ' + this.value + '?> (' + evaluationResult + ')');
+      }
+      return evaluationResult;
     }
 
     /**
