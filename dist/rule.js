@@ -179,7 +179,7 @@ var Rule = function () {
                  */
                 evaluateCondition = function () {
                   var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee(condition) {
-                    var comparisonValue, subConditions, conditionResult;
+                    var comparisonValue, subConditions;
                     return regeneratorRuntime.wrap(function _callee$(_context) {
                       while (1) {
                         switch (_context.prev = _context.next) {
@@ -225,14 +225,9 @@ var Rule = function () {
                             comparisonValue = _context.sent;
 
                           case 17:
-                            conditionResult = condition.evaluate(comparisonValue, _this2.engine.operators);
+                            return _context.abrupt('return', condition.evaluate(comparisonValue, _this2.engine.operators));
 
-                            if (!condition.isBooleanOperator()) {
-                              debug('evaluateConditions:: <' + comparisonValue + ' ' + condition.operator + ' ' + condition.value + '?> (' + conditionResult + ')');
-                            }
-                            return _context.abrupt('return', conditionResult);
-
-                          case 20:
+                          case 18:
                           case 'end':
                             return _context.stop();
                         }
@@ -269,7 +264,7 @@ var Rule = function () {
                           case 3:
                             conditionResults = _context2.sent;
 
-                            debug('evaluateConditions::results', conditionResults);
+                            debug('rule::evaluateConditions results', conditionResults);
                             return _context2.abrupt('return', method.call(conditionResults, function (result) {
                               return result === true;
                             }));

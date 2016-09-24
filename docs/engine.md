@@ -77,6 +77,8 @@ rule.setConditions({
 })
 ```
 
+See the [operator example](../examples/custom-operators.js)
+
 ### engine.run([Object facts], [Object options]) -> Promise (Events)
 
 Runs the rules engine.  Returns a promise which resolves when all rules have been run.

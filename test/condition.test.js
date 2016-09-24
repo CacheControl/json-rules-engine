@@ -12,12 +12,32 @@ function condition () {
       id: '6ed20017-375f-40c9-a1d2-6d7e0f4733c5',
       fact: 'team_participation',
       operator: 'equal',
-      value: 50
+      value: 50,
+      path: '.metrics[0].forum-posts'
     }]
   }
 }
 
 describe('Condition', () => {
+  describe('constructor', () => {
+    it('fact conditions have properties', () => {
+      let properties = condition()
+      let subject = new Condition(properties.all[0])
+      expect(subject).to.have.property('fact')
+      expect(subject).to.have.property('operator')
+      expect(subject).to.have.property('value')
+      expect(subject).to.have.property('path')
+    })
+
+    it('boolean conditions have properties', () => {
+      let properties = condition()
+      let subject = new Condition(properties)
+      expect(subject).to.have.property('operator')
+      expect(subject).to.have.property('priority')
+      expect(subject.priority).to.equal(1)
+    })
+  })
+
   describe('evaluate', () => {
     let conditionBase = factories.condition({
       fact: 'age',
@@ -132,6 +152,25 @@ describe('Condition', () => {
         setup({operator: 'lessThan'})
         expect(condition.evaluate({}, operators)).to.equal(false)
       })
+    })
+  })
+
+  describe('objects', () => {
+    it('extracts the object property values using its "path" property', () => {
+      let factData = [{ id: 50 }, { id: 60 }]
+      let condition = new Condition({operator: 'equal', path: '[0].id', fact: 'age', value: 50})
+      expect(condition.evaluate(factData, operators)).to.equal(true)
+
+      condition.value = 100 // negative case
+      expect(condition.evaluate(factData, operators)).to.equal(false)
+    })
+
+    it('ignores "path" when non-objects are returned by the fact', () => {
+      let condition = new Condition({operator: 'equal', path: '[0].id', fact: 'age', value: 50})
+      expect(condition.evaluate(50, operators)).to.equal(true)
+
+      condition.value = 100 // negative case
+      expect(condition.evaluate(50, operators)).to.equal(false)
     })
   })
 

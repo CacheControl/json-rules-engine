@@ -61,13 +61,13 @@ class Engine extends EventEmitter {
    * @param {function(factValue, jsonValue)} callback - the method to execute when the operator is encountered.
    */
   addOperator (operatorOrName, cb) {
-    debug(`engine::addOperator name:${operatorOrName}`)
     let operator
     if (operatorOrName instanceof Operator) {
       operator = operatorOrName
     } else {
       operator = new Operator(operatorOrName, cb)
     }
+    debug(`engine::addOperator name:${operator.name}`)
     this.operators.set(operator.name, operator)
   }
 

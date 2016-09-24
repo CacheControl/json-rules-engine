@@ -116,13 +116,13 @@ var Engine = function (_EventEmitter) {
   }, {
     key: 'addOperator',
     value: function addOperator(operatorOrName, cb) {
-      debug('engine::addOperator name:' + operatorOrName);
       var operator = void 0;
       if (operatorOrName instanceof _operator2.default) {
         operator = operatorOrName;
       } else {
         operator = new _operator2.default(operatorOrName, cb);
       }
+      debug('engine::addOperator name:' + operator.name);
       this.operators.set(operator.name, operator);
     }
 

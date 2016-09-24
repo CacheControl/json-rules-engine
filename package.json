@@ -1,6 +1,6 @@
 {
   "name": "json-rules-engine",
-  "version": "1.1.0",
+  "version": "1.2.0-beta",
   "description": "Rules Engine expressed in simple json",
   "main": "dist/index.js",
   "scripts": {
@@ -61,8 +61,9 @@
     "standard": "^5.4.1"
   },
   "dependencies": {
-    "debug": "^2.2.0",
-    "object-hash": "^1.1.0",
-    "params": "0.1.1"
+    "debug": "2.2.0",
+    "object-hash": "1.1.0",
+    "params": "0.1.1",
+    "selectn": "1.1.1"
   }
 }

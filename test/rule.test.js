@@ -138,10 +138,11 @@ describe('Rule', () => {
       all: [{
         value: 10,
         operator: 'equals',
-        fact: 'userId',
+        fact: 'user',
         params: {
           foo: true
-        }
+        },
+        path: '.id'
       }]
     }
     let rule

@@ -29,19 +29,15 @@ var engine = new Engine()
 var microsoftRule = {
   conditions: {
     all: [{
-      fact: 'account-information-field',
+      fact: 'account-information',
       operator: 'equal',
       value: 'microsoft',
-      params: {
-        field: 'company'
-      }
+      path: '.company'
     }, {
-      fact: 'account-information-field',
+      fact: 'account-information',
       operator: 'equal',
       value: 'terminated',
-      params: {
-        field: 'status'
-      }
+      path: '.status'
     }]
   },
   event: { type: 'microsoft-terminated-employees' }
@@ -56,9 +52,12 @@ engine.addRule(microsoftRule)
 var tenureRule = {
   conditions: {
     all: [{
-      fact: 'account-tenure',
+      fact: 'employee-tenure',
       operator: 'greaterThanInclusive',
-      value: 5
+      value: 5,
+      params: {
+        'unit': 'years'
+      }
     }]
   },
   event: { type: 'five-year-tenure' }
@@ -82,41 +81,31 @@ engine
  * - Demonstrates facts called only by other facts and never mentioned directly in a rule
  */
 engine.addFact('account-information', function (params, almanac) {
-  return accountClient.getAccountInformation(params.accountId)
+  return almanac.factValue('accountId')
+    .then(function (accountId) {
+      return accountClient.getAccountInformation(accountId)
+    })
     .then(function (results) {
       return results.data
     })
 })
 
 /**
- * 'account-tenure' fact retrieves account-information, and computes the number of years
+ * 'employee-tenure' fact retrieves account-information, and computes the duration of employment
  * since the account was created using 'accountInformation.createdAt'
  */
-engine.addFact('account-tenure', function (params, almanac) {
-  return almanac
-    .factValue('accountId')
-    .then(function (account) {
-      return almanac.factValue('account-information', { accountId: account })
-    })
+engine.addFact('employee-tenure', function (params, almanac) {
+  return almanac.factValue('account-information')
     .then(function (accountInformation) {
       var created = new Date(accountInformation.createdAt)
       var now = new Date()
-      return now.getFullYear() - created.getFullYear()
-    })
-    .catch(console.log)
-})
-
-/**
- * 'account-information-field' fact returns any field from account-information for operator comparison
- */
-engine.addFact('account-information-field', function (params, almanac) {
-  return almanac
-    .factValue('accountId')
-    .then(function (account) {
-      return almanac.factValue('account-information', { accountId: account })
-    })
-    .then(function (accountInformation) {
-      return accountInformation[params.field]  // return the specific field value
+      switch (params.unit) {
+        case 'years':
+          return now.getFullYear() - created.getFullYear()
+        case 'milliseconds':
+        default:
+          return now.getTime() - created.getTime()
+      }
     })
     .catch(console.log)
 })
