@@ -18,17 +18,17 @@ Operators.push(new _operator2.default('notEqual', function (a, b) {
   return a !== b;
 }));
 Operators.push(new _operator2.default('in', function (a, b) {
-  return b.includes(a);
+  return b.indexOf(a) > -1;
 }));
 Operators.push(new _operator2.default('notIn', function (a, b) {
-  return !b.includes(a);
+  return b.indexOf(a) === -1;
 }));
 
 Operators.push(new _operator2.default('contains', function (a, b) {
-  return a.includes(b);
+  return a.indexOf(b) > -1;
 }, Array.isArray));
 Operators.push(new _operator2.default('doesNotContain', function (a, b) {
-  return !a.includes(b);
+  return a.indexOf(b) === -1;
 }, Array.isArray));
 
 function numberValidator(factValue) {
