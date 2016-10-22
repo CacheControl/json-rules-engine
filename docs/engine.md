@@ -1,5 +1,7 @@
 # Engine
 
+The Engine stores and executes rules, emits events, and maintains state.
+
 ## Methods
 
 ### constructor([Array rules])

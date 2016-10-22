@@ -1,5 +1,7 @@
 # Rules
 
+Rules contain a set of _conditions_ and a single _event_.  When the engine is run, each rule condition is evaluated.  If the results are truthy, the rule's _event_ is triggered.
+
 ## Methods
 
 ### constructor([Object options|String json])

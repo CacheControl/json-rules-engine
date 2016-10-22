@@ -11,18 +11,18 @@
  */
 
 require('colors')
-var Engine = require('../dist').Engine
-var Rule = require('../dist').Rule
+let Engine = require('../dist').Engine
+let Rule = require('../dist').Rule
 
 /**
  * Setup a new engine
  */
-var engine = new Engine()
+let engine = new Engine()
 
 /**
  * Create a rule
  */
-var rule = new Rule()
+let rule = new Rule()
 
 // define the 'conditions' for when "hello world" should display
 rule.setConditions({
@@ -47,13 +47,13 @@ engine.addRule(rule)
  * Fact values do NOT need to be known at engine runtime; see the
  * examples for how to pull in data asynchronously as the engine runs
  */
-var facts = { displayMessage: true }
+let facts = { displayMessage: true }
 
 // run the engine
 engine
   .run(facts)
-  .then(function (triggeredEvents) { // engine returns a list of events with truthy conditions
-    triggeredEvents.map(function (event) { console.log(event.params.data.green) })
+  .then(triggeredEvents => { // engine returns a list of events with truthy conditions
+    triggeredEvents.map(event => console.log(event.params.data.green))
   })
   .catch(console.log)
 

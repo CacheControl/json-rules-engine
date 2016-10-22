@@ -24,17 +24,9 @@ A rules engine expressed in JSON
 $ npm install json-rules-engine
 ```
 
-## Documentation
+## Basic Example
 
-It's best to start with the [overview](./docs/overview.md) to understand the terminology.  Next, see the [walkthrough](./docs/overview.md) and try out some [examples](./examples).
-
-To dive right in, start with the [basic example](./examples/basic.js).
-
-## Example
-
-In basketball, a player who commits five personal fouls over the course of a 40-minute game, or six in a 48-minute game, fouls out.
-
-This example demonstrates an engine for detecting whether an individual player has fouled out.
+This example demonstrates an engine for detecting whether a basketball player has fouled out (a player who commits five personal fouls over the course of a 40-minute game, or six in a 48-minute game, fouls out).
 
 ```js
 import { Engine } from 'json-rules-engine'
@@ -79,28 +71,120 @@ engine.addRule({
 })
 
 /**
- * define the facts
- * note: facts may be loaded asynchronously at runtime; see the advanced example below
+ * Define facts the engine will use to evaluate the conditions above.
+ * Facts may also be loaded asynchronously at runtime; see the advanced example below
  */
 let facts = {
   personalFoulCount: 6,
   gameDuration: 40
 }
 
-// run the engine
+// Run the engine to evaluate
 engine
   .run(facts)
-  .then(events => { // run() return events with truthy conditions
+  .then(events => { // run() returns events with truthy conditions
     events.map(event => console.log(event.params.message))
   })
 
 /*
+ * Output:
+ *
  * Player has fouled out!
  */
 ```
 
 Run this example [here](./examples/nested-boolean-logic.js)
 
+## Advanced Example
+
+This example demonstates an engine for identifying employees who work for Microsoft and are taking Christmas day off.
+
+This  demonstrates an engine which uses asynchronous fact data.
+Fact information is loaded via API call during runtime, and the results are cached and recycled for all 3 conditions.
+It also demonstates use of the condition _path_ feature to reference properties of objects returned by facts.
+
+```js
+import { Engine } from 'json-rules-engine'
+
+// example client for making asynchronous requests to an api, database, etc
+import apiClient from './account-api-client'
+
+/**
+ * Setup a new engine
+ */
+let engine = new Engine()
+
+/**
+ * Rule for identifying microsoft employees taking pto on christmas
+ *
+ * the account-information fact returns:
+ *  { company: 'XYZ', status: 'ABC', ptoDaysTaken: ['YYYY-MM-DD', 'YYYY-MM-DD'] }
+ */
+let microsoftRule = {
+  conditions: {
+    all: [{
+      fact: 'account-information',
+      operator: 'equal',
+      value: 'microsoft',
+      path: '.company' // access the 'company' property of "account-information"
+    }, {
+      fact: 'account-information',
+      operator: 'in',
+      value: ['active', 'paid-leave'], // 'status' can be active or paid-leave
+      path: '.status' // access the 'status' property of "account-information"
+    }, {
+      fact: 'account-information',
+      operator: 'contains', // the 'ptoDaysTaken' property (an array) must contain '2016-12-25'
+      value: '2016-12-25',
+      path: '.ptoDaysTaken' // access the 'ptoDaysTaken' property of "account-information"
+    }]
+  },
+  event: {
+    type: 'microsoft-christmas-pto',
+    params: {
+      message: 'current microsoft employee taking christmas day off'
+    }
+  }
+}
+engine.addRule(microsoftRule)
+
+/**
+ * 'account-information' fact executes an api call and retrieves account data, feeding the results
+ * into the engine.  The major advantage of this technique is that although there are THREE conditions
+ * requiring this data, only ONE api call is made.  This results in much more efficient runtime performance
+ * and fewer network requests.
+ */
+engine.addFact('account-information', function (params, almanac) {
+  console.log('loading account information...')
+  return almanac.factValue('accountId')
+    .then((accountId) => {
+      return apiClient.getAccountInformation(accountId)
+    })
+})
+
+// define fact(s) known at runtime
+let facts = { accountId: 'lincoln' }
+engine
+  .run(facts)
+  .then(function (events) {
+    console.log(facts.accountId + ' is a ' + events.map(event => event.params.message))
+  })
+  .catch(err => console.log(err.stack))
+
+/*
+ * OUTPUT:
+ *
+ * loading account information... // <-- API call is made ONCE and results recycled for all 3 conditions
+ * lincoln is a current microsoft employee taking christmas day off
+ */
+```
+
+Run this example [here](./examples/nested-boolean-logic.js)
+
+## Docs
+
+The examples above provide a simple demonstrations of what `json-rules-engine` can do.  To learn more about the advanced features and techniques,
+see the [docs](./docs) and read through the [examples](./examples).  There is also a [walkthrough](./docs/walkthrough.md) available.
 
 ## Persisting Rules
 

@@ -11,17 +11,18 @@
  */
 
 require('colors')
-var Engine = require('../dist').Engine
+let Engine = require('../dist').Engine
+let accountClient = require('./support/account-api-client')
 
 /**
  * Setup a new engine
  */
-var engine = new Engine()
+let engine = new Engine()
 
 /**
  * - Demonstrates setting high performance (cpu) facts higher than low performing (network call) facts.
  */
-var microsoftRule = {
+let microsoftRule = {
   conditions: {
     all: [{
       fact: 'account-information',
@@ -40,12 +41,12 @@ engine.addRule(microsoftRule)
 /**
  * Register listeners with the engine for rule success and failure
  */
-var facts
+let facts
 engine
-  .on('success', function (event) {
+  .on('success', event => {
     console.log(facts.accountId + ' DID '.green + 'meet conditions for the ' + event.type.underline + ' rule.')
   })
-  .on('failure', function (rule) {
+  .on('failure', rule => {
     console.log(facts.accountId + ' did ' + 'NOT'.red + ' meet conditions for the ' + rule.event.type.underline + ' rule.')
   })
 
@@ -54,26 +55,29 @@ engine
  * Facts that do not have a priority set default to 1
  * @type {Integer} - Facts are run in priority from highest to lowest.
  */
-var HIGH = 100
-var LOW = 1
+let HIGH = 100
+let LOW = 1
 
 /**
  * 'account-information' fact executes an api call - network calls are expensive, so
  * we set this fact to be LOW priority; it will only be evaluated after all higher priority facts
  * evaluate truthy
  */
-engine.addFact('account-information', function (params, almanac) {
+engine.addFact('account-information', (params, almanac) => {
   // this fact will not be evaluated, because the "date" fact will fail first
-  console.log('Checking the "account-information" fact..') // this will not appear
-  return true
+  console.log('Checking the "account-information" fact...') // this message will not appear
+  return almanac.factValue('accountId')
+  .then((accountId) => {
+    return accountClient.getAccountInformation(accountId)
+  })
 }, { priority: LOW })
 
 /**
  * 'date' fact returns the current unix timestamp in ms.
  * Because this is cheap to compute, we set it to "HIGH" priority
  */
-engine.addFact('date', function (params, almanac) {
-  console.log('Checking the "date" fact..')
+engine.addFact('date', (params, almanac) => {
+  console.log('Checking the "date" fact...')
   return Date.now()
 }, { priority: HIGH })
 

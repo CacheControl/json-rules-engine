@@ -11,7 +11,7 @@
  */
 
 require('colors')
-var Engine = require('../dist').Engine
+let Engine = require('../dist').Engine
 
 /**
  * Setup a new engine
