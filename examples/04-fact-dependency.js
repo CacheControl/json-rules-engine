@@ -13,20 +13,20 @@
  */
 
 require('colors')
-var Engine = require('../dist').Engine
-var accountClient = require('./support/account-api-client')
+let Engine = require('../dist').Engine
+let accountClient = require('./support/account-api-client')
 
 /**
  * Setup a new engine
  */
-var engine = new Engine()
+let engine = new Engine()
 
 /**
  * Rule for identifying microsoft employees that have been terminated.
  * - Demonstrates re-using a same fact with different parameters
  * - Demonstrates calling a base fact, which serves to load data once and reuse later
  */
-var microsoftRule = {
+let microsoftRule = {
   conditions: {
     all: [{
       fact: 'account-information',
@@ -49,7 +49,7 @@ engine.addRule(microsoftRule)
  * - Demonstrates calling a base fact, also shared by the account-information-field fact
  * - Demonstrates performing computations on data retrieved by base fact
  */
-var tenureRule = {
+let tenureRule = {
   conditions: {
     all: [{
       fact: 'employee-tenure',
@@ -67,12 +67,12 @@ engine.addRule(tenureRule)
 /**
  * Register listeners with the engine for rule success and failure
  */
-var facts
+let facts
 engine
-  .on('success', function (event) {
+  .on('success', event => {
     console.log(facts.accountId + ' DID '.green + 'meet conditions for the ' + event.type.underline + ' rule.')
   })
-  .on('failure', function (rule) {
+  .on('failure', rule => {
     console.log(facts.accountId + ' did ' + 'NOT'.red + ' meet conditions for the ' + rule.event.type.underline + ' rule.')
   })
 
@@ -80,13 +80,10 @@ engine
  * 'account-information' fact executes an api call and retrieves account data
  * - Demonstrates facts called only by other facts and never mentioned directly in a rule
  */
-engine.addFact('account-information', function (params, almanac) {
+engine.addFact('account-information', (params, almanac) => {
   return almanac.factValue('accountId')
-    .then(function (accountId) {
+    .then(accountId => {
       return accountClient.getAccountInformation(accountId)
-    })
-    .then(function (results) {
-      return results.data
     })
 })
 
@@ -94,11 +91,11 @@ engine.addFact('account-information', function (params, almanac) {
  * 'employee-tenure' fact retrieves account-information, and computes the duration of employment
  * since the account was created using 'accountInformation.createdAt'
  */
-engine.addFact('employee-tenure', function (params, almanac) {
+engine.addFact('employee-tenure', (params, almanac) => {
   return almanac.factValue('account-information')
-    .then(function (accountInformation) {
-      var created = new Date(accountInformation.createdAt)
-      var now = new Date()
+    .then(accountInformation => {
+      let created = new Date(accountInformation.createdAt)
+      let now = new Date()
       switch (params.unit) {
         case 'years':
           return now.getFullYear() - created.getFullYear()
@@ -114,7 +111,7 @@ engine.addFact('employee-tenure', function (params, almanac) {
 facts = { accountId: 'washington' }
 engine
   .run(facts)  // first run, using washington's facts
-  .then(function () {
+  .then(() => {
     facts = { accountId: 'jefferson' }
     return engine.run(facts) // second run, using jefferson's facts; facts & evaluation are independent of the first run
   })

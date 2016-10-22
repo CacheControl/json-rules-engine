@@ -24,16 +24,90 @@ A rules engine expressed in JSON
 $ npm install json-rules-engine
 ```
 
-## Documentation
+## Basic Example
 
-It's best to start with the [overview](./docs/overview.md) to understand the terminology.  Next, see the [walkthrough](./docs/overview.md) and try out some [examples](./examples).
+This example demonstrates an engine for detecting whether a basketball player has fouled out (a player who commits five personal fouls over the course of a 40-minute game, or six in a 48-minute game, fouls out).
 
-To dive right in, start with the [basic example](./examples/basic.js).
-
-## Hello World
 ```js
 import { Engine } from 'json-rules-engine'
-import { Rule } from 'json-rules-engine'
+
+/**
+ * Setup a new engine
+ */
+let engine = new Engine()
+
+// define a rule for detecting the player has exceeded foul limits.  Foul out any player who:
+// (has committed 5 fouls AND game is 40 minutes) OR (has committed 6 fouls AND game is 48 minutes)
+engine.addRule({
+  conditions: {
+    any: [{
+      all: [{
+        fact: 'gameDuration',
+        operator: 'equal',
+        value: 40
+      }, {
+        fact: 'personalFoulCount',
+        operator: 'greaterThanInclusive',
+        value: 5
+      }]
+    }, {
+      all: [{
+        fact: 'gameDuration',
+        operator: 'equal',
+        value: 48
+      }, {
+        fact: 'personalFoulCount',
+        operator: 'greaterThanInclusive',
+        value: 6
+      }]
+    }]
+  },
+  event: {  // define the event to fire when the conditions evaluate truthy
+    type: 'fouledOut',
+    params: {
+      message: 'Player has fouled out!'
+    }
+  }
+})
+
+/**
+ * Define facts the engine will use to evaluate the conditions above.
+ * Facts may also be loaded asynchronously at runtime; see the advanced example below
+ */
+let facts = {
+  personalFoulCount: 6,
+  gameDuration: 40
+}
+
+// Run the engine to evaluate
+engine
+  .run(facts)
+  .then(events => { // run() returns events with truthy conditions
+    events.map(event => console.log(event.params.message))
+  })
+
+/*
+ * Output:
+ *
+ * Player has fouled out!
+ */
+```
+
+Run this example [here](./examples/nested-boolean-logic.js)
+
+## Advanced Example
+
+This example demonstates an engine for identifying employees who work for Microsoft and are taking Christmas day off.
+
+This  demonstrates an engine which uses asynchronous fact data.
+Fact information is loaded via API call during runtime, and the results are cached and recycled for all 3 conditions.
+It also demonstates use of the condition _path_ feature to reference properties of objects returned by facts.
+
+```js
+import { Engine } from 'json-rules-engine'
+
+// example client for making asynchronous requests to an api, database, etc
+import apiClient from './account-api-client'
 
 /**
  * Setup a new engine
@@ -41,50 +115,76 @@ import { Rule } from 'json-rules-engine'
 let engine = new Engine()
 
 /**
- * Create a rule
+ * Rule for identifying microsoft employees taking pto on christmas
+ *
+ * the account-information fact returns:
+ *  { company: 'XYZ', status: 'ABC', ptoDaysTaken: ['YYYY-MM-DD', 'YYYY-MM-DD'] }
  */
-let rule = new Rule()
-
-// define the 'conditions' for when "hello world" should display
-rule.setConditions({
-  all: [{
-    fact: 'displayMessage',
-    operator: 'equal',
-    value: true
-  }]
-})
-// define the 'event' that will fire when the condition evaluates truthy
-rule.setEvent({
-  type: 'message',
-  params: {
-    data: 'hello-world!'
+let microsoftRule = {
+  conditions: {
+    all: [{
+      fact: 'account-information',
+      operator: 'equal',
+      value: 'microsoft',
+      path: '.company' // access the 'company' property of "account-information"
+    }, {
+      fact: 'account-information',
+      operator: 'in',
+      value: ['active', 'paid-leave'], // 'status' can be active or paid-leave
+      path: '.status' // access the 'status' property of "account-information"
+    }, {
+      fact: 'account-information',
+      operator: 'contains', // the 'ptoDaysTaken' property (an array) must contain '2016-12-25'
+      value: '2016-12-25',
+      path: '.ptoDaysTaken' // access the 'ptoDaysTaken' property of "account-information"
+    }]
+  },
+  event: {
+    type: 'microsoft-christmas-pto',
+    params: {
+      message: 'current microsoft employee taking christmas day off'
+    }
   }
-})
-// add rule to engine
-engine.addRule(rule)
+}
+engine.addRule(microsoftRule)
 
 /**
- * Pass initial values into the engine.
- * Fact values do NOT need to be known at engine runtime; see the
- * examples for how to pull in data asynchronously throughout a run()
+ * 'account-information' fact executes an api call and retrieves account data, feeding the results
+ * into the engine.  The major advantage of this technique is that although there are THREE conditions
+ * requiring this data, only ONE api call is made.  This results in much more efficient runtime performance
+ * and fewer network requests.
  */
-let facts = { displayMessage: true }
+engine.addFact('account-information', function (params, almanac) {
+  console.log('loading account information...')
+  return almanac.factValue('accountId')
+    .then((accountId) => {
+      return apiClient.getAccountInformation(accountId)
+    })
+})
 
-// run the engine
+// define fact(s) known at runtime
+let facts = { accountId: 'lincoln' }
 engine
   .run(facts)
-  .then(triggeredEvents => { // run() return events with truthy conditions
-    triggeredEvents.map(event => console.log(event.params.data))
+  .then(function (events) {
+    console.log(facts.accountId + ' is a ' + events.map(event => event.params.message))
   })
-  .catch(console.log)
+  .catch(err => console.log(err.stack))
 
 /*
- * hello-world!
+ * OUTPUT:
+ *
+ * loading account information... // <-- API call is made ONCE and results recycled for all 3 conditions
+ * lincoln is a current microsoft employee taking christmas day off
  */
 ```
 
-[Try it out!](https://tonicdev.com/cachecontrol/json-rules-engine.hello-world)
+Run this example [here](./examples/nested-boolean-logic.js)
 
+## Docs
+
+The examples above provide a simple demonstrations of what `json-rules-engine` can do.  To learn more about the advanced features and techniques,
+see the [docs](./docs) and read through the [examples](./examples).  There is also a [walkthrough](./docs/walkthrough.md) available.
 
 ## Persisting Rules
 

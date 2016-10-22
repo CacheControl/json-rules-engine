@@ -1,5 +1,8 @@
 # Facts
 
+Facts are methods or constants registered with the engine prior to runtime and referenced within rule conditions.  Each fact method should be a pure function that may return a computed value or promise.
+As rule conditions are evaluated during runtime, they retrieve fact values dynamically and use the condition _operator_ to compare the fact result with the condition _value_.
+
 ## Methods
 
 ### constructor(String id, Constant|Function, [Object options]) -> instance

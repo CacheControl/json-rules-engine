@@ -17,12 +17,12 @@
  */
 
 require('colors')
-var Engine = require('../dist').Engine
+let Engine = require('../dist').Engine
 
 /**
  * Setup a new engine
  */
-var engine = new Engine()
+let engine = new Engine()
 
 /**
  * Define a 'startsWith' custom operator, for use in later rules
@@ -35,7 +35,7 @@ engine.addOperator('startsWith', (factValue, jsonValue) => {
 /**
  * Add rule for detecting words that start with 'a'
  */
-var ruleA = {
+let ruleA = {
   conditions: {
     all: [{
       fact: 'word',
@@ -52,7 +52,7 @@ engine.addRule(ruleA)
 /*
  * Add rule for detecting words that start with 'b'
  */
-var ruleB = {
+let ruleB = {
   conditions: {
     all: [{
       fact: 'word',
@@ -67,7 +67,7 @@ var ruleB = {
 engine.addRule(ruleB)
 
 // utility for printing output
-var printEventType = {
+let printEventType = {
   'start-with-a': 'start with "a"',
   'start-with-b': 'start with "b"'
 }
@@ -75,12 +75,12 @@ var printEventType = {
 /**
  * Register listeners with the engine for rule success and failure
  */
-var facts
+let facts
 engine
-  .on('success', function (event) {
+  .on('success', event => {
     console.log(facts.word + ' DID '.green + printEventType[event.type])
   })
-  .on('failure', function (rule) {
+  .on('failure', rule => {
     console.log(facts.word + ' did ' + 'NOT'.red + ' ' + printEventType[rule.event.type])
   })
 
@@ -92,7 +92,7 @@ facts = {
 }
 engine
   .run(facts)  // first run, using 'bacon'
-  .then(function () {
+  .then(() => {
     facts = {
       word: 'antelope'
     }
