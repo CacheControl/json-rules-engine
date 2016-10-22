@@ -30,60 +30,76 @@ It's best to start with the [overview](./docs/overview.md) to understand the ter
 
 To dive right in, start with the [basic example](./examples/basic.js).
 
-## Hello World
+## Example
+
+In basketball, a player who commits five personal fouls over the course of a 40-minute game, or six in a 48-minute game, fouls out.
+
+This example demonstrates an engine for detecting whether an individual player has fouled out.
+
 ```js
 import { Engine } from 'json-rules-engine'
-import { Rule } from 'json-rules-engine'
 
 /**
  * Setup a new engine
  */
 let engine = new Engine()
 
-/**
- * Create a rule
- */
-let rule = new Rule()
-
-// define the 'conditions' for when "hello world" should display
-rule.setConditions({
-  all: [{
-    fact: 'displayMessage',
-    operator: 'equal',
-    value: true
-  }]
-})
-// define the 'event' that will fire when the condition evaluates truthy
-rule.setEvent({
-  type: 'message',
-  params: {
-    data: 'hello-world!'
+// define a rule for detecting the player has exceeded foul limits.  Foul out any player who:
+// (has committed 5 fouls AND game is 40 minutes) OR (has committed 6 fouls AND game is 48 minutes)
+engine.addRule({
+  conditions: {
+    any: [{
+      all: [{
+        fact: 'gameDuration',
+        operator: 'equal',
+        value: 40
+      }, {
+        fact: 'personalFoulCount',
+        operator: 'greaterThanInclusive',
+        value: 5
+      }]
+    }, {
+      all: [{
+        fact: 'gameDuration',
+        operator: 'equal',
+        value: 48
+      }, {
+        fact: 'personalFoulCount',
+        operator: 'greaterThanInclusive',
+        value: 6
+      }]
+    }]
+  },
+  event: {  // define the event to fire when the conditions evaluate truthy
+    type: 'fouledOut',
+    params: {
+      message: 'Player has fouled out!'
+    }
   }
 })
-// add rule to engine
-engine.addRule(rule)
 
 /**
- * Pass initial values into the engine.
- * Fact values do NOT need to be known at engine runtime; see the
- * examples for how to pull in data asynchronously throughout a run()
+ * define the facts
+ * note: facts may be loaded asynchronously at runtime; see the advanced example below
  */
-let facts = { displayMessage: true }
+let facts = {
+  personalFoulCount: 6,
+  gameDuration: 40
+}
 
 // run the engine
 engine
   .run(facts)
-  .then(triggeredEvents => { // run() return events with truthy conditions
-    triggeredEvents.map(event => console.log(event.params.data))
+  .then(events => { // run() return events with truthy conditions
+    events.map(event => console.log(event.params.message))
   })
-  .catch(console.log)
 
 /*
- * hello-world!
+ * Player has fouled out!
  */
 ```
 
-[Try it out!](https://tonicdev.com/cachecontrol/json-rules-engine.hello-world)
+Run this example [here](./examples/nested-boolean-logic.js)
 
 
 ## Persisting Rules
