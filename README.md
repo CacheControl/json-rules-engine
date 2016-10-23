@@ -93,7 +93,7 @@ engine
  */
 ```
 
-Run this example [here](./examples/nested-boolean-logic.js)
+This is available in the [examples](./examples/02-nested-boolean-logic.js)
 
 ## Advanced Example
 
@@ -179,7 +179,7 @@ engine
  */
 ```
 
-Run this example [here](./examples/nested-boolean-logic.js)
+This is available in the [examples](./examples/03-dynamic-facts)
 
 ## Docs
 

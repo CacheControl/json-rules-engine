@@ -10,10 +10,10 @@
  * complex example demonstrating asynchronously computed facts, see the fact-dependency example.
  *
  * Usage:
- *   node ./examples/custom-operators.js
+ *   node ./examples/06-custom-operators.js
  *
  * For detailed output:
- *   DEBUG=json-rules-engine node ./examples/custom-operators.js
+ *   DEBUG=json-rules-engine node ./examples/06-custom-operators.js
  */
 
 require('colors')

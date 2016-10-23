@@ -4,10 +4,10 @@
  * This example demonstates nested boolean logic - e.g. (x OR y) AND (a OR b).
  *
  * Usage:
- *   node ./examples/nested-boolean-logic.js
+ *   node ./examples/02-nested-boolean-logic.js
  *
  * For detailed output:
- *   DEBUG=json-rules-engine node ./examples/nested-boolean-logic.js
+ *   DEBUG=json-rules-engine node ./examples/02-nested-boolean-logic.js
  */
 
 require('colors')

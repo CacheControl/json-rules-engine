@@ -6,10 +6,10 @@
  * from outside sources (api's, databases, etc)
  *
  * Usage:
- *   node ./examples/fact-dependency.js
+ *   node ./examples/04-fact-dependency.js
  *
  * For detailed output:
- *   DEBUG=json-rules-engine node ./examples/fact-dependency.js
+ *   DEBUG=json-rules-engine node ./examples/04-fact-dependency.js
  */
 
 require('colors')
