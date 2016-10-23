@@ -43,7 +43,9 @@ let Rule = require('json-rules-engine').Rule
 engine.addRule({
   conditions: {},
   event: {},
-  priority: 1
+  priority: 1,                             // optional, default: 1
+  onSuccess: function (event, almanac) {}, // optional
+  onFailure: function (event, almanac) {}, // optional
 })
 
 // or rule instance:

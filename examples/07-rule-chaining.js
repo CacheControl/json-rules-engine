@@ -35,7 +35,13 @@ let drinkRule = {
     }]
   },
   event: { type: 'drinks-screwdrivers' },
-  priority: 10 // IMPORTANT!  Set a higher priority for the drinkRule, so it runs first
+  priority: 10, // IMPORTANT!  Set a higher priority for the drinkRule, so it runs first
+  onSuccess: function (event, almanac) {
+    almanac.addRuntimeFact('screwdriverAficionado', true)
+  },
+  onFailure: function (event, almanac) {
+    almanac.addRuntimeFact('screwdriverAficionado', false)
+  },
 }
 engine.addRule(drinkRule)
 
@@ -68,18 +74,17 @@ let facts
 engine
   .on('success', (event, almanac) => {
     console.log(facts.accountId + ' DID '.green + 'meet conditions for the ' + event.type.underline + ' rule.')
-    almanac.addRuntimeFact('screwdriverAficionado', true)
   })
   .on('failure', rule => {
     console.log(facts.accountId + ' did ' + 'NOT'.red + ' meet conditions for the ' + rule.event.type.underline + ' rule.')
   })
 
 // define fact(s) known at runtime
-facts = { accountId: 'washington', drinksOrangeJuice: true, enjoysVodka: true, isSociable: true, screwdriverAficionado: false }
+facts = { accountId: 'washington', drinksOrangeJuice: true, enjoysVodka: true, isSociable: true }
 engine
   .run(facts)  // first run, using washington's facts
   .then(() => {
-    facts = { accountId: 'jefferson', drinksOrangeJuice: true, enjoysVodka: false, isSociable: true, screwdriverAficionado: false }
+    facts = { accountId: 'jefferson', drinksOrangeJuice: true, enjoysVodka: false, isSociable: true }
     return engine.run(facts) // second run, using jefferson's facts; facts & evaluation are independent of the first run
   })
   .catch(console.log)
