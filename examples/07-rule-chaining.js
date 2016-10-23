@@ -41,7 +41,7 @@ let drinkRule = {
   },
   onFailure: function (event, almanac) {
     almanac.addRuntimeFact('screwdriverAficionado', false)
-  },
+  }
 }
 engine.addRule(drinkRule)
 
