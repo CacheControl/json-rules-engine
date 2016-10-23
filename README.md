@@ -179,7 +179,7 @@ engine
  */
 ```
 
-This is available in the [examples](./examples/03-dynamic-facts)
+This is available in the [examples](./examples/03-dynamic-facts.js)
 
 ## Docs
 
