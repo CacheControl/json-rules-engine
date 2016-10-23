@@ -52,6 +52,36 @@ describe('Rule', () => {
     })
   })
 
+  describe('event emissions', () => {
+    it('can emit', () => {
+      let rule = new Rule()
+      let successSpy = sinon.spy()
+      rule.on('test', successSpy)
+      rule.emit('test')
+      expect(successSpy.callCount).to.equal(1)
+    })
+
+    it('can be initialized with an onSuccess option', (done) => {
+      let event = { type: 'test' }
+      let onSuccess = function (e) {
+        expect(e).to.equal(event)
+        done()
+      }
+      let rule = new Rule({ onSuccess })
+      rule.emit('success', event)
+    })
+
+    it('can be initialized with an onFailure option', (done) => {
+      let event = { type: 'test' }
+      let onFailure = function (e) {
+        expect(e).to.equal(event)
+        done()
+      }
+      let rule = new Rule({ onFailure })
+      rule.emit('failure', event)
+    })
+  })
+
   describe('setConditions()', () => {
     describe('validations', () => {
       it('throws an exception for invalid root conditions', () => {

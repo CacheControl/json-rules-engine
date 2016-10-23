@@ -2,10 +2,11 @@
 
 import params from 'params'
 import Condition from './condition'
+import { EventEmitter } from 'events'
 
 let debug = require('debug')('json-rules-engine')
 
-class Rule {
+class Rule extends EventEmitter {
   /**
    * returns a new Rule instance
    * @param {object,string} options, or json string that can be parsed into options
@@ -17,11 +18,18 @@ class Rule {
    * @return {Rule} instance
    */
   constructor (options) {
+    super()
     if (typeof options === 'string') {
       options = JSON.parse(options)
     }
     if (options && options.conditions) {
       this.setConditions(options.conditions)
+    }
+    if (options && options.onSuccess) {
+      this.on('success', options.onSuccess)
+    }
+    if (options && options.onFailure) {
+      this.on('failure', options.onFailure)
     }
 
     let priority = (options && options.priority) || 1
@@ -136,7 +144,13 @@ class Rule {
       } else {
         comparisonValue = await almanac.factValue(condition.fact, condition.params)
       }
-      return condition.evaluate(comparisonValue, this.engine.operators)
+      let passes = await condition.evaluate(comparisonValue, this.engine.operators)
+      if (passes) {
+        this.emit('success', this.event, almanac)
+      } else {
+        this.emit('failure', this.event, almanac)
+      }
+      return passes
     }
 
     /**
