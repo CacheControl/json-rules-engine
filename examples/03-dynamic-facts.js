@@ -5,10 +5,10 @@
  * to select object properties returned by facts
  *
  * Usage:
- *   node ./examples/dynamic-facts.js
+ *   node ./examples/03-dynamic-facts.js
  *
  * For detailed output:
- *   DEBUG=json-rules-engine node ./examples/dynamic-facts.js
+ *   DEBUG=json-rules-engine node ./examples/03-dynamic-facts.js
  */
 
 require('colors')

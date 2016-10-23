@@ -4,10 +4,10 @@
  * This is the hello-world example from the README.
  *
  * Usage:
- *   node ./examples/hello-world.js
+ *   node ./examples/01-hello-world.js
  *
  * For detailed output:
- *   DEBUG=json-rules-engine node ./examples/hello-world.js
+ *   DEBUG=json-rules-engine node ./examples/01-hello-world.js
  */
 
 require('colors')

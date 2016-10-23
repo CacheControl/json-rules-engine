@@ -14,15 +14,23 @@ var _condition = require('./condition');
 
 var _condition2 = _interopRequireDefault(_condition);
 
+var _events = require('events');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 var debug = require('debug')('json-rules-engine');
 
-var Rule = function () {
+var Rule = function (_EventEmitter) {
+  _inherits(Rule, _EventEmitter);
+
   /**
    * returns a new Rule instance
    * @param {object,string} options, or json string that can be parsed into options
@@ -36,18 +44,27 @@ var Rule = function () {
   function Rule(options) {
     _classCallCheck(this, Rule);
 
+    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Rule).call(this));
+
     if (typeof options === 'string') {
       options = JSON.parse(options);
     }
     if (options && options.conditions) {
-      this.setConditions(options.conditions);
+      _this.setConditions(options.conditions);
+    }
+    if (options && options.onSuccess) {
+      _this.on('success', options.onSuccess);
+    }
+    if (options && options.onFailure) {
+      _this.on('failure', options.onFailure);
     }
 
     var priority = options && options.priority || 1;
-    this.setPriority(priority);
+    _this.setPriority(priority);
 
     var event = options && options.event || { type: 'unknown' };
-    this.setEvent(event);
+    _this.setEvent(event);
+    return _this;
   }
 
   /**
@@ -134,14 +151,14 @@ var Rule = function () {
   }, {
     key: 'prioritizeConditions',
     value: function prioritizeConditions(conditions) {
-      var _this = this;
+      var _this2 = this;
 
       var factSets = conditions.reduce(function (sets, condition) {
         // if a priority has been set on this specific condition, honor that first
         // otherwise, use the fact's priority
         var priority = condition.priority;
         if (!priority) {
-          var fact = _this.engine.getFact(condition.fact);
+          var fact = _this2.engine.getFact(condition.fact);
           priority = fact && fact.priority || 1;
         }
         if (!sets[priority]) sets[priority] = [];
@@ -165,7 +182,7 @@ var Rule = function () {
     key: 'evaluate',
     value: function () {
       var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee6(almanac) {
-        var _this2 = this;
+        var _this3 = this;
 
         var evaluateCondition, evaluateConditions, prioritizeAndRun, any, all;
         return regeneratorRuntime.wrap(function _callee6$(_context6) {
@@ -179,7 +196,7 @@ var Rule = function () {
                  */
                 evaluateCondition = function () {
                   var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee(condition) {
-                    var comparisonValue, subConditions;
+                    var comparisonValue, subConditions, passes;
                     return regeneratorRuntime.wrap(function _callee$(_context) {
                       while (1) {
                         switch (_context.prev = _context.next) {
@@ -225,14 +242,25 @@ var Rule = function () {
                             comparisonValue = _context.sent;
 
                           case 17:
-                            return _context.abrupt('return', condition.evaluate(comparisonValue, _this2.engine.operators));
+                            _context.next = 19;
+                            return condition.evaluate(comparisonValue, _this3.engine.operators);
 
-                          case 18:
+                          case 19:
+                            passes = _context.sent;
+
+                            if (passes) {
+                              _this3.emit('success', _this3.event, almanac);
+                            } else {
+                              _this3.emit('failure', _this3.event, almanac);
+                            }
+                            return _context.abrupt('return', passes);
+
+                          case 22:
                           case 'end':
                             return _context.stop();
                         }
                       }
-                    }, _callee, _this2);
+                    }, _callee, _this3);
                   }));
 
                   return function evaluateCondition(_x3) {
@@ -274,7 +302,7 @@ var Rule = function () {
                             return _context2.stop();
                         }
                       }
-                    }, _callee2, _this2);
+                    }, _callee2, _this3);
                   }));
 
                   return function evaluateConditions(_x4, _x5) {
@@ -314,7 +342,7 @@ var Rule = function () {
                             if (operator === 'all') {
                               method = Array.prototype.every;
                             }
-                            orderedSets = _this2.prioritizeConditions(conditions);
+                            orderedSets = _this3.prioritizeConditions(conditions);
                             cursor = Promise.resolve();
 
                             orderedSets.forEach(function (set) {
@@ -344,7 +372,7 @@ var Rule = function () {
                             return _context3.stop();
                         }
                       }
-                    }, _callee3, _this2);
+                    }, _callee3, _this3);
                   }));
 
                   return function prioritizeAndRun(_x6, _x7) {
@@ -372,7 +400,7 @@ var Rule = function () {
                             return _context4.stop();
                         }
                       }
-                    }, _callee4, _this2);
+                    }, _callee4, _this3);
                   }));
 
                   return function any(_x8) {
@@ -400,7 +428,7 @@ var Rule = function () {
                             return _context5.stop();
                         }
                       }
-                    }, _callee5, _this2);
+                    }, _callee5, _this3);
                   }));
 
                   return function all(_x9) {
@@ -443,6 +471,6 @@ var Rule = function () {
   }]);
 
   return Rule;
-}();
+}(_events.EventEmitter);
 
 exports.default = Rule;

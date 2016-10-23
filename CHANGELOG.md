@@ -1,3 +1,24 @@
+1.3.0 / 2016-10-24
+==================
+
+  * Rule event emissions
+  * Rule chaining
+
+1.2.1 / 2016-10-22
+==================
+
+  * Use Array.indexOf instead of Array.includes for older node version compatibility
+
+1.2.0 / 2016-09-13
+==================
+
+  * Fact path support
+
+1.1.0 / 2016-09-11
+==================
+
+  * Custom operator support
+
 1.0.4 / 2016-06-18
 ==================
 

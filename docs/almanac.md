@@ -22,6 +22,14 @@ almanac
   .then( values => console.log(values))
 ```
 
+### almanac.addRuntimeFact(String factId, Mixed value)
+
+Sets a constant fact mid-run.  Often used in conjunction with rule and engine event emissions.
+
+```js
+almanac.addRuntimeFact('account-id', 1)
+```
+
 ## Common Use Cases
 
 ### Fact dependencies
@@ -102,3 +110,38 @@ engine.on('success', (event, almanac) => {
     })
 })
 ```
+
+### Rule Chaining
+
+The `almanac.addRuntimeFact()` method may be used in conjunction with event emissions to
+set fact values during runtime, effectively enabling _rule-chaining_.  Note that ordering
+of rule execution is enabled via the `priority` option, and is crucial component to propertly
+configuring rule chaining.
+
+```js
+engine.addRule({
+  conditions,
+  event,
+  onSuccess: function (event, almanac) {
+    almanac.addRuntimeFact('rule-1-passed', true) // track that the rule passed
+  },
+  onFailure: function (event, almanac) {
+    almanac.addRuntimeFact('rule-1-passed', false) // track that the rule failed
+  },
+  priority: 10 // a higher priority ensures this rule will be run prior to subsequent rules
+})
+
+// in a later rule:
+engine.addRule({
+  conditions: {
+    all: [{
+      fact: 'rule-1-passed',
+      operator: 'equal',
+      value: true
+    }
+  },
+  priority: 1 // lower priority ensures this is run AFTER its predecessor
+}
+```
+
+See the [full example](../examples/07-rule-chaining.js)

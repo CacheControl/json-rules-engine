@@ -76,6 +76,29 @@ let rule = new Rule(jsonString) // restored rule; same conditions, priority, eve
 let jsonObject = rule.toJSON(false) // object: {conditions:{ all: [] }, priority: 50 ...
 ```
 
+### Events
+
+Listen for 'success' and 'failure' events emitted when rule is evaluated.
+
+#### ```rule.on('success', Function(Object event, Almanac almanac))```
+
+```js
+// whenever rule is evaluated and the conditions pass, 'success' will trigger
+rule.on('success', function(event, almanac) {
+  console.log(event) // { type: 'my-event', params: { id: 1 }
+})
+```
+
+#### ```rule.on('failure', Function(Object event, Almanac almanac))```
+
+Companion to 'success', except fires when the rule fails.
+
+```js
+engine.on('failure', function(event, almanac) {
+  console.log(event) // { type: 'my-event', params: { id: 1 }
+})
+```
+
 ## Conditions
 
 Each rule condition must begin with a boolean operator(```all``` or ```any```) at its root.
