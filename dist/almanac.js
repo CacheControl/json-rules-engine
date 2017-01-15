@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -14,7 +14,7 @@ var _fact2 = _interopRequireDefault(_fact);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -28,7 +28,7 @@ var verbose = require('debug')('json-rules-engine-verbose');
  */
 var Almanac = function () {
   function Almanac(factMap) {
-    var runtimeFacts = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+    var runtimeFacts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
     _classCallCheck(this, Almanac);
 
@@ -123,7 +123,7 @@ var Almanac = function () {
     key: 'factValue',
     value: function () {
       var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(factId) {
-        var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+        var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
         var fact, cacheKey, cacheVal;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
@@ -155,7 +155,7 @@ var Almanac = function () {
         }, _callee, this);
       }));
 
-      function factValue(_x2, _x3) {
+      function factValue(_x2) {
         return _ref.apply(this, arguments);
       }
 

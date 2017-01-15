@@ -18,7 +18,7 @@ var _events = require('events');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -44,7 +44,7 @@ var Rule = function (_EventEmitter) {
   function Rule(options) {
     _classCallCheck(this, Rule);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Rule).call(this));
+    var _this = _possibleConstructorReturn(this, (Rule.__proto__ || Object.getPrototypeOf(Rule)).call(this));
 
     if (typeof options === 'string') {
       options = JSON.parse(options);
@@ -126,7 +126,7 @@ var Rule = function (_EventEmitter) {
   }, {
     key: 'toJSON',
     value: function toJSON() {
-      var stringify = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+      var stringify = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
       var props = {
         conditions: this.conditions.toJSON(false),
