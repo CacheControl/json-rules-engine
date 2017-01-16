@@ -37,7 +37,7 @@ var _engineDefaultOperators2 = _interopRequireDefault(_engineDefaultOperators);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -59,11 +59,11 @@ var Engine = function (_EventEmitter) {
    * @param  {Rule[]} rules - array of rules to initialize with
    */
   function Engine() {
-    var rules = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
+    var rules = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
     _classCallCheck(this, Engine);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Engine).call(this));
+    var _this = _possibleConstructorReturn(this, (Engine.__proto__ || Object.getPrototypeOf(Engine)).call(this));
 
     _this.rules = [];
     _this.operators = new Map();
@@ -265,7 +265,7 @@ var Engine = function (_EventEmitter) {
       var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2() {
         var _this4 = this;
 
-        var runtimeFacts = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+        var runtimeFacts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
         var almanac, orderedSets, cursor;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
@@ -303,7 +303,7 @@ var Engine = function (_EventEmitter) {
         }, _callee2, this);
       }));
 
-      function run(_x4) {
+      function run() {
         return _ref2.apply(this, arguments);
       }
 
