@@ -167,7 +167,7 @@ class Engine extends EventEmitter {
     debug(`engine::run runtimeFacts:`, runtimeFacts)
     runtimeFacts['success-events'] = new Fact('success-events', SuccessEventFact(), { cache: false })
     this.status = RUNNING
-    let almanac = new Almanac(this.facts, runtimeFacts, this.options)
+    let almanac = new Almanac(this.facts, runtimeFacts)
     let orderedSets = this.prioritizeRules()
     let cursor = Promise.resolve()
     // for each rule set, evaluate in parallel,
