@@ -24,6 +24,8 @@
       "/dist"
     ],
     "globals": [
+      "context",
+      "xcontext",
       "describe",
       "xdescribe",
       "it",

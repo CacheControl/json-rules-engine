@@ -134,6 +134,7 @@ class Rule extends EventEmitter {
      */
     let evaluateCondition = async (condition) => {
       let comparisonValue
+      let passes
       if (condition.isBooleanOperator()) {
         let subConditions = condition[condition.operator]
         if (condition.operator === 'all') {
@@ -142,9 +143,16 @@ class Rule extends EventEmitter {
           comparisonValue = await any(subConditions)
         }
       } else {
-        comparisonValue = await almanac.factValue(condition.fact, condition.params)
+        try {
+          comparisonValue = await almanac.factValue(condition.fact, condition.params)
+        } catch (err) {
+          if (this.engine.allowUndefinedFacts && err.code === 'UNDEFINED_FACT') passes = false
+          else throw err
+        }
       }
-      let passes = await condition.evaluate(comparisonValue, this.engine.operators)
+      if (passes === undefined) {
+        passes = await condition.evaluate(comparisonValue, this.engine.operators)
+      }
       if (passes) {
         this.emit('success', this.event, almanac)
       } else {

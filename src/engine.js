@@ -20,9 +20,10 @@ class Engine extends EventEmitter {
    * Returns a new Engine instance
    * @param  {Rule[]} rules - array of rules to initialize with
    */
-  constructor (rules = []) {
+  constructor (rules = [], options = {}) {
     super()
     this.rules = []
+    this.allowUndefinedFacts = options.allowUndefinedFacts || false
     this.operators = new Map()
     this.facts = new Map()
     this.status = READY
@@ -166,7 +167,7 @@ class Engine extends EventEmitter {
     debug(`engine::run runtimeFacts:`, runtimeFacts)
     runtimeFacts['success-events'] = new Fact('success-events', SuccessEventFact(), { cache: false })
     this.status = RUNNING
-    let almanac = new Almanac(this.facts, runtimeFacts)
+    let almanac = new Almanac(this.facts, runtimeFacts, this.options)
     let orderedSets = this.prioritizeRules()
     let cursor = Promise.resolve()
     // for each rule set, evaluate in parallel,
