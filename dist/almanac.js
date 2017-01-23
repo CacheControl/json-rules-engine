@@ -12,6 +12,8 @@ var _fact = require('./fact');
 
 var _fact2 = _interopRequireDefault(_fact);
 
+var _errors = require('./errors');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
@@ -60,7 +62,7 @@ var Almanac = function () {
     value: function _getFact(factId) {
       var fact = this.factMap.get(factId);
       if (fact === undefined) {
-        throw new Error('Undefined fact: ' + factId);
+        throw new _errors.UndefinedFactError('Undefined fact: ' + factId);
       }
       return fact;
     }

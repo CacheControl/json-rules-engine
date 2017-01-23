@@ -196,58 +196,84 @@ var Rule = function (_EventEmitter) {
                  */
                 evaluateCondition = function () {
                   var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee(condition) {
-                    var comparisonValue, subConditions, passes;
+                    var comparisonValue, passes, subConditions;
                     return regeneratorRuntime.wrap(function _callee$(_context) {
                       while (1) {
                         switch (_context.prev = _context.next) {
                           case 0:
                             comparisonValue = void 0;
+                            passes = void 0;
 
                             if (!condition.isBooleanOperator()) {
-                              _context.next = 14;
+                              _context.next = 15;
                               break;
                             }
 
                             subConditions = condition[condition.operator];
 
                             if (!(condition.operator === 'all')) {
-                              _context.next = 9;
+                              _context.next = 10;
                               break;
                             }
 
-                            _context.next = 6;
+                            _context.next = 7;
                             return all(subConditions);
 
-                          case 6:
+                          case 7:
                             comparisonValue = _context.sent;
-                            _context.next = 12;
+                            _context.next = 13;
                             break;
 
-                          case 9:
-                            _context.next = 11;
+                          case 10:
+                            _context.next = 12;
                             return any(subConditions);
 
-                          case 11:
+                          case 12:
                             comparisonValue = _context.sent;
 
-                          case 12:
-                            _context.next = 17;
+                          case 13:
+                            _context.next = 28;
                             break;
 
-                          case 14:
-                            _context.next = 16;
+                          case 15:
+                            _context.prev = 15;
+                            _context.next = 18;
                             return almanac.factValue(condition.fact, condition.params);
 
-                          case 16:
+                          case 18:
                             comparisonValue = _context.sent;
+                            _context.next = 28;
+                            break;
 
-                          case 17:
-                            _context.next = 19;
+                          case 21:
+                            _context.prev = 21;
+                            _context.t0 = _context['catch'](15);
+
+                            if (!(_this3.engine.allowUndefinedFacts && _context.t0.code === 'UNDEFINED_FACT')) {
+                              _context.next = 27;
+                              break;
+                            }
+
+                            passes = false;
+                            _context.next = 28;
+                            break;
+
+                          case 27:
+                            throw _context.t0;
+
+                          case 28:
+                            if (!(passes === undefined)) {
+                              _context.next = 32;
+                              break;
+                            }
+
+                            _context.next = 31;
                             return condition.evaluate(comparisonValue, _this3.engine.operators);
 
-                          case 19:
+                          case 31:
                             passes = _context.sent;
 
+                          case 32:
                             if (passes) {
                               _this3.emit('success', _this3.event, almanac);
                             } else {
@@ -255,12 +281,12 @@ var Rule = function (_EventEmitter) {
                             }
                             return _context.abrupt('return', passes);
 
-                          case 22:
+                          case 34:
                           case 'end':
                             return _context.stop();
                         }
                       }
-                    }, _callee, _this3);
+                    }, _callee, _this3, [[15, 21]]);
                   }));
 
                   return function evaluateCondition(_x3) {

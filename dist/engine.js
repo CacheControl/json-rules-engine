@@ -60,12 +60,14 @@ var Engine = function (_EventEmitter) {
    */
   function Engine() {
     var rules = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
     _classCallCheck(this, Engine);
 
     var _this = _possibleConstructorReturn(this, (Engine.__proto__ || Object.getPrototypeOf(Engine)).call(this));
 
     _this.rules = [];
+    _this.allowUndefinedFacts = options.allowUndefinedFacts || false;
     _this.operators = new Map();
     _this.facts = new Map();
     _this.status = READY;
@@ -245,7 +247,7 @@ var Engine = function (_EventEmitter) {
         }, _callee, this);
       }));
 
-      function evaluateRules(_x2, _x3) {
+      function evaluateRules(_x3, _x4) {
         return _ref.apply(this, arguments);
       }
 
