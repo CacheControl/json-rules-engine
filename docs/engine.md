@@ -4,7 +4,7 @@ The Engine stores and executes rules, emits events, and maintains state.
 
 ## Methods
 
-### constructor([Array rules])
+### constructor([Array rules], Object [options])
 
 ```js
 let Engine = require('json-rules-engine').Engine
@@ -13,7 +13,19 @@ let engine = new Engine()
 
 // initialize with rules
 let engine = new Engine([Array rules])
+
+// initialize with options
+let options = {
+  allowUndefinedFacts: false
+};
+let engine = new Engine([Array rules], options)
 ```
+
+#### Options
+
+`allowUndefinedFacts` - By default, when a running engine encounters an undefined fact,
+an exception is thrown.  Turning this option on will cause the engine to treat
+undefined facts as falsey conditions.  (default: false)
 
 ### engine.addFact(String id, Function [definitionFunc], Object [options])
 

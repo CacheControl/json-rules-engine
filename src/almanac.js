@@ -4,6 +4,7 @@ let debug = require('debug')('json-rules-engine')
 let verbose = require('debug')('json-rules-engine-verbose')
 
 import Fact from './fact'
+import { UndefinedFactError } from './errors'
 
 /**
  * Fact results lookup
@@ -36,7 +37,7 @@ export default class Almanac {
   _getFact (factId) {
     let fact = this.factMap.get(factId)
     if (fact === undefined) {
-      throw new Error(`Undefined fact: ${factId}`)
+      throw new UndefinedFactError(`Undefined fact: ${factId}`)
     }
     return fact
   }

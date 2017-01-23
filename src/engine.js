@@ -20,9 +20,10 @@ class Engine extends EventEmitter {
    * Returns a new Engine instance
    * @param  {Rule[]} rules - array of rules to initialize with
    */
-  constructor (rules = []) {
+  constructor (rules = [], options = {}) {
     super()
     this.rules = []
+    this.allowUndefinedFacts = options.allowUndefinedFacts || false
     this.operators = new Map()
     this.facts = new Map()
     this.status = READY
