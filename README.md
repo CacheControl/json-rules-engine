@@ -207,3 +207,6 @@ To see what the engine is doing under the hood, debug output can be turned on vi
 ```bash
 DEBUG=json-rules-engine
 ```
+
+## License
+[ISC](./LICENSE)
