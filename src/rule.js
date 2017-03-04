@@ -142,17 +142,18 @@ class Rule extends EventEmitter {
         } else {
           comparisonValue = await any(subConditions)
         }
+        // for booleans, rule passing is determined by the all/any result
+        passes = comparisonValue === true
       } else {
         try {
-          comparisonValue = await almanac.factValue(condition.fact, condition.params)
+          passes = await condition.evaluate(almanac, this.engine.operators, comparisonValue)
         } catch (err) {
+          // any condition raising an undefined fact error is considered falsey when allowUndefinedFacts is enabled
           if (this.engine.allowUndefinedFacts && err.code === 'UNDEFINED_FACT') passes = false
           else throw err
         }
       }
-      if (passes === undefined) {
-        passes = await condition.evaluate(comparisonValue, this.engine.operators)
-      }
+
       if (passes) {
         this.emit('success', this.event, almanac)
       } else {

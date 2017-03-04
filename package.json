@@ -55,7 +55,7 @@
     "chai": "3.4.1",
     "chai-as-promised": "^5.2.0",
     "colors": "~1.1.2",
-    "mocha": "2.3.4",
+    "mocha": "3.2.0",
     "regenerator": "~0.8.46",
     "sinon": "^1.17.2",
     "sinon-chai": "^2.8.0",
@@ -64,6 +64,7 @@
   },
   "dependencies": {
     "debug": "2.2.0",
+    "lodash.isplainobject": "4.0.6",
     "object-hash": "1.1.5",
     "params": "0.1.1",
     "selectn": "1.1.1"

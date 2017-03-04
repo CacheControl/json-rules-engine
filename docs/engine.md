@@ -34,12 +34,12 @@ undefined facts as falsey conditions.  (default: false)
 engine.addFact('speed-of-light', 299792458)
 
 // facts computed via function
-engine.addFact('account-type', function getAccountType() {
+engine.addFact('account-type', function getAccountType(params, almanac) {
   // ...
 })
 
 // facts with options:
-engine.addFact('account-type', function getAccountType() {
+engine.addFact('account-type', function getAccountType(params, almanac) {
   // ...
 }, { cache: false, priority: 500 })
 ```

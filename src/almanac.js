@@ -2,6 +2,9 @@
 
 let debug = require('debug')('json-rules-engine')
 let verbose = require('debug')('json-rules-engine-verbose')
+let selectn = require('selectn')
+let isPlainObject = require('lodash.isplainobject')
+let warn = require('debug')('json-rules-engine:warn')
 
 import Fact from './fact'
 import { UndefinedFactError } from './errors'
@@ -82,9 +85,10 @@ export default class Almanac {
    * by the engine, which cache's fact computations based on parameters provided
    * @param  {string} factId - fact identifier
    * @param  {Object} params - parameters to feed into the fact.  By default, these will also be used to compute the cache key
+   * @param  {String} path - object
    * @return {Promise} a promise which will resolve with the fact computation.
    */
-  async factValue (factId, params = {}) {
+  async factValue (factId, params = {}, path = '') {
     let fact = this._getFact(factId)
     let cacheKey = fact.getCacheKey(params)
     let cacheVal = cacheKey && this.factResultsCache.get(cacheKey)
@@ -93,6 +97,15 @@ export default class Almanac {
       return cacheVal
     }
     verbose(`almanac::factValue cache miss for fact:${factId}; calculating`)
-    return this._setFactValue(fact, params, fact.calculate(params, this))
+    let factValue = await this._setFactValue(fact, params, fact.calculate(params, this))
+    if (path) {
+      if (isPlainObject(factValue) || Array.isArray(factValue)) {
+        factValue = selectn(path)(factValue)
+        debug(`condition::evaluate extracting object property ${path}, received: ${factValue}`)
+      } else {
+        warn(`condition::evaluate could not compute object path(${path}) of non-object: ${factValue} <${typeof factValue}>; continuing with ${factValue}`)
+      }
+    }
+    return factValue
   }
 }
