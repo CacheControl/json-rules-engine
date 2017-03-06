@@ -50,9 +50,9 @@ describe('Engine: fact priority', () => {
         engine.stop()
       })
       await engine.run()
-      expect(eventSpy).to.have.been.calledOnce
-      expect(ageStub).to.have.been.calledOnce
-      expect(segmentStub).to.not.have.been.called
+      expect(eventSpy).to.have.been.calledOnce()
+      expect(ageStub).to.have.been.calledOnce()
+      expect(segmentStub).to.not.have.been.called()
     })
   })
 })

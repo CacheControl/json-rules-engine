@@ -1,7 +1,6 @@
 'use strict'
 
-import engineFactory from '../src/index'
-import { Fact } from '../src/index'
+import engineFactory, { Fact } from '../src/index'
 import sinon from 'sinon'
 
 describe('Engine: custom cache keys', () => {
@@ -60,9 +59,9 @@ describe('Engine: custom cache keys', () => {
   describe('1 rule', () => {
     it('allows a fact to retrieve other fact values', async () => {
       await engine.run()
-      expect(eventSpy).to.have.been.calledOnce
-      expect(demographicDataSpy).to.have.been.calledOnce
-      expect(demographicSpy).to.have.been.calledTwice
+      expect(eventSpy).to.have.been.calledOnce()
+      expect(demographicDataSpy).to.have.been.calledOnce()
+      expect(demographicSpy).to.have.been.calledTwice()
     })
   })
 
@@ -82,10 +81,10 @@ describe('Engine: custom cache keys', () => {
       engine.addRule(rule)
 
       await engine.run()
-      expect(eventSpy).to.have.been.calledTwice
-      expect(demographicDataSpy).to.have.been.calledOnce
-      expect(demographicSpy).to.have.been.calledTwice
-      expect(demographicDataSpy).to.have.been.calledOnce
+      expect(eventSpy).to.have.been.calledTwice()
+      expect(demographicDataSpy).to.have.been.calledOnce()
+      expect(demographicSpy).to.have.been.calledTwice()
+      expect(demographicDataSpy).to.have.been.calledOnce()
     })
   })
 })

@@ -36,18 +36,18 @@ describe('Engine: run', () => {
   describe('independent runs', () => {
     it('treats each run() independently', async () => {
       await Promise.all([50, 10, 12, 30, 14, 15, 25].map((age) => engine.run({age})))
-      expect(eventSpy).to.have.been.calledThrice
+      expect(eventSpy).to.have.been.calledThrice()
     })
 
     it('allows runtime facts to override engine facts for a single run()', async () => {
       engine.addFact('age', 30)
 
       await engine.run({ age: 85 }) // override 'age' with runtime fact
-      expect(eventSpy).to.have.been.calledTwice
+      expect(eventSpy).to.have.been.calledTwice()
 
       eventSpy.reset()
       await engine.run() // no runtime fact; revert to age: 30
-      expect(eventSpy).to.have.been.calledOnce
+      expect(eventSpy).to.have.been.calledOnce()
 
       eventSpy.reset()
       await engine.run({ age: 2 }) // override 'age' with runtime fact

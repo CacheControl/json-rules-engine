@@ -33,6 +33,6 @@ describe('Engine: failure', () => {
     engine.on('failure', failureSpy)
     engine.addFact('age', 50)
     await engine.run()
-    expect(failureSpy).to.not.have.been.calledOnce
+    expect(failureSpy).to.not.have.been.calledOnce()
   })
 })

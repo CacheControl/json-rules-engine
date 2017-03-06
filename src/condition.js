@@ -62,7 +62,7 @@ export default class Condition {
   /**
    * Interprets .value as either a primitive, or if a fact, retrieves the fact value
    */
-  async _getValue(almanac) {
+  async _getValue (almanac) {
     let value = this.value
     if (isPlainObject(value) && value.hasOwnProperty('fact')) { // value: { fact: 'xyz' }
       value = await almanac.factValue(value.fact, value.params, value.path)

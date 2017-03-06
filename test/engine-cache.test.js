@@ -35,14 +35,14 @@ describe('Engine: cache', () => {
   it('loads facts once and caches the results for future use', async () => {
     setup({cache: true})
     await engine.run()
-    expect(eventSpy).to.have.been.calledThrice
-    expect(factSpy).to.have.been.calledOnce
+    expect(eventSpy).to.have.been.calledThrice()
+    expect(factSpy).to.have.been.calledOnce()
   })
 
   it('allows caching to be turned off', async () => {
     setup({cache: false})
     await engine.run()
-    expect(eventSpy).to.have.been.calledThrice
-    expect(factSpy).to.have.been.calledThrice
+    expect(eventSpy).to.have.been.calledThrice()
+    expect(factSpy).to.have.been.calledThrice()
   })
 })

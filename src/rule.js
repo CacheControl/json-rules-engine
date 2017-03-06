@@ -110,7 +110,7 @@ class Rule extends EventEmitter {
       let priority = condition.priority
       if (!priority) {
         let fact = this.engine.getFact(condition.fact)
-        priority = fact && fact.priority || 1
+        priority = (fact && fact.priority) || 1
       }
       if (!sets[priority]) sets[priority] = []
       sets[priority].push(condition)

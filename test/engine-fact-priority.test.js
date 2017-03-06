@@ -51,11 +51,11 @@ describe('Engine: fact priority', () => {
       setup(allCondition)
       ageStub.returns(10) // fail
       await engine.run()
-      expect(failureSpy).to.have.been.called
-      expect(eventSpy).to.not.have.been.called
-      expect(ageStub).to.have.been.calledOnce
-      expect(segmentStub).to.not.have.been.called
-      expect(accountTypeStub).to.not.have.been.called
+      expect(failureSpy).to.have.been.called()
+      expect(eventSpy).to.not.have.been.called()
+      expect(ageStub).to.have.been.calledOnce()
+      expect(segmentStub).to.not.have.been.called()
+      expect(accountTypeStub).to.not.have.been.called()
     })
 
     it('stops on the first fact to fail, part 2', async () => {
@@ -63,11 +63,11 @@ describe('Engine: fact priority', () => {
       ageStub.returns(20) // pass
       segmentStub.returns('android') // fail
       await engine.run()
-      expect(failureSpy).to.have.been.called
-      expect(eventSpy).to.not.have.been.called
-      expect(ageStub).to.have.been.calledOnce
-      expect(segmentStub).to.have.been.calledOnce
-      expect(accountTypeStub).to.not.have.been.called
+      expect(failureSpy).to.have.been.called()
+      expect(eventSpy).to.not.have.been.called()
+      expect(ageStub).to.have.been.calledOnce()
+      expect(segmentStub).to.have.been.calledOnce()
+      expect(accountTypeStub).to.not.have.been.called()
     })
 
     describe('sub-conditions', () => {
@@ -96,11 +96,11 @@ describe('Engine: fact priority', () => {
         ageStub.returns(20) // pass
         segmentStub.returns('android') // fail
         await engine.run()
-        expect(failureSpy).to.have.been.called
-        expect(eventSpy).to.not.have.been.called
-        expect(ageStub).to.have.been.calledOnce
-        expect(segmentStub).to.have.been.calledOnce
-        expect(accountTypeStub).to.not.have.been.called
+        expect(failureSpy).to.have.been.called()
+        expect(eventSpy).to.not.have.been.called()
+        expect(ageStub).to.have.been.calledOnce()
+        expect(segmentStub).to.have.been.calledOnce()
+        expect(accountTypeStub).to.not.have.been.called()
       })
     })
   })
@@ -125,11 +125,11 @@ describe('Engine: fact priority', () => {
       setup(anyCondition)
       ageStub.returns(20) // succeed
       await engine.run()
-      expect(eventSpy).to.have.been.calledOnce
-      expect(failureSpy).to.not.have.been.called
-      expect(ageStub).to.have.been.calledOnce
-      expect(segmentStub).to.not.have.been.called
-      expect(accountTypeStub).to.not.have.been.called
+      expect(eventSpy).to.have.been.calledOnce()
+      expect(failureSpy).to.not.have.been.called()
+      expect(ageStub).to.have.been.calledOnce()
+      expect(segmentStub).to.not.have.been.called()
+      expect(accountTypeStub).to.not.have.been.called()
     })
 
     it('short circuits on the first fact to fail, part 2', async () => {
@@ -137,11 +137,11 @@ describe('Engine: fact priority', () => {
       ageStub.returns(10) // fail
       segmentStub.returns('human') // pass
       await engine.run()
-      expect(eventSpy).to.have.been.calledOnce
-      expect(failureSpy).to.not.have.been.called
-      expect(ageStub).to.have.been.calledOnce
-      expect(segmentStub).to.have.been.calledOnce
-      expect(accountTypeStub).to.not.have.been.called
+      expect(eventSpy).to.have.been.calledOnce()
+      expect(failureSpy).to.not.have.been.called()
+      expect(ageStub).to.have.been.calledOnce()
+      expect(segmentStub).to.have.been.calledOnce()
+      expect(accountTypeStub).to.not.have.been.called()
     })
 
     describe('sub-conditions', () => {
@@ -170,11 +170,11 @@ describe('Engine: fact priority', () => {
         ageStub.returns(20) // success
         segmentStub.returns('human') // success
         await engine.run()
-        expect(failureSpy).to.not.have.been.called
-        expect(eventSpy).to.have.been.called
-        expect(ageStub).to.have.been.calledOnce
-        expect(segmentStub).to.have.been.calledOnce
-        expect(accountTypeStub).to.not.have.been.called
+        expect(failureSpy).to.not.have.been.called()
+        expect(eventSpy).to.have.been.called()
+        expect(ageStub).to.have.been.calledOnce()
+        expect(segmentStub).to.have.been.calledOnce()
+        expect(accountTypeStub).to.not.have.been.called()
       })
     })
   })

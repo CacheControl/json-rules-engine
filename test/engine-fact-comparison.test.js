@@ -1,14 +1,13 @@
 'use strict'
 
 import engineFactory from '../src/index'
-import { Fact } from '../src/index'
 import sinon from 'sinon'
 
 describe('Engine: fact to fact comparison', () => {
   let engine
   let eventSpy = sinon.spy()
 
-  function setup(conditions) {
+  function setup (conditions) {
     let event = { type: 'success-event' }
     eventSpy.reset()
     engine = engineFactory()
@@ -30,7 +29,7 @@ describe('Engine: fact to fact comparison', () => {
     it('allows a fact to retrieve other fact values', async () => {
       setup(constantCondition)
       await engine.run({ height: 1, width: 2 })
-      expect(eventSpy).to.have.been.calledOnce
+      expect(eventSpy).to.have.been.calledOnce()
 
       eventSpy.reset()
 
@@ -66,7 +65,7 @@ describe('Engine: fact to fact comparison', () => {
         return params.multiplier * width
       })
       await engine.run({ height: 5, width: 10 })
-      expect(eventSpy).to.have.been.calledOnce
+      expect(eventSpy).to.have.been.calledOnce()
 
       eventSpy.reset()
 
@@ -80,7 +79,7 @@ describe('Engine: fact to fact comparison', () => {
       all: [{
         fact: 'widthMultiplier',
         params: {
-          multiplier: 2,
+          multiplier: 2
         },
         path: '.feet',
         operator: 'equal',
@@ -104,7 +103,7 @@ describe('Engine: fact to fact comparison', () => {
         return { feet: params.multiplier * width }
       })
       await engine.run({ height: 5, width: 10 })
-      expect(eventSpy).to.have.been.calledOnce
+      expect(eventSpy).to.have.been.calledOnce()
 
       eventSpy.reset()
 

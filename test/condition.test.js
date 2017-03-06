@@ -76,14 +76,14 @@ describe('Condition', () => {
     context('validations', () => {
       beforeEach(() => setup())
       it('throws when missing an almanac', () => {
-        return expect(condition.evaluate(undefined, operators)).to.be.rejectedWith('Error: almanac required')
+        return expect(condition.evaluate(undefined, operators)).to.be.rejectedWith('almanac required')
       })
       it('throws when missing operators', () => {
-        return expect(condition.evaluate(almanac, undefined)).to.be.rejectedWith('Error: operatorMap required')
+        return expect(condition.evaluate(almanac, undefined)).to.be.rejectedWith('operatorMap required')
       })
       it('throws when run against a boolean operator', () => {
         condition.all = []
-        return expect(condition.evaluate(almanac, operators)).to.be.rejectedWith('Error: Cannot evaluate() a boolean condition')
+        return expect(condition.evaluate(almanac, operators)).to.be.rejectedWith('Cannot evaluate() a boolean condition')
       })
     })
 
@@ -102,17 +102,17 @@ describe('Condition', () => {
     })
 
     it('evaluates "in"', async () => {
-      setup({ operator: 'in', value: [5, 10, 15, 20]}, 15)
+      setup({ operator: 'in', value: [5, 10, 15, 20] }, 15)
       expect(await condition.evaluate(almanac, operators)).to.equal(true)
-      setup({ operator: 'in', value: [5, 10, 15, 20]}, 99)
+      setup({ operator: 'in', value: [5, 10, 15, 20] }, 99)
       expect(await condition.evaluate(almanac, operators)).to.equal(false)
     })
 
     it('evaluates "contains"', async () => {
       setup({ operator: 'contains', value: 10 }, [5, 10, 15])
-      expect(await condition.evaluate(almanac,operators)).to.equal(true)
+      expect(await condition.evaluate(almanac, operators)).to.equal(true)
       setup({ operator: 'contains', value: 10 }, [1, 2, 3])
-      expect(await condition.evaluate(almanac,operators)).to.equal(false)
+      expect(await condition.evaluate(almanac, operators)).to.equal(false)
     })
 
     it('evaluates "doesNotContain"', async () => {
@@ -170,7 +170,7 @@ describe('Condition', () => {
         setup({ operator: 'contains' }, null)
         expect(await condition.evaluate(almanac, operators)).to.equal(false)
         setup({ operator: 'doesNotContain' }, null)
-        expect(await condition.evaluate(almanac,operators)).to.equal(false)
+        expect(await condition.evaluate(almanac, operators)).to.equal(false)
       })
 
       it('returns false when using comparison operators with null', async () => {
@@ -209,7 +209,7 @@ describe('Condition', () => {
       expect(await condition.evaluate(almanac, operators)).to.equal(false)
     })
 
-    it('ignores "path" when non-objects are returned by the fact', async  () => {
+    it('ignores "path" when non-objects are returned by the fact', async () => {
       let ageFact = new Fact('age', 50)
       let facts = new Map([[ageFact.id, ageFact]])
       let almanac = new Almanac(facts)
@@ -282,7 +282,7 @@ describe('Condition', () => {
       }
     }
     it('recursively parses nested conditions', () => {
-      expect(() => new Condition(complexCondition())).to.not.throw
+      expect(() => new Condition(complexCondition())).to.not.throw()
     })
 
     it('throws if a nested condition is invalid', () => {
