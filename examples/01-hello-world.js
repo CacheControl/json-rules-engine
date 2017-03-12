@@ -22,30 +22,31 @@ let engine = new Engine()
 /**
  * Create a rule
  */
-let rule = new Rule()
-
-// define the 'conditions' for when "hello world" should display
-rule.setConditions({
-  all: [{
-    fact: 'displayMessage',
-    operator: 'equal',
-    value: true
-  }]
-})
-// define the 'event' that will fire when the condition evaluates truthy
-rule.setEvent({
-  type: 'message',
-  params: {
-    data: 'hello-world!'
+let rule = new Rule({
+  // define the 'conditions' for when "hello world" should display
+  conditions: {
+    all: [{
+      fact: 'displayMessage',
+      operator: 'equal',
+      value: true
+    }]
+  },
+  // define the 'event' that will fire when the condition evaluates truthy
+  event: {
+    type: 'message',
+    params: {
+      data: 'hello-world!'
+    }
   }
 })
+
 // add rule to engine
 engine.addRule(rule)
 
 /**
  * Define a 'displayMessage' as a constant value
  * Fact values do NOT need to be known at engine runtime; see the
- * examples for how to pull in data asynchronously as the engine runs
+ * 03-dynamic-facts.js example for how to pull in data asynchronously during runtime
  */
 let facts = { displayMessage: true }
 

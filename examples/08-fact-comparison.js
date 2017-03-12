@@ -21,7 +21,7 @@ let engine = new Engine()
 /**
  * Rule for determining if account has enough money to purchase a $50 gift card product
  *
- * customerAccount (in euros) >= $50 gift card
+ * customer-account-balance >= $50 gift card
  */
 let rule = {
   conditions: {
