@@ -205,7 +205,7 @@ var Rule = function (_EventEmitter) {
                             passes = void 0;
 
                             if (!condition.isBooleanOperator()) {
-                              _context.next = 15;
+                              _context.next = 16;
                               break;
                             }
 
@@ -232,48 +232,39 @@ var Rule = function (_EventEmitter) {
                             comparisonValue = _context.sent;
 
                           case 13:
-                            _context.next = 28;
+                            // for booleans, rule passing is determined by the all/any result
+                            passes = comparisonValue === true;
+                            _context.next = 29;
                             break;
 
-                          case 15:
-                            _context.prev = 15;
-                            _context.next = 18;
-                            return almanac.factValue(condition.fact, condition.params);
+                          case 16:
+                            _context.prev = 16;
+                            _context.next = 19;
+                            return condition.evaluate(almanac, _this3.engine.operators, comparisonValue);
 
-                          case 18:
-                            comparisonValue = _context.sent;
-                            _context.next = 28;
+                          case 19:
+                            passes = _context.sent;
+                            _context.next = 29;
                             break;
 
-                          case 21:
-                            _context.prev = 21;
-                            _context.t0 = _context['catch'](15);
+                          case 22:
+                            _context.prev = 22;
+                            _context.t0 = _context['catch'](16);
 
                             if (!(_this3.engine.allowUndefinedFacts && _context.t0.code === 'UNDEFINED_FACT')) {
-                              _context.next = 27;
+                              _context.next = 28;
                               break;
                             }
 
                             passes = false;
-                            _context.next = 28;
+                            _context.next = 29;
                             break;
 
-                          case 27:
+                          case 28:
                             throw _context.t0;
 
-                          case 28:
-                            if (!(passes === undefined)) {
-                              _context.next = 32;
-                              break;
-                            }
+                          case 29:
 
-                            _context.next = 31;
-                            return condition.evaluate(comparisonValue, _this3.engine.operators);
-
-                          case 31:
-                            passes = _context.sent;
-
-                          case 32:
                             if (passes) {
                               _this3.emit('success', _this3.event, almanac);
                             } else {
@@ -281,12 +272,12 @@ var Rule = function (_EventEmitter) {
                             }
                             return _context.abrupt('return', passes);
 
-                          case 34:
+                          case 31:
                           case 'end':
                             return _context.stop();
                         }
                       }
-                    }, _callee, _this3, [[15, 21]]);
+                    }, _callee, _this3, [[16, 22]]);
                   }));
 
                   return function evaluateCondition(_x3) {

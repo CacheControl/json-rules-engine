@@ -34,12 +34,12 @@ undefined facts as falsey conditions.  (default: false)
 engine.addFact('speed-of-light', 299792458)
 
 // facts computed via function
-engine.addFact('account-type', function getAccountType() {
+engine.addFact('account-type', function getAccountType(params, almanac) {
   // ...
 })
 
 // facts with options:
-engine.addFact('account-type', function getAccountType() {
+engine.addFact('account-type', function getAccountType(params, almanac) {
   // ...
 }, { cache: false, priority: 500 })
 ```
@@ -82,18 +82,20 @@ engine.addOperator('startsWithLetter', (factValue, jsonValue) => {
 })
 
 // and to use the operator...
-rule.setConditions({
-  all: [
-    {
-      fact: 'username',
-      operator: 'startsWithLetter' // reference the operator name in the rule
-      value: 'a'
-    }
-  ]
-})
+let rule = new Rule(
+  conditions: {
+    all: [
+      {
+        fact: 'username',
+        operator: 'startsWithLetter', // reference the operator name in the rule
+        value: 'a'
+      }
+    ]
+  }
+)
 ```
 
-See the [operator example](../examples/custom-operators.js)
+See the [operator example](../examples/06-custom-operators.js)
 
 ### engine.run([Object facts], [Object options]) -> Promise (Events)
 
@@ -128,19 +130,21 @@ engine.stop()
 
 ### engine.on(String event, Function callback) -> Engine
 
-Listens for events emitted as rules are being evaluated.  "event" is determined by [rule.setEvent](./rules.md#seteventobject-event).
+Listens for events emitted as rules are being evaluated.  "event" is determined by the [rule event](./rules.md#Events).
 
 ```js
-rule.setEvent({
-  type: 'my-event',
-  params: {
-    id: 1
+let rule = new Rule({
+  event: {
+    type: 'my-event',
+    params: {
+      customValue: 'my-custom-value'
+    }
   }
 })
 
-// whenever rule is evaluated and the conditions pass, 'my-event' will trigger
+// whenever rule is evaluated and conditions pass, 'my-event' will trigger
 engine.on('my-event', function(params) {
-  console.log(params) // id: 1
+  console.log(params) // { customValue: 'my-custom-value' }
 })
 ```
 

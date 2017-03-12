@@ -52,7 +52,7 @@ describe('Engine: recursive rules', () => {
       engine.addFact('income', 30)
       engine.addFact('family-size', 2)
       await engine.run()
-      expect(eventSpy).to.have.been.calledOnce
+      expect(eventSpy).to.have.been.calledOnce()
     })
 
     it('evaluates false when facts do not pass rules', async () => {
@@ -61,7 +61,7 @@ describe('Engine: recursive rules', () => {
       engine.addFact('income', 200)
       engine.addFact('family-size', 8)
       await engine.run()
-      expect(eventSpy).to.not.have.been.calledOnce
+      expect(eventSpy).to.not.have.been.calledOnce()
     })
   })
 
@@ -101,7 +101,7 @@ describe('Engine: recursive rules', () => {
       engine.addFact('income', 30)
       engine.addFact('family-size', 2)
       await engine.run()
-      expect(eventSpy).to.have.been.calledOnce
+      expect(eventSpy).to.have.been.calledOnce()
     })
 
     it('evaluates false when facts do not pass rules', async () => {
@@ -110,7 +110,7 @@ describe('Engine: recursive rules', () => {
       engine.addFact('income', 200)
       engine.addFact('family-size', 2)
       await engine.run()
-      expect(eventSpy).to.not.have.been.calledOnce
+      expect(eventSpy).to.not.have.been.calledOnce()
     })
   })
 
@@ -143,7 +143,7 @@ describe('Engine: recursive rules', () => {
       engine.addFact('income', 30)
       engine.addFact('family-size', 1)
       await engine.run()
-      expect(eventSpy).to.have.been.calledOnce
+      expect(eventSpy).to.have.been.calledOnce()
     })
 
     it('evaluates false when facts do not pass rules', async () => {
@@ -151,7 +151,7 @@ describe('Engine: recursive rules', () => {
       engine.addFact('income', 30)
       engine.addFact('family-size', 5)
       await engine.run()
-      expect(eventSpy).to.not.have.been.calledOnce
+      expect(eventSpy).to.not.have.been.calledOnce()
     })
   })
 })

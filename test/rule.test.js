@@ -153,7 +153,7 @@ describe('Rule', () => {
       engine.addRule(rule)
       engine.on('success', eventSpy)
       await engine.run()
-      expect(eventSpy).to.have.been.calledOnce
+      expect(eventSpy).to.have.been.calledOnce()
     })
   })
 

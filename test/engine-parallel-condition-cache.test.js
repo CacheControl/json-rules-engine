@@ -44,15 +44,15 @@ describe('Engine', () => {
     it('calls the fact definition once for each condition if caching is off', async () => {
       setup({ cache: false })
       await engine.run()
-      expect(eventSpy).to.have.been.calledOnce
-      expect(factSpy).to.have.been.calledThrice
+      expect(eventSpy).to.have.been.calledOnce()
+      expect(factSpy).to.have.been.calledThrice()
     })
 
     it('calls the fact definition once', async () => {
       setup()
       await engine.run()
-      expect(eventSpy).to.have.been.calledOnce
-      expect(factSpy).to.have.been.calledOnce
+      expect(eventSpy).to.have.been.calledOnce()
+      expect(factSpy).to.have.been.calledOnce()
     })
   })
 
@@ -70,8 +70,8 @@ describe('Engine', () => {
       engine.addRule(rule)
 
       await engine.run()
-      expect(eventSpy).to.have.been.calledTwice
-      expect(factSpy).to.have.been.calledOnce
+      expect(eventSpy).to.have.been.calledTwice()
+      expect(factSpy).to.have.been.calledOnce()
     })
   })
 })

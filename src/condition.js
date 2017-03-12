@@ -1,10 +1,8 @@
 'use strict'
 
-import params from 'params'
-import selectn from 'selectn'
-
+let params = require('params')
 let debug = require('debug')('json-rules-engine')
-let warn = require('debug')('json-rules-engine:warn')
+let isPlainObject = require('lodash.isplainobject')
 
 export default class Condition {
   constructor (properties) {
@@ -62,32 +60,38 @@ export default class Condition {
   }
 
   /**
+   * Interprets .value as either a primitive, or if a fact, retrieves the fact value
+   */
+  async _getValue (almanac) {
+    let value = this.value
+    if (isPlainObject(value) && value.hasOwnProperty('fact')) { // value: { fact: 'xyz' }
+      value = await almanac.factValue(value.fact, value.params, value.path)
+    }
+    return value
+  }
+
+  /**
    * Takes the fact result and compares it to the condition 'value', using the operator
-   * @param   {mixed} comparisonValue - fact result
+   *   LHS                      OPER       RHS
+   * <fact + params + path>  <operator>  <value>
+   *
+   * @param   {Almanac} almanac
    * @param   {Map} operatorMap - map of available operators, keyed by operator name
    * @returns {Boolean} - evaluation result
    */
-  evaluate (comparisonValue, operatorMap) {
-    // for any/all, simply comparisonValue that the sub-condition array evaluated truthy
-    if (this.isBooleanOperator()) return comparisonValue === true
-
-    // if the fact has provided an object, and a path is specified, retrieve the object property
-    if (this.path) {
-      if (typeof comparisonValue === 'object') {
-        comparisonValue = selectn(this.path)(comparisonValue)
-        debug(`condition::evaluate extracting object property ${this.path}, received: ${comparisonValue}`)
-      } else {
-        warn(`condition::evaluate could not compute object path(${this.path}) of non-object: ${comparisonValue} <${typeof comparisonValue}>; continuing with ${comparisonValue}`)
-      }
-    }
+  async evaluate (almanac, operatorMap) {
+    if (!almanac) throw new Error('almanac required')
+    if (!operatorMap) throw new Error('operatorMap required')
+    if (this.isBooleanOperator()) throw new Error('Cannot evaluate() a boolean condition')
 
     let op = operatorMap.get(this.operator)
     if (!op) throw new Error(`Unknown operator: ${this.operator}`)
 
-    let evaluationResult = op.evaluate(comparisonValue, this.value)
-    if (!this.isBooleanOperator()) {
-      debug(`condition::evaluate <${comparisonValue} ${this.operator} ${this.value}?> (${evaluationResult})`)
-    }
+    let rightHandSideValue = await this._getValue(almanac)
+    let leftHandSideValue = await almanac.factValue(this.fact, this.params, this.path)
+
+    let evaluationResult = op.evaluate(leftHandSideValue, rightHandSideValue)
+    debug(`condition::evaluate <${leftHandSideValue} ${this.operator} ${rightHandSideValue}?> (${evaluationResult})`)
     return evaluationResult
   }
 

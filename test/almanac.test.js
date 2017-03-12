@@ -113,7 +113,7 @@ describe('Almanac', () => {
     it('honors facts with caching disabled', (done) => {
       setup(new Fact('id', 1, { cache: false }))
       let promise = almanac._setFactValue(fact, {}, FACT_VALUE)
-      expect(almanac.factResultsCache.values().next().value).to.be.undefined
+      expect(almanac.factResultsCache.values().next().value).to.be.undefined()
       promise.then(value => expect(value).to.equal(FACT_VALUE)).then(_ => done()).catch(done)
     })
   })
@@ -135,7 +135,7 @@ describe('Almanac', () => {
       almanac.factValue('foo')
       almanac.factValue('foo')
       almanac.factValue('foo')
-      expect(factSpy).to.have.been.calledThrice
+      expect(factSpy).to.have.been.calledThrice()
     })
 
     it('evaluates the fact once when fact caching is on', () => {
@@ -143,7 +143,7 @@ describe('Almanac', () => {
       almanac.factValue('foo')
       almanac.factValue('foo')
       almanac.factValue('foo')
-      expect(factSpy).to.have.been.calledOnce
+      expect(factSpy).to.have.been.calledOnce()
     })
   })
 })

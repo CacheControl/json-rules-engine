@@ -22,6 +22,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var debug = require('debug')('json-rules-engine');
 var verbose = require('debug')('json-rules-engine-verbose');
+var selectn = require('selectn');
+var isPlainObject = require('lodash.isplainobject');
+var warn = require('debug')('json-rules-engine:warn');
 
 /**
  * Fact results lookup
@@ -118,6 +121,7 @@ var Almanac = function () {
      * by the engine, which cache's fact computations based on parameters provided
      * @param  {string} factId - fact identifier
      * @param  {Object} params - parameters to feed into the fact.  By default, these will also be used to compute the cache key
+     * @param  {String} path - object
      * @return {Promise} a promise which will resolve with the fact computation.
      */
 
@@ -126,7 +130,8 @@ var Almanac = function () {
     value: function () {
       var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(factId) {
         var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-        var fact, cacheKey, cacheVal;
+        var path = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+        var fact, cacheKey, cacheVal, factValue;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -147,9 +152,23 @@ var Almanac = function () {
 
               case 6:
                 verbose('almanac::factValue cache miss for fact:' + factId + '; calculating');
-                return _context.abrupt('return', this._setFactValue(fact, params, fact.calculate(params, this)));
+                _context.next = 9;
+                return this._setFactValue(fact, params, fact.calculate(params, this));
 
-              case 8:
+              case 9:
+                factValue = _context.sent;
+
+                if (path) {
+                  if (isPlainObject(factValue) || Array.isArray(factValue)) {
+                    factValue = selectn(path)(factValue);
+                    debug('condition::evaluate extracting object property ' + path + ', received: ' + factValue);
+                  } else {
+                    warn('condition::evaluate could not compute object path(' + path + ') of non-object: ' + factValue + ' <' + (typeof factValue === 'undefined' ? 'undefined' : _typeof(factValue)) + '>; continuing with ' + factValue);
+                  }
+                }
+                return _context.abrupt('return', factValue);
+
+              case 12:
               case 'end':
                 return _context.stop();
             }

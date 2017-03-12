@@ -92,8 +92,8 @@ describe('Engine: fact evaluation', () => {
           })
           setup(conditions, { allowUndefinedFacts: true })
           await engine.run()
-          expect(successSpy).to.have.been.called
-          expect(failureSpy).to.not.have.been.called
+          expect(successSpy).to.have.been.called()
+          expect(failureSpy).to.not.have.been.called()
         })
 
         it('emits "failure" when the condition fails', async () => {
@@ -106,8 +106,8 @@ describe('Engine: fact evaluation', () => {
           conditions.any[0].params.eligibilityId = 2
           setup(conditions, { allowUndefinedFacts: true })
           await engine.run()
-          expect(successSpy).to.not.have.been.called
-          expect(failureSpy).to.have.been.called
+          expect(successSpy).to.not.have.been.called()
+          expect(failureSpy).to.have.been.called()
         })
       })
     })
@@ -125,7 +125,7 @@ describe('Engine: fact evaluation', () => {
       conditions.any[0].params.eligibilityId = 2
       setup(conditions)
       await engine.run()
-      expect(successSpy).to.not.have.been.called
+      expect(successSpy).to.not.have.been.called()
     })
   })
 
@@ -154,7 +154,7 @@ describe('Engine: fact evaluation', () => {
       failureCondition.any[0].params.eligibilityId = 2
       setup(failureCondition)
       await engine.run()
-      expect(successSpy).to.not.have.been.called
+      expect(successSpy).to.not.have.been.called()
     })
 
     it('emits when complex object paths meet the conditions', async () => {
@@ -210,7 +210,7 @@ describe('Engine: fact evaluation', () => {
       }
       engine.addFact('eligibilityField', eligibilityField)
       await engine.run()
-      expect(successSpy).to.have.been.called
+      expect(successSpy).to.have.been.called()
     })
   })
 
@@ -222,7 +222,7 @@ describe('Engine: fact evaluation', () => {
       }
       engine.addFact('eligibilityField', eligibilityField)
       await engine.run()
-      expect(successSpy).to.have.been.called
+      expect(successSpy).to.have.been.called()
     })
 
     it('works with synchronous, non-promise evaluations that are falsey', async () => {
@@ -232,7 +232,7 @@ describe('Engine: fact evaluation', () => {
       }
       engine.addFact('eligibilityField', eligibilityField)
       await engine.run()
-      expect(successSpy).to.not.have.been.called
+      expect(successSpy).to.not.have.been.called()
     })
   })
 })

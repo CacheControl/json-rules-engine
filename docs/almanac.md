@@ -12,14 +12,14 @@ The almanac for the current engine run is available as arguments passed to the f
 
 ## Methods
 
-### almanac.factValue(Fact fact, Object params) -> Promise
+### almanac.factValue(Fact fact, Object params, String path) -> Promise
 
-Computes the value of the provided fact + params.
+Computes the value of the provided fact + params.  If "path" is provided, it will be used as a property accessor on the fact's return object.
 
 ```js
 almanac
-  .factValue('account-information', { accountId: 1 })
-  .then( values => console.log(values))
+  .factValue('account-information', { accountId: 1 }, '.balance')
+  .then( value => console.log(value))
 ```
 
 ### almanac.addRuntimeFact(String factId, Mixed value)
@@ -37,7 +37,7 @@ almanac.addRuntimeFact('account-id', 1)
 The most common use of the almanac is to access data computed by other facts during runtime.  This allows
 leveraging the engine's caching mechanisms to design more efficient rules.
 
-The [computed-facts](../examples/computed-facts) example demonstrates a real world application of this technique.
+The [fact-dependency](../examples/04-fact-dependency.js) example demonstrates a real world application of this technique.
 
 For example, say there were two facts: _is-funded-account_ and _account-balance_.  Both facts depend on the same _account-information_ data set.
 Using the Almanac, each fact can be defined to call a **base** fact responsible for loading the data.  This causes the engine
@@ -97,7 +97,7 @@ engine.run({ accountId: 1 })
 When a rule evalutes truthy and its ```event``` is called, new facts may be defined by the event handler.
   Note that with this technique, the rule priority becomes important; if a rule is expected to
   define a fact value, it's important that rule be run prior to other rules that reference the fact.  To
-  learn more about setting rule priorties, see the [rule documentation](./rule.md).
+  learn more about setting rule priorities, see the [rule documentation](./rules.md).
 
 ```js
 engine.on('success', (event, almanac) => {

@@ -1,10 +1,7 @@
 'use strict'
 
 import sinon from 'sinon'
-import engineFactory from '../src/index'
-import { Fact } from '../src/index'
-import { Rule } from '../src/index'
-import { Operator } from '../src/index'
+import engineFactory, { Fact, Rule, Operator } from '../src/index'
 
 describe('Engine', () => {
   let engine
@@ -81,7 +78,7 @@ describe('Engine', () => {
         return factValue[0] === jsonValue
       })
       expect(engine.operators.size).to.equal(11)
-      expect(engine.operators.get('startsWithLetter')).to.exist
+      expect(engine.operators.get('startsWithLetter')).to.exist()
       expect(engine.operators.get('startsWithLetter')).to.be.an.instanceof(Operator)
     })
 
@@ -100,7 +97,7 @@ describe('Engine', () => {
 
     function assertFact (engine) {
       expect(engine.facts.size).to.equal(1)
-      expect(engine.facts.has(FACT_NAME)).to.be.true
+      expect(engine.facts.has(FACT_NAME)).to.be.true()
     }
 
     it('allows a constant fact', () => {
@@ -122,7 +119,7 @@ describe('Engine', () => {
         return FACT_VALUE
       })
       assertFact(engine)
-      expect(engine.facts.get(FACT_NAME).value).to.be.undefined
+      expect(engine.facts.get(FACT_NAME).value).to.be.undefined()
     })
 
     it('allows a lamba fact with options', () => {
@@ -132,7 +129,7 @@ describe('Engine', () => {
       }, options)
       assertFact(engine)
       expect(engine.facts.get(FACT_NAME).options).to.eql(options)
-      expect(engine.facts.get(FACT_NAME).value).to.be.undefined
+      expect(engine.facts.get(FACT_NAME).value).to.be.undefined()
     })
 
     it('allows a fact instance', () => {
@@ -140,7 +137,7 @@ describe('Engine', () => {
       let fact = new Fact(FACT_NAME, 50, options)
       engine.addFact(fact)
       assertFact(engine)
-      expect(engine.facts.get(FACT_NAME)).to.exist
+      expect(engine.facts.get(FACT_NAME)).to.exist()
       expect(engine.facts.get(FACT_NAME).options).to.eql(options)
     })
   })

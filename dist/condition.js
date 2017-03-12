@@ -4,24 +4,15 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _params = require('params');
-
-var _params2 = _interopRequireDefault(_params);
-
-var _selectn = require('selectn');
-
-var _selectn2 = _interopRequireDefault(_selectn);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var params = require('params');
 var debug = require('debug')('json-rules-engine');
-var warn = require('debug')('json-rules-engine:warn');
+var isPlainObject = require('lodash.isplainobject');
 
 var Condition = function () {
   function Condition(properties) {
@@ -41,7 +32,7 @@ var Condition = function () {
         return new Condition(c);
       });
     } else {
-      properties = (0, _params2.default)(properties).require(['fact', 'operator', 'value']);
+      properties = params(properties).require(['fact', 'operator', 'value']);
       // a non-boolean condition does not have a priority by default. this allows
       // priority to be dictated by the fact definition
       if (properties.hasOwnProperty('priority')) {
@@ -89,37 +80,131 @@ var Condition = function () {
     }
 
     /**
+     * Interprets .value as either a primitive, or if a fact, retrieves the fact value
+     */
+
+  }, {
+    key: '_getValue',
+    value: function () {
+      var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(almanac) {
+        var value;
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                value = this.value;
+
+                if (!(isPlainObject(value) && value.hasOwnProperty('fact'))) {
+                  _context.next = 5;
+                  break;
+                }
+
+                _context.next = 4;
+                return almanac.factValue(value.fact, value.params, value.path);
+
+              case 4:
+                value = _context.sent;
+
+              case 5:
+                return _context.abrupt('return', value);
+
+              case 6:
+              case 'end':
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function _getValue(_x2) {
+        return _ref.apply(this, arguments);
+      }
+
+      return _getValue;
+    }()
+
+    /**
      * Takes the fact result and compares it to the condition 'value', using the operator
-     * @param   {mixed} comparisonValue - fact result
+     *   LHS                      OPER       RHS
+     * <fact + params + path>  <operator>  <value>
+     *
+     * @param   {Almanac} almanac
      * @param   {Map} operatorMap - map of available operators, keyed by operator name
      * @returns {Boolean} - evaluation result
      */
 
   }, {
     key: 'evaluate',
-    value: function evaluate(comparisonValue, operatorMap) {
-      // for any/all, simply comparisonValue that the sub-condition array evaluated truthy
-      if (this.isBooleanOperator()) return comparisonValue === true;
+    value: function () {
+      var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(almanac, operatorMap) {
+        var op, rightHandSideValue, leftHandSideValue, evaluationResult;
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                if (almanac) {
+                  _context2.next = 2;
+                  break;
+                }
 
-      // if the fact has provided an object, and a path is specified, retrieve the object property
-      if (this.path) {
-        if ((typeof comparisonValue === 'undefined' ? 'undefined' : _typeof(comparisonValue)) === 'object') {
-          comparisonValue = (0, _selectn2.default)(this.path)(comparisonValue);
-          debug('condition::evaluate extracting object property ' + this.path + ', received: ' + comparisonValue);
-        } else {
-          warn('condition::evaluate could not compute object path(' + this.path + ') of non-object: ' + comparisonValue + ' <' + (typeof comparisonValue === 'undefined' ? 'undefined' : _typeof(comparisonValue)) + '>; continuing with ' + comparisonValue);
-        }
+                throw new Error('almanac required');
+
+              case 2:
+                if (operatorMap) {
+                  _context2.next = 4;
+                  break;
+                }
+
+                throw new Error('operatorMap required');
+
+              case 4:
+                if (!this.isBooleanOperator()) {
+                  _context2.next = 6;
+                  break;
+                }
+
+                throw new Error('Cannot evaluate() a boolean condition');
+
+              case 6:
+                op = operatorMap.get(this.operator);
+
+                if (op) {
+                  _context2.next = 9;
+                  break;
+                }
+
+                throw new Error('Unknown operator: ' + this.operator);
+
+              case 9:
+                _context2.next = 11;
+                return this._getValue(almanac);
+
+              case 11:
+                rightHandSideValue = _context2.sent;
+                _context2.next = 14;
+                return almanac.factValue(this.fact, this.params, this.path);
+
+              case 14:
+                leftHandSideValue = _context2.sent;
+                evaluationResult = op.evaluate(leftHandSideValue, rightHandSideValue);
+
+                debug('condition::evaluate <' + leftHandSideValue + ' ' + this.operator + ' ' + rightHandSideValue + '?> (' + evaluationResult + ')');
+                return _context2.abrupt('return', evaluationResult);
+
+              case 18:
+              case 'end':
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+
+      function evaluate(_x3, _x4) {
+        return _ref2.apply(this, arguments);
       }
 
-      var op = operatorMap.get(this.operator);
-      if (!op) throw new Error('Unknown operator: ' + this.operator);
-
-      var evaluationResult = op.evaluate(comparisonValue, this.value);
-      if (!this.isBooleanOperator()) {
-        debug('condition::evaluate <' + comparisonValue + ' ' + this.operator + ' ' + this.value + '?> (' + evaluationResult + ')');
-      }
-      return evaluationResult;
-    }
+      return evaluate;
+    }()
 
     /**
      * Returns the boolean operator for the condition

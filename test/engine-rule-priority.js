@@ -34,7 +34,7 @@ describe('Engine: cache', () => {
 
   it('runs the rules in order of priority', () => {
     setup()
-    expect(engine.prioritizedRules).to.be.null
+    expect(engine.prioritizedRules).to.be.null()
     engine.prioritizeRules()
     expect(engine.prioritizedRules.length).to.equal(3)
     expect(engine.prioritizedRules[0][0].priority).to.equal(100)
@@ -46,6 +46,6 @@ describe('Engine: cache', () => {
     engine.prioritizeRules()
     expect(engine.prioritizedRules.length).to.equal(3)
     engine.addRule(factories.rule())
-    expect(engine.prioritizedRules).to.be.null
+    expect(engine.prioritizedRules).to.be.null()
   })
 })
