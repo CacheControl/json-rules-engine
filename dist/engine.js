@@ -161,22 +161,18 @@ var Engine = function (_EventEmitter) {
   }, {
     key: 'prioritizeRules',
     value: function prioritizeRules() {
-      var _this2 = this;
-
       if (!this.prioritizedRules) {
-        (function () {
-          var ruleSets = _this2.rules.reduce(function (sets, rule) {
-            var priority = rule.priority;
-            if (!sets[priority]) sets[priority] = [];
-            sets[priority].push(rule);
-            return sets;
-          }, {});
-          _this2.prioritizedRules = Object.keys(ruleSets).sort(function (a, b) {
-            return Number(a) > Number(b) ? -1 : 1; // order highest priority -> lowest
-          }).map(function (priority) {
-            return ruleSets[priority];
-          });
-        })();
+        var ruleSets = this.rules.reduce(function (sets, rule) {
+          var priority = rule.priority;
+          if (!sets[priority]) sets[priority] = [];
+          sets[priority].push(rule);
+          return sets;
+        }, {});
+        this.prioritizedRules = Object.keys(ruleSets).sort(function (a, b) {
+          return Number(a) > Number(b) ? -1 : 1; // order highest priority -> lowest
+        }).map(function (priority) {
+          return ruleSets[priority];
+        });
       }
       return this.prioritizedRules;
     }
@@ -217,25 +213,25 @@ var Engine = function (_EventEmitter) {
     key: 'evaluateRules',
     value: function () {
       var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(ruleArray, almanac) {
-        var _this3 = this;
+        var _this2 = this;
 
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 return _context.abrupt('return', Promise.all(ruleArray.map(function (rule) {
-                  if (_this3.status !== RUNNING) {
-                    debug('engine::run status:' + _this3.status + '; skipping remaining rules');
+                  if (_this2.status !== RUNNING) {
+                    debug('engine::run status:' + _this2.status + '; skipping remaining rules');
                     return;
                   }
                   return rule.evaluate(almanac).then(function (rulePasses) {
                     debug('engine::run ruleResult:' + rulePasses);
                     if (rulePasses) {
-                      _this3.emit('success', rule.event, almanac);
-                      _this3.emit(rule.event.type, rule.event.params, _this3);
+                      _this2.emit('success', rule.event, almanac);
+                      _this2.emit(rule.event.type, rule.event.params, _this2);
                       almanac.factValue('success-events', { event: rule.event });
                     }
-                    if (!rulePasses) _this3.emit('failure', rule, almanac);
+                    if (!rulePasses) _this2.emit('failure', rule, almanac);
                   });
                 })));
 
@@ -265,7 +261,7 @@ var Engine = function (_EventEmitter) {
     key: 'run',
     value: function () {
       var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2() {
-        var _this4 = this;
+        var _this3 = this;
 
         var runtimeFacts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
         var almanac, orderedSets, cursor;
@@ -286,12 +282,12 @@ var Engine = function (_EventEmitter) {
                 return _context2.abrupt('return', new Promise(function (resolve, reject) {
                   orderedSets.map(function (set) {
                     cursor = cursor.then(function () {
-                      return _this4.evaluateRules(set, almanac);
+                      return _this3.evaluateRules(set, almanac);
                     }).catch(reject);
                     return cursor;
                   });
                   cursor.then(function () {
-                    _this4.status = FINISHED;
+                    _this3.status = FINISHED;
                     debug('engine::run completed');
                     resolve(almanac.factValue('success-events'));
                   }).catch(reject);
