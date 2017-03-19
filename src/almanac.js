@@ -17,7 +17,7 @@ import { UndefinedFactError } from './errors'
 export default class Almanac {
   constructor (factMap, runtimeFacts = {}) {
     this.factMap = new Map(factMap)
-    this.factResultsCache = new Map()
+    this.factResultsCache = new Map() // { cacheKey:  Promise<factValu> }
 
     for (let factId in runtimeFacts) {
       let fact
@@ -89,15 +89,17 @@ export default class Almanac {
    * @return {Promise} a promise which will resolve with the fact computation.
    */
   async factValue (factId, params = {}, path = '') {
+    let factValue
     let fact = this._getFact(factId)
     let cacheKey = fact.getCacheKey(params)
     let cacheVal = cacheKey && this.factResultsCache.get(cacheKey)
     if (cacheVal) {
-      cacheVal.then(val => debug(`almanac::factValue cache hit for fact:${factId} value: ${JSON.stringify(val)}<${typeof val}>`))
-      return cacheVal
+      factValue = await cacheVal
+      debug(`almanac::factValue cache hit for fact:${factId} value: ${JSON.stringify(factValue)}<${typeof factValue}>`)
+    } else {
+      verbose(`almanac::factValue cache miss for fact:${factId}; calculating`)
+      factValue = await this._setFactValue(fact, params, fact.calculate(params, this))
     }
-    verbose(`almanac::factValue cache miss for fact:${factId}; calculating`)
-    let factValue = await this._setFactValue(fact, params, fact.calculate(params, this))
     if (path) {
       if (isPlainObject(factValue) || Array.isArray(factValue)) {
         factValue = selectn(path)(factValue)

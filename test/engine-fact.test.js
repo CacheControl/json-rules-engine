@@ -57,9 +57,12 @@ describe('Engine: fact evaluation', () => {
   }
   let successSpy = sinon.spy()
   let failureSpy = sinon.spy()
-  function setup (conditions = baseConditions(), engineOptions = {}) {
+  beforeEach(() => {
     successSpy.reset()
     failureSpy.reset()
+  })
+
+  function setup (conditions = baseConditions(), engineOptions = {}) {
     engine = engineFactory([], engineOptions)
     let rule = factories.rule({ conditions, event })
     engine.addRule(rule)
@@ -157,14 +160,40 @@ describe('Engine: fact evaluation', () => {
       expect(successSpy).to.not.have.been.called()
     })
 
-    it('emits when complex object paths meet the conditions', async () => {
-      let complexCondition = conditions()
-      complexCondition.any[0].path = '.address.occupantHistory[0].year'
-      complexCondition.any[0].value = 2011
-      complexCondition.any[0].operator = 'equal'
-      setup(complexCondition)
-      await engine.run()
-      expect(successSpy).to.have.been.calledWith(event)
+    context('complex paths', () => {
+      it('correctly interprets "path" when dynamic facts return objects', async () => {
+        let complexCondition = conditions()
+        complexCondition.any[0].path = '.address.occupantHistory[0].year'
+        complexCondition.any[0].value = 2011
+        complexCondition.any[0].operator = 'equal'
+        setup(complexCondition)
+        await engine.run()
+        expect(successSpy).to.have.been.calledWith(event)
+      })
+
+      it('correctly interprets "path" with runtime fact objects', async () => {
+        let fact = { x: { y: 1 }, a: 2 }
+        let conditions = {
+          all: [{
+            fact: 'x',
+            path: '.y',
+            operator: 'equal',
+            value: 1
+          }]
+        }
+        let event = {
+          type: 'runtimeEvent'
+        }
+
+        engine = engineFactory([])
+        let rule = factories.rule({ conditions, event })
+        engine.addRule(rule)
+        engine.on('success', successSpy)
+        engine.on('failure', failureSpy)
+        await engine.run(fact)
+        expect(successSpy).to.have.been.calledWith(event)
+        expect(failureSpy).to.not.have.been.calledWith(event)
+      })
     })
 
     it('does not emit when complex object paths fail the condition', async () => {

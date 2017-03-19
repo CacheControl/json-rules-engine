@@ -6,6 +6,7 @@
   "scripts": {
     "test": "mocha && npm run lint --silent",
     "lint": "standard --verbose | snazzy || true",
+    "lint:fix": "standard --fix",
     "prepublish": "npm run compile",
     "compile": "babel --stage 1 -d dist/ src/ && regenerator --no-cache-dir --include-runtime src/generator-runtime.js > dist/generator-runtime.js"
   },
