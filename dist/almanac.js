@@ -38,7 +38,7 @@ var Almanac = function () {
     _classCallCheck(this, Almanac);
 
     this.factMap = new Map(factMap);
-    this.factResultsCache = new Map();
+    this.factResultsCache = new Map(); // { cacheKey:  Promise<factValu> }
 
     for (var factId in runtimeFacts) {
       var fact = void 0;
@@ -131,33 +131,40 @@ var Almanac = function () {
       var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(factId) {
         var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
         var path = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
-        var fact, cacheKey, cacheVal, factValue;
+        var factValue, fact, cacheKey, cacheVal;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
+                factValue = void 0;
                 fact = this._getFact(factId);
                 cacheKey = fact.getCacheKey(params);
                 cacheVal = cacheKey && this.factResultsCache.get(cacheKey);
 
                 if (!cacheVal) {
-                  _context.next = 6;
+                  _context.next = 11;
                   break;
                 }
 
-                cacheVal.then(function (val) {
-                  return debug('almanac::factValue cache hit for fact:' + factId + ' value: ' + JSON.stringify(val) + '<' + (typeof val === 'undefined' ? 'undefined' : _typeof(val)) + '>');
-                });
-                return _context.abrupt('return', cacheVal);
+                _context.next = 7;
+                return cacheVal;
 
-              case 6:
-                verbose('almanac::factValue cache miss for fact:' + factId + '; calculating');
-                _context.next = 9;
-                return this._setFactValue(fact, params, fact.calculate(params, this));
-
-              case 9:
+              case 7:
                 factValue = _context.sent;
 
+                debug('almanac::factValue cache hit for fact:' + factId + ' value: ' + JSON.stringify(factValue) + '<' + (typeof factValue === 'undefined' ? 'undefined' : _typeof(factValue)) + '>');
+                _context.next = 15;
+                break;
+
+              case 11:
+                verbose('almanac::factValue cache miss for fact:' + factId + '; calculating');
+                _context.next = 14;
+                return this._setFactValue(fact, params, fact.calculate(params, this));
+
+              case 14:
+                factValue = _context.sent;
+
+              case 15:
                 if (path) {
                   if (isPlainObject(factValue) || Array.isArray(factValue)) {
                     factValue = selectn(path)(factValue);
@@ -168,7 +175,7 @@ var Almanac = function () {
                 }
                 return _context.abrupt('return', factValue);
 
-              case 12:
+              case 17:
               case 'end':
                 return _context.stop();
             }
