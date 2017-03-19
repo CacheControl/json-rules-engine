@@ -1,3 +1,8 @@
+1.5.1 / 2017-03-19
+==================
+
+  * Bugfix almanac.factValue skipping interpreting condition "path" for cached facts
+
 1.5.0 / 2017-03-12
 ==================
 
