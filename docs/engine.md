@@ -144,6 +144,6 @@ engine.on('success', function(event, almanac, ruleResult) {
 Companion to 'success', except fires when a rule fails.
 
 ```js
-engine.on('failure', function(rule, almanac, ruleResult) {
+engine.on('failure', function(event, almanac, ruleResult) {
 })
 ```

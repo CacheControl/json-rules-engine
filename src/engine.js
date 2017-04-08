@@ -148,10 +148,9 @@ class Engine extends EventEmitter {
         debug(`engine::run ruleResult:${ruleResult.result}`)
         if (ruleResult.result) {
           this.emit('success', rule.event, almanac, ruleResult)
-          this.emit(rule.event.type, rule.event.params, this) // DEPRECATED; todo - remove from docs
           almanac.factValue('success-events', { event: rule.event })
         } else {
-          this.emit('failure', rule, almanac, ruleResult)
+          this.emit('failure', rule.event, almanac, ruleResult)
         }
       })
     }))

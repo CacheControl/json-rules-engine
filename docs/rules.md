@@ -235,7 +235,7 @@ rule.on('success', function(event, almanac, ruleResult) {
 Companion to `success`, except fires when the rule fails.
 
 ```js
-engine.on('failure', function(event, almanac) {
+engine.on('failure', function(event, almanac, ruleResult) {
   console.log(event) // { type: 'my-event', params: { id: 1 }
 })
 ```
