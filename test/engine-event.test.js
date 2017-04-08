@@ -4,7 +4,7 @@ import engineFactory from '../src/index'
 import Almanac from '../src/almanac'
 import sinon from 'sinon'
 
-describe.only('Engine: event', () => {
+describe('Engine: event', () => {
   let engine
 
   let event = {
@@ -67,11 +67,11 @@ describe.only('Engine: event', () => {
     let ruleOptions = { conditions, event, priority: 100 }
     let determineDrinkingAgeRule = factories.rule(ruleOptions)
     engine.addRule(determineDrinkingAgeRule)
+    // rule will succeed because of 'any'
     engine.addFact('age', 10) // age fails
     engine.addFact('qualified', false) // qualified fails.
     engine.addFact('zipCode', 80403) // zipCode succeeds
     engine.addFact('gender', 'male') // gender succeeds
-    // rule will succeed because of 'any'
   }
 
   context('engine events: simple', () => {
@@ -85,7 +85,9 @@ describe.only('Engine: event', () => {
         expect(almanac).to.be.an.instanceof(Almanac)
         expect(ruleResult.result).to.be.true()
         expect(ruleResult.conditions.any[0].result).to.be.true()
+        expect(ruleResult.conditions.any[0].factResult).to.equal(21)
         expect(ruleResult.conditions.any[1].result).to.be.false()
+        expect(ruleResult.conditions.any[1].factResult).to.equal(false)
         successSpy()
       })
       engine.on('failure', failureSpy)
@@ -95,6 +97,7 @@ describe.only('Engine: event', () => {
     })
 
     it('"failure" passes the event, almanac, and results', async () => {
+      let AGE = 10
       let failureSpy = sinon.spy()
       let successSpy = sinon.spy()
       engine.on('failure', function (e, almanac, ruleResult) {
@@ -102,11 +105,13 @@ describe.only('Engine: event', () => {
         expect(almanac).to.be.an.instanceof(Almanac)
         expect(ruleResult.result).to.be.false()
         expect(ruleResult.conditions.any[0].result).to.be.false()
+        expect(ruleResult.conditions.any[0].factResult).to.equal(AGE)
         expect(ruleResult.conditions.any[1].result).to.be.false()
+        expect(ruleResult.conditions.any[1].factResult).to.equal(false)
         failureSpy()
       })
       engine.on('success', successSpy)
-      engine.addFact('age', 10) // age fails
+      engine.addFact('age', AGE) // age fails
       await engine.run()
       expect(failureSpy.callCount).to.equal(1)
       expect(successSpy.callCount).to.equal(0)
@@ -160,10 +165,14 @@ describe.only('Engine: event', () => {
         expect(almanac).to.be.an.instanceof(Almanac)
         expect(ruleResult.result).to.be.true()
         expect(ruleResult.conditions.any[0].result).to.be.false()
+        expect(ruleResult.conditions.any[0].factResult).to.equal(10)
         expect(ruleResult.conditions.any[1].result).to.be.false()
+        expect(ruleResult.conditions.any[1].factResult).to.equal(false)
         expect(ruleResult.conditions.any[2].result).to.be.true()
         expect(ruleResult.conditions.any[2].all[0].result).to.be.true()
+        expect(ruleResult.conditions.any[2].all[0].factResult).to.equal(80403)
         expect(ruleResult.conditions.any[2].all[1].result).to.be.true()
+        expect(ruleResult.conditions.any[2].all[1].factResult).to.equal('male')
         successSpy()
       })
       engine.on('failure', failureSpy)
@@ -173,6 +182,8 @@ describe.only('Engine: event', () => {
     })
 
     it('"failure" passes the event, almanac, and results', async () => {
+      let ZIP_CODE = 99992
+      let GENDER = 'female'
       let failureSpy = sinon.spy()
       let successSpy = sinon.spy()
       engine.on('failure', function (e, almanac, ruleResult) {
@@ -180,15 +191,19 @@ describe.only('Engine: event', () => {
         expect(almanac).to.be.an.instanceof(Almanac)
         expect(ruleResult.result).to.be.false()
         expect(ruleResult.conditions.any[0].result).to.be.false()
+        expect(ruleResult.conditions.any[0].factResult).to.equal(10)
         expect(ruleResult.conditions.any[1].result).to.be.false()
+        expect(ruleResult.conditions.any[1].factResult).to.equal(false)
         expect(ruleResult.conditions.any[2].result).to.be.false()
         expect(ruleResult.conditions.any[2].all[0].result).to.be.false()
+        expect(ruleResult.conditions.any[2].all[0].factResult).to.equal(ZIP_CODE)
         expect(ruleResult.conditions.any[2].all[1].result).to.be.false()
+        expect(ruleResult.conditions.any[2].all[1].factResult).to.equal(GENDER)
         failureSpy()
       })
       engine.on('success', successSpy)
-      engine.addFact('zipCode', 99992) // zipCode fails
-      engine.addFact('gender', 'female') // gender fails
+      engine.addFact('zipCode', ZIP_CODE) // zipCode fails
+      engine.addFact('gender', GENDER) // gender fails
       await engine.run()
       expect(failureSpy.callCount).to.equal(1)
       expect(successSpy.callCount).to.equal(0)
@@ -207,7 +222,9 @@ describe.only('Engine: event', () => {
         expect(failureSpy.callCount).to.equal(0)
         expect(ruleResult.result).to.be.true()
         expect(ruleResult.conditions.any[0].result).to.be.true()
+        expect(ruleResult.conditions.any[0].factResult).to.equal(21)
         expect(ruleResult.conditions.any[1].result).to.be.false()
+        expect(ruleResult.conditions.any[1].factResult).to.equal(false)
         successSpy()
       })
       rule.on('failure', failureSpy)
@@ -217,6 +234,7 @@ describe.only('Engine: event', () => {
     })
 
     it('on-failure, it passes the event type and params', async () => {
+      let AGE = 10
       let successSpy = sinon.spy()
       let failureSpy = sinon.spy()
       let rule = engine.rules[0]
@@ -226,12 +244,14 @@ describe.only('Engine: event', () => {
         expect(successSpy.callCount).to.equal(0)
         expect(ruleResult.result).to.be.false()
         expect(ruleResult.conditions.any[0].result).to.be.false()
+        expect(ruleResult.conditions.any[0].factResult).to.equal(AGE)
         expect(ruleResult.conditions.any[1].result).to.be.false()
+        expect(ruleResult.conditions.any[1].factResult).to.equal(false)
         failureSpy()
       })
       rule.on('success', successSpy)
       // both conditions will fail
-      engine.addFact('age', 10)
+      engine.addFact('age', AGE)
       await engine.run()
       expect(failureSpy.callCount).to.equal(1)
       expect(successSpy.callCount).to.equal(0)

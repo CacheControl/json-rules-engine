@@ -90,9 +90,9 @@ export default class Condition {
     let rightHandSideValue = await this._getValue(almanac)
     let leftHandSideValue = await almanac.factValue(this.fact, this.params, this.path)
 
-    let evaluationResult = op.evaluate(leftHandSideValue, rightHandSideValue)
-    debug(`condition::evaluate <${leftHandSideValue} ${this.operator} ${rightHandSideValue}?> (${evaluationResult})`)
-    return evaluationResult
+    let result = op.evaluate(leftHandSideValue, rightHandSideValue)
+    debug(`condition::evaluate <${leftHandSideValue} ${this.operator} ${rightHandSideValue}?> (${result})`)
+    return { result, leftHandSideValue, rightHandSideValue, operator: this.operator }
   }
 
   /**

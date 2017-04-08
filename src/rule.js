@@ -153,7 +153,9 @@ class Rule extends EventEmitter {
         passes = comparisonValue === true
       } else {
         try {
-          passes = await condition.evaluate(almanac, this.engine.operators, comparisonValue)
+          let evaluationResult = await condition.evaluate(almanac, this.engine.operators, comparisonValue)
+          passes = evaluationResult.result
+          condition.factResult = evaluationResult.leftHandSideValue
         } catch (err) {
           // any condition raising an undefined fact error is considered falsey when allowUndefinedFacts is enabled
           if (this.engine.allowUndefinedFacts && err.code === 'UNDEFINED_FACT') passes = false
