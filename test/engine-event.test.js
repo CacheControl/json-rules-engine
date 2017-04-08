@@ -30,10 +30,12 @@ describe('Engine: event', () => {
 
   describe('engine events', () => {
     it('passes the event type and params', (done) => {
-      engine.on('success', function (a, engine) {
+      engine.on('success', function (a, almanac, ruleResult) {
         try {
           expect(a).to.eql(event)
-          expect(engine).to.eql(engine)
+          expect(almanac).to.be.an.instanceof(Almanac)
+          expect(ruleResult.result).to.be.true()
+          expect(ruleResult.conditions.any[0].result).to.be.true()
         } catch (e) { return done(e) }
         done()
       })
@@ -71,7 +73,7 @@ describe('Engine: event', () => {
       })
       engine.addRule(drinkOrderRule)
       return new Promise((resolve, reject) => {
-        engine.on('success', function (event, almanac) {
+        engine.on('success', function (event, almanac, ruleResult) {
           switch (event.type) {
             case 'setDrinkingFlag':
               almanac.addRuntimeFact('canOrderDrinks', event.params.canOrderDrinks)
@@ -91,11 +93,12 @@ describe('Engine: event', () => {
     it('on-success, it passes the event type and params', (done) => {
       let failureSpy = sinon.spy()
       let rule = engine.rules[0]
-      rule.on('success', function (e, a) {
+      rule.on('success', function (e, almanac, ruleResult) {
         try {
           expect(e).to.eql(event)
-          expect(a).to.be.an.instanceof(Almanac)
+          expect(almanac).to.be.an.instanceof(Almanac)
           expect(failureSpy.callCount).to.equal(0)
+          expect(ruleResult.conditions.any[0].result).to.be.true()
         } catch (err) { return done(err) }
         done()
       })
@@ -106,11 +109,12 @@ describe('Engine: event', () => {
     it('on-failure, it passes the event type and params', (done) => {
       let successSpy = sinon.spy()
       let rule = engine.rules[0]
-      rule.on('failure', function (e, a) {
+      rule.on('failure', function (e, almanac, ruleResult) {
         try {
           expect(e).to.eql(event)
-          expect(a).to.be.an.instanceof(Almanac)
+          expect(almanac).to.be.an.instanceof(Almanac)
           expect(successSpy.callCount).to.equal(0)
+          expect(ruleResult.conditions.any[0].result).to.be.false()
         } catch (err) { return done(err) }
         done()
       })

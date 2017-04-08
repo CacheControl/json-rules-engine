@@ -3,6 +3,7 @@
 import params from 'params'
 import Condition from './condition'
 import { EventEmitter } from 'events'
+import deepClone from 'lodash.clonedeep'
 
 let debug = require('debug')('json-rules-engine')
 
@@ -124,9 +125,15 @@ class Rule extends EventEmitter {
   /**
    * Evaluates the rule, starting with the root boolean operator and recursing down
    * All evaluation is done within the context of an almanac
-   * @return {Promise(boolean)} rule evaluation result
+   * @return {Promise(RuleResult)} rule evaluation result
    */
   async evaluate (almanac) {
+    let ruleResult = {
+      conditions: deepClone(this.conditions),
+      event: deepClone(this.event),
+      priority: deepClone(this.priority)
+    }
+
     /**
      * Evaluates the rule conditions
      * @param  {Condition} condition - condition to evaluate
@@ -153,11 +160,11 @@ class Rule extends EventEmitter {
           else throw err
         }
       }
-
+      condition.result = passes
       if (passes) {
-        this.emit('success', this.event, almanac)
+        this.emit('success', this.event, almanac, ruleResult)
       } else {
-        this.emit('failure', this.event, almanac)
+        this.emit('failure', this.event, almanac, ruleResult)
       }
       return passes
     }
@@ -238,10 +245,14 @@ class Rule extends EventEmitter {
       return prioritizeAndRun(conditions, 'all')
     }
 
-    if (this.conditions.any) {
-      return await any(this.conditions.any)
+    if (ruleResult.conditions.any) {
+      let result = await any(ruleResult.conditions.any)
+      ruleResult.result = result
+      return ruleResult
     } else {
-      return await all(this.conditions.all)
+      let result = await all(ruleResult.conditions.all)
+      ruleResult.result = result
+      return ruleResult
     }
   }
 }

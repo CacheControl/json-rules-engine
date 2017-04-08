@@ -221,16 +221,16 @@ See the [fact-comparison](../examples/08-fact-comparison.js) example
 
 Listen for `success` and `failure` events emitted when rule is evaluated.
 
-#### ```rule.on('success', Function(Object event, Almanac almanac))```
+#### ```rule.on('success', Function(Object event, Almanac almanac, RuleResult ruleResult))```
 
 ```js
 // whenever rule is evaluated and the conditions pass, 'success' will trigger
-rule.on('success', function(event, almanac) {
+rule.on('success', function(event, almanac, ruleResult) {
   console.log(event) // { type: 'my-event', params: { id: 1 }
 })
 ```
 
-#### ```rule.on('failure', Function(Object event, Almanac almanac))```
+#### ```rule.on('failure', Function(Object event, Almanac almanac, RuleResult ruleResult))```
 
 Companion to `success`, except fires when the rule fails.
 
