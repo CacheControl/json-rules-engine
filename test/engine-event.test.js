@@ -18,6 +18,10 @@ describe('Engine: event', () => {
       fact: 'age',
       operator: 'greaterThanInclusive',
       value: 21
+    }, {
+      fact: 'qualified',
+      operator: 'equal',
+      value: true
     }]
   }
   beforeEach(() => {
@@ -25,21 +29,28 @@ describe('Engine: event', () => {
     let ruleOptions = { conditions, event, priority: 100 }
     let determineDrinkingAgeRule = factories.rule(ruleOptions)
     engine.addRule(determineDrinkingAgeRule)
+    // age will succeed because 21 >= 21
     engine.addFact('age', 21)
+    // set 'qualified' to fail. rule will succeed because of 'any'
+    engine.addFact('qualified', false)
   })
 
-  describe('engine events', () => {
-    it('passes the event type and params', (done) => {
-      engine.on('success', function (a, almanac, ruleResult) {
-        try {
-          expect(a).to.eql(event)
-          expect(almanac).to.be.an.instanceof(Almanac)
-          expect(ruleResult.result).to.be.true()
-          expect(ruleResult.conditions.any[0].result).to.be.true()
-        } catch (e) { return done(e) }
-        done()
+  context('engine events', () => {
+    it('passes the event type and params', async () => {
+      let failureSpy = sinon.spy()
+      let successSpy = sinon.spy()
+      engine.on('success', function (e, almanac, ruleResult) {
+        expect(e).to.eql(event)
+        expect(almanac).to.be.an.instanceof(Almanac)
+        expect(ruleResult.result).to.be.true()
+        expect(ruleResult.conditions.any[0].result).to.be.true()
+        expect(ruleResult.conditions.any[1].result).to.be.false()
+        successSpy()
       })
-      engine.run()
+      engine.on('failure', failureSpy)
+      await engine.run()
+      expect(failureSpy.callCount).to.equal(0)
+      expect(successSpy.callCount).to.equal(1)
     })
 
     it('emits using the event "type"', (done) => {
@@ -89,38 +100,44 @@ describe('Engine: event', () => {
       })
     })
   })
-  describe('rule events', () => {
-    it('on-success, it passes the event type and params', (done) => {
-      let failureSpy = sinon.spy()
-      let rule = engine.rules[0]
-      rule.on('success', function (e, almanac, ruleResult) {
-        try {
-          expect(e).to.eql(event)
-          expect(almanac).to.be.an.instanceof(Almanac)
-          expect(failureSpy.callCount).to.equal(0)
-          expect(ruleResult.conditions.any[0].result).to.be.true()
-        } catch (err) { return done(err) }
-        done()
-      })
-      rule.on('failure', failureSpy)
-      engine.run()
-    })
 
-    it('on-failure, it passes the event type and params', (done) => {
+  context('rule events', () => {
+    it('on-success, it passes the event type and params', async () => {
+      let failureSpy = sinon.spy()
       let successSpy = sinon.spy()
       let rule = engine.rules[0]
+      rule.on('success', function (e, almanac, ruleResult) {
+        expect(e).to.eql(event)
+        expect(almanac).to.be.an.instanceof(Almanac)
+        expect(failureSpy.callCount).to.equal(0)
+        expect(ruleResult.result).to.be.true()
+        expect(ruleResult.conditions.any[0].result).to.be.true()
+        expect(ruleResult.conditions.any[1].result).to.be.false()
+        successSpy()
+      })
+      rule.on('failure', failureSpy)
+      await engine.run()
+      expect(successSpy.callCount).to.equal(1)
+    })
+
+    it('on-failure, it passes the event type and params', async () => {
+      let successSpy = sinon.spy()
+      let failureSpy = sinon.spy()
+      let rule = engine.rules[0]
       rule.on('failure', function (e, almanac, ruleResult) {
-        try {
-          expect(e).to.eql(event)
-          expect(almanac).to.be.an.instanceof(Almanac)
-          expect(successSpy.callCount).to.equal(0)
-          expect(ruleResult.conditions.any[0].result).to.be.false()
-        } catch (err) { return done(err) }
-        done()
+        expect(e).to.eql(event)
+        expect(almanac).to.be.an.instanceof(Almanac)
+        expect(successSpy.callCount).to.equal(0)
+        expect(ruleResult.result).to.be.false()
+        expect(ruleResult.conditions.any[0].result).to.be.false()
+        expect(ruleResult.conditions.any[1].result).to.be.false()
+        failureSpy()
       })
       rule.on('success', successSpy)
+      // both conditions will fail
       engine.addFact('age', 10)
-      engine.run()
+      await engine.run()
+      expect(failureSpy.callCount).to.equal(1)
     })
   })
 })

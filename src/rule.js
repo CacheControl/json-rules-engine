@@ -161,11 +161,6 @@ class Rule extends EventEmitter {
         }
       }
       condition.result = passes
-      if (passes) {
-        this.emit('success', this.event, almanac, ruleResult)
-      } else {
-        this.emit('failure', this.event, almanac, ruleResult)
-      }
       return passes
     }
 
@@ -245,14 +240,23 @@ class Rule extends EventEmitter {
       return prioritizeAndRun(conditions, 'all')
     }
 
+    /**
+     * Emits based on rule evaluation result, and decorates ruleResult with 'result' property
+     * @param {Boolean} result
+     */
+    let processResult = (result) => {
+      ruleResult.result = result
+      if (result) this.emit('success', ruleResult.event, almanac, ruleResult)
+      else this.emit('failure', ruleResult.event, almanac, ruleResult)
+      return ruleResult
+    }
+
     if (ruleResult.conditions.any) {
       let result = await any(ruleResult.conditions.any)
-      ruleResult.result = result
-      return ruleResult
+      return processResult(result)
     } else {
       let result = await all(ruleResult.conditions.all)
-      ruleResult.result = result
-      return ruleResult
+      return processResult(result)
     }
   }
 }
