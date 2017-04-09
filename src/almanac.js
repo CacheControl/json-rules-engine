@@ -1,13 +1,13 @@
 'use strict'
 
+import Fact from './fact'
+import { UndefinedFactError } from './errors'
+
 let debug = require('debug')('json-rules-engine')
 let verbose = require('debug')('json-rules-engine-verbose')
 let selectn = require('selectn')
 let isPlainObject = require('lodash.isplainobject')
 let warn = require('debug')('json-rules-engine:warn')
-
-import Fact from './fact'
-import { UndefinedFactError } from './errors'
 
 /**
  * Fact results lookup
