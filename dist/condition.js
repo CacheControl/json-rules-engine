@@ -137,7 +137,7 @@ var Condition = function () {
     key: 'evaluate',
     value: function () {
       var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(almanac, operatorMap) {
-        var op, rightHandSideValue, leftHandSideValue, evaluationResult;
+        var op, rightHandSideValue, leftHandSideValue, result;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -186,10 +186,10 @@ var Condition = function () {
 
               case 14:
                 leftHandSideValue = _context2.sent;
-                evaluationResult = op.evaluate(leftHandSideValue, rightHandSideValue);
+                result = op.evaluate(leftHandSideValue, rightHandSideValue);
 
-                debug('condition::evaluate <' + leftHandSideValue + ' ' + this.operator + ' ' + rightHandSideValue + '?> (' + evaluationResult + ')');
-                return _context2.abrupt('return', evaluationResult);
+                debug('condition::evaluate <' + leftHandSideValue + ' ' + this.operator + ' ' + rightHandSideValue + '?> (' + result + ')');
+                return _context2.abrupt('return', { result: result, leftHandSideValue: leftHandSideValue, rightHandSideValue: rightHandSideValue, operator: this.operator });
 
               case 18:
               case 'end':

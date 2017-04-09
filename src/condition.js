@@ -1,11 +1,11 @@
 'use strict'
 
-let params = require('params')
 let debug = require('debug')('json-rules-engine')
 let isPlainObject = require('lodash.isplainobject')
 
 export default class Condition {
   constructor (properties) {
+    if (!properties) throw new Error('Condition: constructor options required')
     let booleanOperator = Condition.booleanOperator(properties)
     Object.assign(this, properties)
     if (booleanOperator) {
@@ -20,7 +20,10 @@ export default class Condition {
         return new Condition(c)
       })
     } else {
-      properties = params(properties).require(['fact', 'operator', 'value'])
+      if (!properties.hasOwnProperty('fact')) throw new Error('Condition: constructor "fact" property required')
+      if (!properties.hasOwnProperty('operator')) throw new Error('Condition: constructor "operator" property required')
+      if (!properties.hasOwnProperty('value')) throw new Error('Condition: constructor "value" property required')
+
       // a non-boolean condition does not have a priority by default. this allows
       // priority to be dictated by the fact definition
       if (properties.hasOwnProperty('priority')) {

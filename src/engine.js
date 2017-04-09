@@ -1,6 +1,5 @@
 'use strict'
 
-import params from 'params'
 import Fact from './fact'
 import Rule from './rule'
 import Operator from './operator'
@@ -41,7 +40,9 @@ class Engine extends EventEmitter {
    * @param {Object} properties.conditions - conditions to evaluate when processing this rule
    */
   addRule (properties) {
-    params(properties).require(['conditions', 'event'])
+    if (!properties) throw new Error('Engine: addRule() requires options')
+    if (!properties.hasOwnProperty('conditions')) throw new Error('Engine: addRule() argument requires "conditions" property')
+    if (!properties.hasOwnProperty('event')) throw new Error('Engine: addRule() argument requires "event" property')
 
     let rule
     if (properties instanceof Rule) {

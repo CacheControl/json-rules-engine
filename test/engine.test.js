@@ -58,7 +58,7 @@ describe('Engine', () => {
         delete rule.conditions
         expect(() => {
           engine.addRule(rule)
-        }).to.throw(/Missing key "conditions"/)
+        }).to.throw(/Engine: addRule\(\) argument requires "conditions" property/)
       })
 
       it('.event', () => {
@@ -66,7 +66,7 @@ describe('Engine', () => {
         delete rule.event
         expect(() => {
           engine.addRule(rule)
-        }).to.throw(/Missing key "event"/)
+        }).to.throw(/Engine: addRule\(\) argument requires "event" property/)
       })
     })
   })

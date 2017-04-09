@@ -1,6 +1,5 @@
 'use strict'
 
-import params from 'params'
 import Condition from './condition'
 import { EventEmitter } from 'events'
 import deepClone from 'lodash.clonedeep'
@@ -70,7 +69,12 @@ class Rule extends EventEmitter {
    * @param {string} event.params - parameters to emit as the argument of the event emission
    */
   setEvent (event) {
-    this.event = params(event).only(['type', 'params'])
+    if (!event) throw new Error('Rule: setEvent() requires event object')
+    if (!event.hasOwnProperty('type')) throw new Error('Rule: setEvent() requires event object with "type" property')
+    this.event = {
+      type: event.type
+    }
+    if (event.params) this.event.params = event.params
     return this
   }
 

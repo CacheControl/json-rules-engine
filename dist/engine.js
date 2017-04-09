@@ -224,14 +224,14 @@ var Engine = function (_EventEmitter) {
                     debug('engine::run status:' + _this2.status + '; skipping remaining rules');
                     return;
                   }
-                  return rule.evaluate(almanac).then(function (rulePasses) {
-                    debug('engine::run ruleResult:' + rulePasses);
-                    if (rulePasses) {
-                      _this2.emit('success', rule.event, almanac);
-                      _this2.emit(rule.event.type, rule.event.params, _this2);
+                  return rule.evaluate(almanac).then(function (ruleResult) {
+                    debug('engine::run ruleResult:' + ruleResult.result);
+                    if (ruleResult.result) {
+                      _this2.emit('success', rule.event, almanac, ruleResult);
                       almanac.factValue('success-events', { event: rule.event });
+                    } else {
+                      _this2.emit('failure', rule.event, almanac, ruleResult);
                     }
-                    if (!rulePasses) _this2.emit('failure', rule, almanac);
                   });
                 })));
 

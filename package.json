@@ -69,7 +69,6 @@
     "lodash.clonedeep": "4.5.0",
     "lodash.isplainobject": "4.0.6",
     "object-hash": "1.1.5",
-    "params": "0.1.1",
     "selectn": "1.1.1"
   }
 }

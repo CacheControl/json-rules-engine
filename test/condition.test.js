@@ -231,22 +231,26 @@ describe('Condition', () => {
   })
 
   describe('atomic facts', () => {
+    it('throws if no options are provided', () => {
+      expect(() => new Condition()).to.throw(/Condition: constructor options required/)
+    })
+
     it('throws for a missing "operator"', () => {
       let conditions = condition()
       delete conditions.all[0].operator
-      expect(() => new Condition(conditions)).to.throw(/Missing key "operator"/)
+      expect(() => new Condition(conditions)).to.throw(/Condition: constructor "operator" property required/)
     })
 
     it('throws for a missing "fact"', () => {
       let conditions = condition()
       delete conditions.all[0].fact
-      expect(() => new Condition(conditions)).to.throw(/Missing key "fact"/)
+      expect(() => new Condition(conditions)).to.throw(/Condition: constructor "fact" property required/)
     })
 
     it('throws for a missing "value"', () => {
       let conditions = condition()
       delete conditions.all[0].value
-      expect(() => new Condition(conditions)).to.throw(/Missing key "value"/)
+      expect(() => new Condition(conditions)).to.throw(/Condition: constructor "value" property required/)
     })
   })
 
@@ -288,7 +292,7 @@ describe('Condition', () => {
     it('throws if a nested condition is invalid', () => {
       let conditions = complexCondition()
       delete conditions.all[2].any[0].fact
-      expect(() => new Condition(conditions)).to.throw(/Missing key "fact"/)
+      expect(() => new Condition(conditions)).to.throw(/Condition: constructor "fact" property required/)
     })
   })
 })
