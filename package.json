@@ -65,10 +65,10 @@
     "standard": "^9.0.0"
   },
   "dependencies": {
-    "debug": "2.2.0",
-    "lodash.clonedeep": "4.5.0",
-    "lodash.isplainobject": "4.0.6",
-    "object-hash": "1.1.5",
-    "selectn": "1.1.1"
+    "debug": "~2.6.3",
+    "lodash.clonedeep": "~4.5.0",
+    "lodash.isplainobject": "~4.0.6",
+    "object-hash": "~1.1.8",
+    "selectn": "~1.1.2"
   }
 }
