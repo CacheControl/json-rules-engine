@@ -1,3 +1,13 @@
+2.0.0-beta1 / 2017-04-09
+==================
+
+  * Add rule results
+  * Document fact .path ability to parse properties containing dots
+  * Bump dependencies
+  * BREAKING CHANGES
+    * `engine.on('failure', (rule, almanac))` is now `engine.on('failure', (event, almanac, ruleResult))`
+    * `engine.on(eventType, (eventParams, engine))` is now `engine.on(eventType, (eventParams, almanac, ruleResult))`
+
 1.5.1 / 2017-03-19
 ==================
 
