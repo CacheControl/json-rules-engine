@@ -80,8 +80,8 @@ engine
   .on('success', (event, almanac) => {
     console.log(facts.userId + ' DID '.green + 'meet conditions for the ' + event.type.underline + ' rule.')
   })
-  .on('failure', rule => {
-    console.log(facts.userId + ' did ' + 'NOT'.red + ' meet conditions for the ' + rule.event.type.underline + ' rule.')
+  .on('failure', event => {
+    console.log(facts.userId + ' did ' + 'NOT'.red + ' meet conditions for the ' + event.type.underline + ' rule.')
   })
 
 // define fact(s) known at runtime

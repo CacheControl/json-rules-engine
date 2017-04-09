@@ -80,8 +80,8 @@ engine
   .on('success', event => {
     console.log(facts.word + ' DID '.green + printEventType[event.type])
   })
-  .on('failure', rule => {
-    console.log(facts.word + ' did ' + 'NOT'.red + ' ' + printEventType[rule.event.type])
+  .on('failure', event => {
+    console.log(facts.word + ' did ' + 'NOT'.red + ' ' + printEventType[event.type])
   })
 
 /**
