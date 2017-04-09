@@ -96,6 +96,25 @@ describe('Engine: event', () => {
       expect(successSpy.callCount).to.equal(1)
     })
 
+    it('"event.type" passes the event parameters, almanac, and results', async () => {
+      let failureSpy = sinon.spy()
+      let successSpy = sinon.spy()
+      engine.on(event.type, function (params, almanac, ruleResult) {
+        expect(params).to.eql(event.params)
+        expect(almanac).to.be.an.instanceof(Almanac)
+        expect(ruleResult.result).to.be.true()
+        expect(ruleResult.conditions.any[0].result).to.be.true()
+        expect(ruleResult.conditions.any[0].factResult).to.equal(21)
+        expect(ruleResult.conditions.any[1].result).to.be.false()
+        expect(ruleResult.conditions.any[1].factResult).to.equal(false)
+        successSpy()
+      })
+      engine.on('failure', failureSpy)
+      await engine.run()
+      expect(failureSpy.callCount).to.equal(0)
+      expect(successSpy.callCount).to.equal(1)
+    })
+
     it('"failure" passes the event, almanac, and results', async () => {
       let AGE = 10
       let failureSpy = sinon.spy()
