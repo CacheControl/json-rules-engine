@@ -10,7 +10,6 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var params = require('params');
 var debug = require('debug')('json-rules-engine');
 var isPlainObject = require('lodash.isplainobject');
 
@@ -18,6 +17,7 @@ var Condition = function () {
   function Condition(properties) {
     _classCallCheck(this, Condition);
 
+    if (!properties) throw new Error('Condition: constructor options required');
     var booleanOperator = Condition.booleanOperator(properties);
     Object.assign(this, properties);
     if (booleanOperator) {
@@ -32,7 +32,10 @@ var Condition = function () {
         return new Condition(c);
       });
     } else {
-      properties = params(properties).require(['fact', 'operator', 'value']);
+      if (!properties.hasOwnProperty('fact')) throw new Error('Condition: constructor "fact" property required');
+      if (!properties.hasOwnProperty('operator')) throw new Error('Condition: constructor "operator" property required');
+      if (!properties.hasOwnProperty('value')) throw new Error('Condition: constructor "value" property required');
+
       // a non-boolean condition does not have a priority by default. this allows
       // priority to be dictated by the fact definition
       if (properties.hasOwnProperty('priority')) {

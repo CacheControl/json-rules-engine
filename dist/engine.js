@@ -7,10 +7,6 @@ exports.FINISHED = exports.RUNNING = exports.READY = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _params = require('params');
-
-var _params2 = _interopRequireDefault(_params);
-
 var _fact = require('./fact');
 
 var _fact2 = _interopRequireDefault(_fact);
@@ -94,7 +90,9 @@ var Engine = function (_EventEmitter) {
   _createClass(Engine, [{
     key: 'addRule',
     value: function addRule(properties) {
-      (0, _params2.default)(properties).require(['conditions', 'event']);
+      if (!properties) throw new Error('Engine: addRule() requires options');
+      if (!properties.hasOwnProperty('conditions')) throw new Error('Engine: addRule() argument requires "conditions" property');
+      if (!properties.hasOwnProperty('event')) throw new Error('Engine: addRule() argument requires "event" property');
 
       var rule = void 0;
       if (properties instanceof _rule2.default) {
@@ -228,6 +226,7 @@ var Engine = function (_EventEmitter) {
                     debug('engine::run ruleResult:' + ruleResult.result);
                     if (ruleResult.result) {
                       _this2.emit('success', rule.event, almanac, ruleResult);
+                      _this2.emit(rule.event.type, rule.event.params, almanac, ruleResult);
                       almanac.factValue('success-events', { event: rule.event });
                     } else {
                       _this2.emit('failure', rule.event, almanac, ruleResult);

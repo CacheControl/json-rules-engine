@@ -31,6 +31,7 @@ var warn = require('debug')('json-rules-engine:warn');
  * Triggers fact computations and saves the results
  * A new almanac is used for every engine run()
  */
+
 var Almanac = function () {
   function Almanac(factMap) {
     var runtimeFacts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};

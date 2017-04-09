@@ -6,10 +6,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _params = require('params');
-
-var _params2 = _interopRequireDefault(_params);
-
 var _condition = require('./condition');
 
 var _condition2 = _interopRequireDefault(_condition);
@@ -111,7 +107,12 @@ var Rule = function (_EventEmitter) {
   }, {
     key: 'setEvent',
     value: function setEvent(event) {
-      this.event = (0, _params2.default)(event).only(['type', 'params']);
+      if (!event) throw new Error('Rule: setEvent() requires event object');
+      if (!event.hasOwnProperty('type')) throw new Error('Rule: setEvent() requires event object with "type" property');
+      this.event = {
+        type: event.type
+      };
+      if (event.params) this.event.params = event.params;
       return this;
     }
 
