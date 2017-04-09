@@ -188,7 +188,6 @@ let rule = new Rule({
         fact: 'product-price',
         params: {
           productId: 'widget',
-          // Complex accessor are supported, e.g. '.profile.addresses[0].city'
           path: '.price'
         },
         operator: 'greaterThan',
@@ -198,7 +197,34 @@ let rule = new Rule({
   }
 })
 ```
-See the [fact-dependency](../examples/04-fact-dependency.js) example
+
+To access nested properties, use dot/bracket-notation:
+```js
+  /*
+  {
+    profile: {
+      addresses: [{ city: 'Denver' }]
+    }
+  }
+  */
+
+  path: '.profile.addresses[0].city'  // "Denver"
+```
+
+To access properties with a '.', pass an array of properties
+```js
+ /*
+  {
+    property: {
+      'dot.property': 'hello-world'
+    }
+  }
+  */
+  path: ['property', 'dot.property']  // "hello-world"
+```
+Full documentation for `path` can be found in the [selectn](https://github.com/wilmoore/selectn.js) library
+
+For an example, see [fact-dependency](../examples/04-fact-dependency.js)
 
 ### Comparing facts
 

@@ -23,6 +23,7 @@ async function eligibilityData (params, engine) {
       name: 'Colorado'
     },
     zip: '80403',
+    'dot.property': 'dot-property-value',
     occupantHistory: [
       { name: 'Joe', year: 2011 },
       { name: 'Jane', year: 2013 }
@@ -165,6 +166,16 @@ describe('Engine: fact evaluation', () => {
         let complexCondition = conditions()
         complexCondition.any[0].path = '.address.occupantHistory[0].year'
         complexCondition.any[0].value = 2011
+        complexCondition.any[0].operator = 'equal'
+        setup(complexCondition)
+        await engine.run()
+        expect(successSpy).to.have.been.calledWith(event)
+      })
+
+      it('correctly interprets "path" when target object properties have dots', async () => {
+        let complexCondition = conditions()
+        complexCondition.any[0].path = ['address', 'dot.property']
+        complexCondition.any[0].value = 'dot-property-value'
         complexCondition.any[0].operator = 'equal'
         setup(complexCondition)
         await engine.run()
