@@ -1,7 +1,7 @@
 'use strict'
 
 let debug = require('debug')('json-rules-engine')
-let isPlainObject = require('lodash.isplainobject')
+let isObjectLike = require('lodash.isobjectlike')
 
 export default class Condition {
   constructor (properties) {
@@ -67,7 +67,7 @@ export default class Condition {
    */
   async _getValue (almanac) {
     let value = this.value
-    if (isPlainObject(value) && value.hasOwnProperty('fact')) { // value: { fact: 'xyz' }
+    if (isObjectLike(value) && value.hasOwnProperty('fact')) { // value: { fact: 'xyz' }
       value = await almanac.factValue(value.fact, value.params, value.path)
     }
     return value

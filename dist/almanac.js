@@ -23,7 +23,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var debug = require('debug')('json-rules-engine');
 var verbose = require('debug')('json-rules-engine-verbose');
 var selectn = require('selectn');
-var isPlainObject = require('lodash.isplainobject');
+var isObjectLike = require('lodash.isobjectlike');
 var warn = require('debug')('json-rules-engine:warn');
 
 /**
@@ -167,7 +167,7 @@ var Almanac = function () {
 
               case 15:
                 if (path) {
-                  if (isPlainObject(factValue) || Array.isArray(factValue)) {
+                  if (isObjectLike(factValue)) {
                     factValue = selectn(path)(factValue);
                     debug('condition::evaluate extracting object property ' + path + ', received: ' + factValue);
                   } else {

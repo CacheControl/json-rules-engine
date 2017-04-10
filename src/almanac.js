@@ -6,7 +6,7 @@ import { UndefinedFactError } from './errors'
 let debug = require('debug')('json-rules-engine')
 let verbose = require('debug')('json-rules-engine-verbose')
 let selectn = require('selectn')
-let isPlainObject = require('lodash.isplainobject')
+let isObjectLike = require('lodash.isobjectlike')
 let warn = require('debug')('json-rules-engine:warn')
 
 /**
@@ -101,7 +101,7 @@ export default class Almanac {
       factValue = await this._setFactValue(fact, params, fact.calculate(params, this))
     }
     if (path) {
-      if (isPlainObject(factValue) || Array.isArray(factValue)) {
+      if (isObjectLike(factValue)) {
         factValue = selectn(path)(factValue)
         debug(`condition::evaluate extracting object property ${path}, received: ${factValue}`)
       } else {

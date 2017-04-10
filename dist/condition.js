@@ -11,7 +11,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var debug = require('debug')('json-rules-engine');
-var isPlainObject = require('lodash.isplainobject');
+var isObjectLike = require('lodash.isobjectlike');
 
 var Condition = function () {
   function Condition(properties) {
@@ -97,7 +97,7 @@ var Condition = function () {
               case 0:
                 value = this.value;
 
-                if (!(isPlainObject(value) && value.hasOwnProperty('fact'))) {
+                if (!(isObjectLike(value) && value.hasOwnProperty('fact'))) {
                   _context.next = 5;
                   break;
                 }

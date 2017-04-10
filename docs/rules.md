@@ -11,7 +11,7 @@ Rules contain a set of _conditions_ and a single _event_.  When the engine is ru
 
 [Operators](#Operators)
 
-[Results](#Results)
+[Rule Results](#rule-results)
 
 ## Methods
 
