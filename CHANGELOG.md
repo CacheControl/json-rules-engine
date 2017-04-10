@@ -1,3 +1,7 @@
+2.0.0-beta2 / 2017-04-10
+==================
+  * Fix fact path object checking to work with objects that have prototypes (lodash isObjectLike instead of isPlainObject)
+
 2.0.0-beta1 / 2017-04-09
 ==================
 
