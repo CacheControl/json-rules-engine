@@ -23,7 +23,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var debug = require('debug')('json-rules-engine');
 var verbose = require('debug')('json-rules-engine-verbose');
 var selectn = require('selectn');
-var isPlainObject = require('lodash.isplainobject');
+var isObjectLike = require('lodash.isobjectlike');
 var warn = require('debug')('json-rules-engine:warn');
 
 /**
@@ -31,6 +31,7 @@ var warn = require('debug')('json-rules-engine:warn');
  * Triggers fact computations and saves the results
  * A new almanac is used for every engine run()
  */
+
 var Almanac = function () {
   function Almanac(factMap) {
     var runtimeFacts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -166,7 +167,7 @@ var Almanac = function () {
 
               case 15:
                 if (path) {
-                  if (isPlainObject(factValue) || Array.isArray(factValue)) {
+                  if (isObjectLike(factValue)) {
                     factValue = selectn(path)(factValue);
                     debug('condition::evaluate extracting object property ' + path + ', received: ' + factValue);
                   } else {

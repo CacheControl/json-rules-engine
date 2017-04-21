@@ -1,6 +1,5 @@
 'use strict'
 
-import params from 'params'
 import Fact from './fact'
 import Rule from './rule'
 import Operator from './operator'
@@ -41,7 +40,9 @@ class Engine extends EventEmitter {
    * @param {Object} properties.conditions - conditions to evaluate when processing this rule
    */
   addRule (properties) {
-    params(properties).require(['conditions', 'event'])
+    if (!properties) throw new Error('Engine: addRule() requires options')
+    if (!properties.hasOwnProperty('conditions')) throw new Error('Engine: addRule() argument requires "conditions" property')
+    if (!properties.hasOwnProperty('event')) throw new Error('Engine: addRule() argument requires "event" property')
 
     let rule
     if (properties instanceof Rule) {
@@ -144,14 +145,15 @@ class Engine extends EventEmitter {
         debug(`engine::run status:${this.status}; skipping remaining rules`)
         return
       }
-      return rule.evaluate(almanac).then((rulePasses) => {
-        debug(`engine::run ruleResult:${rulePasses}`)
-        if (rulePasses) {
-          this.emit('success', rule.event, almanac)
-          this.emit(rule.event.type, rule.event.params, this)
+      return rule.evaluate(almanac).then((ruleResult) => {
+        debug(`engine::run ruleResult:${ruleResult.result}`)
+        if (ruleResult.result) {
+          this.emit('success', rule.event, almanac, ruleResult)
+          this.emit(rule.event.type, rule.event.params, almanac, ruleResult)
           almanac.factValue('success-events', { event: rule.event })
+        } else {
+          this.emit('failure', rule.event, almanac, ruleResult)
         }
-        if (!rulePasses) this.emit('failure', rule, almanac)
       })
     }))
   }

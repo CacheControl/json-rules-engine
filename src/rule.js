@@ -1,8 +1,8 @@
 'use strict'
 
-import params from 'params'
 import Condition from './condition'
 import { EventEmitter } from 'events'
+import deepClone from 'lodash.clonedeep'
 
 let debug = require('debug')('json-rules-engine')
 
@@ -69,7 +69,12 @@ class Rule extends EventEmitter {
    * @param {string} event.params - parameters to emit as the argument of the event emission
    */
   setEvent (event) {
-    this.event = params(event).only(['type', 'params'])
+    if (!event) throw new Error('Rule: setEvent() requires event object')
+    if (!event.hasOwnProperty('type')) throw new Error('Rule: setEvent() requires event object with "type" property')
+    this.event = {
+      type: event.type
+    }
+    if (event.params) this.event.params = event.params
     return this
   }
 
@@ -124,9 +129,15 @@ class Rule extends EventEmitter {
   /**
    * Evaluates the rule, starting with the root boolean operator and recursing down
    * All evaluation is done within the context of an almanac
-   * @return {Promise(boolean)} rule evaluation result
+   * @return {Promise(RuleResult)} rule evaluation result
    */
   async evaluate (almanac) {
+    let ruleResult = {
+      conditions: deepClone(this.conditions),
+      event: deepClone(this.event),
+      priority: deepClone(this.priority)
+    }
+
     /**
      * Evaluates the rule conditions
      * @param  {Condition} condition - condition to evaluate
@@ -146,19 +157,16 @@ class Rule extends EventEmitter {
         passes = comparisonValue === true
       } else {
         try {
-          passes = await condition.evaluate(almanac, this.engine.operators, comparisonValue)
+          let evaluationResult = await condition.evaluate(almanac, this.engine.operators, comparisonValue)
+          passes = evaluationResult.result
+          condition.factResult = evaluationResult.leftHandSideValue
         } catch (err) {
           // any condition raising an undefined fact error is considered falsey when allowUndefinedFacts is enabled
           if (this.engine.allowUndefinedFacts && err.code === 'UNDEFINED_FACT') passes = false
           else throw err
         }
       }
-
-      if (passes) {
-        this.emit('success', this.event, almanac)
-      } else {
-        this.emit('failure', this.event, almanac)
-      }
+      condition.result = passes
       return passes
     }
 
@@ -238,10 +246,23 @@ class Rule extends EventEmitter {
       return prioritizeAndRun(conditions, 'all')
     }
 
-    if (this.conditions.any) {
-      return await any(this.conditions.any)
+    /**
+     * Emits based on rule evaluation result, and decorates ruleResult with 'result' property
+     * @param {Boolean} result
+     */
+    let processResult = (result) => {
+      ruleResult.result = result
+      if (result) this.emit('success', ruleResult.event, almanac, ruleResult)
+      else this.emit('failure', ruleResult.event, almanac, ruleResult)
+      return ruleResult
+    }
+
+    if (ruleResult.conditions.any) {
+      let result = await any(ruleResult.conditions.any)
+      return processResult(result)
     } else {
-      return await all(this.conditions.all)
+      let result = await all(ruleResult.conditions.all)
+      return processResult(result)
     }
   }
 }

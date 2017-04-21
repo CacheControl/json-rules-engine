@@ -6,15 +6,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _params = require('params');
-
-var _params2 = _interopRequireDefault(_params);
-
 var _condition = require('./condition');
 
 var _condition2 = _interopRequireDefault(_condition);
 
 var _events = require('events');
+
+var _lodash = require('lodash.clonedeep');
+
+var _lodash2 = _interopRequireDefault(_lodash);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -107,7 +107,12 @@ var Rule = function (_EventEmitter) {
   }, {
     key: 'setEvent',
     value: function setEvent(event) {
-      this.event = (0, _params2.default)(event).only(['type', 'params']);
+      if (!event) throw new Error('Rule: setEvent() requires event object');
+      if (!event.hasOwnProperty('type')) throw new Error('Rule: setEvent() requires event object with "type" property');
+      this.event = {
+        type: event.type
+      };
+      if (event.params) this.event.params = event.params;
       return this;
     }
 
@@ -175,7 +180,7 @@ var Rule = function (_EventEmitter) {
     /**
      * Evaluates the rule, starting with the root boolean operator and recursing down
      * All evaluation is done within the context of an almanac
-     * @return {Promise(boolean)} rule evaluation result
+     * @return {Promise(RuleResult)} rule evaluation result
      */
 
   }, {
@@ -184,19 +189,27 @@ var Rule = function (_EventEmitter) {
       var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee6(almanac) {
         var _this3 = this;
 
-        var evaluateCondition, evaluateConditions, prioritizeAndRun, any, all;
+        var ruleResult, evaluateCondition, evaluateConditions, prioritizeAndRun, any, all, processResult, result, _result;
+
         return regeneratorRuntime.wrap(function _callee6$(_context6) {
           while (1) {
             switch (_context6.prev = _context6.next) {
               case 0:
+                ruleResult = {
+                  conditions: (0, _lodash2.default)(this.conditions),
+                  event: (0, _lodash2.default)(this.event),
+                  priority: (0, _lodash2.default)(this.priority)
+                };
+
                 /**
                  * Evaluates the rule conditions
                  * @param  {Condition} condition - condition to evaluate
                  * @return {Promise(true|false)} - resolves with the result of the condition evaluation
                  */
+
                 evaluateCondition = function () {
                   var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee(condition) {
-                    var comparisonValue, passes, subConditions;
+                    var comparisonValue, passes, subConditions, evaluationResult;
                     return regeneratorRuntime.wrap(function _callee$(_context) {
                       while (1) {
                         switch (_context.prev = _context.next) {
@@ -234,7 +247,7 @@ var Rule = function (_EventEmitter) {
                           case 13:
                             // for booleans, rule passing is determined by the all/any result
                             passes = comparisonValue === true;
-                            _context.next = 29;
+                            _context.next = 31;
                             break;
 
                           case 16:
@@ -243,41 +256,39 @@ var Rule = function (_EventEmitter) {
                             return condition.evaluate(almanac, _this3.engine.operators, comparisonValue);
 
                           case 19:
-                            passes = _context.sent;
-                            _context.next = 29;
+                            evaluationResult = _context.sent;
+
+                            passes = evaluationResult.result;
+                            condition.factResult = evaluationResult.leftHandSideValue;
+                            _context.next = 31;
                             break;
 
-                          case 22:
-                            _context.prev = 22;
+                          case 24:
+                            _context.prev = 24;
                             _context.t0 = _context['catch'](16);
 
                             if (!(_this3.engine.allowUndefinedFacts && _context.t0.code === 'UNDEFINED_FACT')) {
-                              _context.next = 28;
+                              _context.next = 30;
                               break;
                             }
 
                             passes = false;
-                            _context.next = 29;
+                            _context.next = 31;
                             break;
 
-                          case 28:
+                          case 30:
                             throw _context.t0;
 
-                          case 29:
-
-                            if (passes) {
-                              _this3.emit('success', _this3.event, almanac);
-                            } else {
-                              _this3.emit('failure', _this3.event, almanac);
-                            }
+                          case 31:
+                            condition.result = passes;
                             return _context.abrupt('return', passes);
 
-                          case 31:
+                          case 33:
                           case 'end':
                             return _context.stop();
                         }
                       }
-                    }, _callee, _this3, [[16, 22]]);
+                    }, _callee, _this3, [[16, 24]]);
                   }));
 
                   return function evaluateCondition(_x3) {
@@ -453,25 +464,39 @@ var Rule = function (_EventEmitter) {
                   };
                 }();
 
-                if (!this.conditions.any) {
-                  _context6.next = 11;
+                /**
+                 * Emits based on rule evaluation result, and decorates ruleResult with 'result' property
+                 * @param {Boolean} result
+                 */
+
+
+                processResult = function processResult(result) {
+                  ruleResult.result = result;
+                  if (result) _this3.emit('success', ruleResult.event, almanac, ruleResult);else _this3.emit('failure', ruleResult.event, almanac, ruleResult);
+                  return ruleResult;
+                };
+
+                if (!ruleResult.conditions.any) {
+                  _context6.next = 14;
                   break;
                 }
 
-                _context6.next = 8;
-                return any(this.conditions.any);
+                _context6.next = 10;
+                return any(ruleResult.conditions.any);
 
-              case 8:
-                return _context6.abrupt('return', _context6.sent);
-
-              case 11:
-                _context6.next = 13;
-                return all(this.conditions.all);
-
-              case 13:
-                return _context6.abrupt('return', _context6.sent);
+              case 10:
+                result = _context6.sent;
+                return _context6.abrupt('return', processResult(result));
 
               case 14:
+                _context6.next = 16;
+                return all(ruleResult.conditions.all);
+
+              case 16:
+                _result = _context6.sent;
+                return _context6.abrupt('return', processResult(_result));
+
+              case 18:
               case 'end':
                 return _context6.stop();
             }

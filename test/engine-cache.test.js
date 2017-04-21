@@ -1,7 +1,7 @@
 'use strict'
 
-import engineFactory from '../src/index'
 import sinon from 'sinon'
+import engineFactory from '../src/index'
 
 describe('Engine: cache', () => {
   let engine
@@ -16,8 +16,12 @@ describe('Engine: cache', () => {
     }]
   }
 
-  let factSpy = sinon.stub().returns(22)
+  let factSpy = sinon.spy()
   let eventSpy = sinon.spy()
+  let ageFact = () => {
+    factSpy()
+    return 22
+  }
   function setup (factOptions) {
     factSpy.reset()
     eventSpy.reset()
@@ -28,7 +32,7 @@ describe('Engine: cache', () => {
     engine.addRule(determineCollegeSenior)
     let over20 = factories.rule({ conditions, event: collegeSeniorEvent, priority: 50 })
     engine.addRule(over20)
-    engine.addFact('age', factSpy, factOptions)
+    engine.addFact('age', ageFact, factOptions)
     engine.on('success', eventSpy)
   }
 

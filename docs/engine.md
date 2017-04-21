@@ -128,42 +128,24 @@ the same priority may still emit events, even though the engine has been told to
 engine.stop()
 ```
 
-### engine.on(String event, Function callback) -> Engine
-
-Listens for events emitted as rules are being evaluated.  "event" is determined by the [rule event](./rules.md#Events).
-
-```js
-let rule = new Rule({
-  event: {
-    type: 'my-event',
-    params: {
-      customValue: 'my-custom-value'
-    }
-  }
-})
-
-// whenever rule is evaluated and conditions pass, 'my-event' will trigger
-engine.on('my-event', function(params) {
-  console.log(params) // { customValue: 'my-custom-value' }
-})
-```
-
 There are two generic event emissions that trigger automatically:
 
-#### ```engine.on('success', cb)```
+#### ```engine.on('success', Function(Object event, Almanac almanac, RuleResult ruleResult))```
 
-Fires when *any* rule passes.  In this case the callback will receive the entire event object.
+Fires when a rule passes. The callback will receive the event object, the current [Almanac](./almanac.md), and the [Rule Result](./rules.md#rule-results).
 
 ```js
-engine.on('success', function(event, almanac) {
+engine.on('success', function(event, almanac, ruleResult) {
+  console.log(event) // { type: 'my-event', params: { id: 1 }
 })
 ```
 
-#### ```engine.on('failure', cb)```
+#### ```engine.on('failure', Function(Object event, Almanac almanac, RuleResult ruleResult))```
 
-Companion to 'success', except fires when any rule fails.
+Companion to 'success', except fires when a rule fails.  The callback will receive the event object, the current [Almanac](./almanac.md), and the [Rule Result](./rules.md#rule-results).
 
 ```js
-engine.on('failure', function(rule, almanac) {
+engine.on('failure', function(event, almanac, ruleResult) {
+  console.log(event) // { type: 'my-event', params: { id: 1 }
 })
 ```

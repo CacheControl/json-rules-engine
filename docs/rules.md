@@ -1,6 +1,17 @@
+
 # Rules
 
 Rules contain a set of _conditions_ and a single _event_.  When the engine is run, each rule condition is evaluated.  If the results are truthy, the rule's _event_ is triggered.
+
+[Methods](#Methods)
+
+[Conditions](#Conditions)
+
+[Events](#Events)
+
+[Operators](#Operators)
+
+[Rule Results](#rule-results)
 
 ## Methods
 
@@ -177,7 +188,6 @@ let rule = new Rule({
         fact: 'product-price',
         params: {
           productId: 'widget',
-          // Complex accessor are supported, e.g. '.profile.addresses[0].city'
           path: '.price'
         },
         operator: 'greaterThan',
@@ -187,7 +197,34 @@ let rule = new Rule({
   }
 })
 ```
-See the [fact-dependency](../examples/04-fact-dependency.js) example
+
+To access nested properties, use dot/bracket-notation:
+```js
+  /*
+  {
+    profile: {
+      addresses: [{ city: 'Denver' }]
+    }
+  }
+  */
+
+  path: '.profile.addresses[0].city'  // "Denver"
+```
+
+To access properties with a '.', pass an array of properties
+```js
+ /*
+  {
+    property: {
+      'dot.property': 'hello-world'
+    }
+  }
+  */
+  path: ['property', 'dot.property']  // "hello-world"
+```
+Full documentation for `path` can be found in the [selectn](https://github.com/wilmoore/selectn.js) library
+
+For an example, see [fact-dependency](../examples/04-fact-dependency.js)
 
 ### Comparing facts
 
@@ -221,21 +258,23 @@ See the [fact-comparison](../examples/08-fact-comparison.js) example
 
 Listen for `success` and `failure` events emitted when rule is evaluated.
 
-#### ```rule.on('success', Function(Object event, Almanac almanac))```
+#### ```rule.on('success', Function(Object event, Almanac almanac, RuleResult ruleResult))```
+
+The callback will receive the event object, the current [Almanac](./almanac.md), and the [Rule Result](./rules.md#rule-results).
 
 ```js
 // whenever rule is evaluated and the conditions pass, 'success' will trigger
-rule.on('success', function(event, almanac) {
+rule.on('success', function(event, almanac, ruleResult) {
   console.log(event) // { type: 'my-event', params: { id: 1 }
 })
 ```
 
-#### ```rule.on('failure', Function(Object event, Almanac almanac))```
+#### ```rule.on('failure', Function(Object event, Almanac almanac, RuleResult ruleResult))```
 
-Companion to `success`, except fires when the rule fails.
+Companion to `success`, except fires when the rule fails.  The callback will receive the event object, the current [Almanac](./almanac.md), and the [Rule Result](./rules.md#rule-results).
 
 ```js
-engine.on('failure', function(event, almanac) {
+engine.on('failure', function(event, almanac, ruleResult) {
   console.log(event) // { type: 'my-event', params: { id: 1 }
 })
 ```
@@ -273,3 +312,34 @@ The ```operator``` compares the value returned by the ```fact``` to what is stor
   ```contains```  - _fact_ (an array) must include _value_
 
   ```doesNotContain```  - _fact_ (an array) must not include _value_
+
+## Rule Results
+
+After a rule is evaluated, a `rule result` object is provided to the `success` and `failure` events.  This argument is similar to a regular rule, and contains additional metadata about how the rule was evaluated.  Rule results can be used to extract the results of individual conditions, computed fact values, and boolean logic results.
+
+Rule results are structured similar to rules, with two additional pieces of metadata sprinkled throughout: `result` and `factResult`
+```js
+{
+  result: false,                    // denotes whether rule computed truthy or falsey
+  conditions: {
+    all: [
+      {
+        fact: 'my-fact',
+        operator: 'equal',
+        value: 'some-value',
+        result: false,             // denotes whether condition computed truthy or falsey
+        factResult: 'other-value'  // denotes what 'my-fact' was computed to be
+      }
+    ]
+  },
+  event: {
+    type: 'my-event',
+    params: {
+      customProperty: 'customValue'
+    }
+  },
+  priority: 1,
+}
+```
+
+A demonstration can be found in the [rule-results](../examples/09-rule-results.js) example.

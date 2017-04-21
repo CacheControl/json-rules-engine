@@ -10,14 +10,14 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var params = require('params');
 var debug = require('debug')('json-rules-engine');
-var isPlainObject = require('lodash.isplainobject');
+var isObjectLike = require('lodash.isobjectlike');
 
 var Condition = function () {
   function Condition(properties) {
     _classCallCheck(this, Condition);
 
+    if (!properties) throw new Error('Condition: constructor options required');
     var booleanOperator = Condition.booleanOperator(properties);
     Object.assign(this, properties);
     if (booleanOperator) {
@@ -32,7 +32,10 @@ var Condition = function () {
         return new Condition(c);
       });
     } else {
-      properties = params(properties).require(['fact', 'operator', 'value']);
+      if (!properties.hasOwnProperty('fact')) throw new Error('Condition: constructor "fact" property required');
+      if (!properties.hasOwnProperty('operator')) throw new Error('Condition: constructor "operator" property required');
+      if (!properties.hasOwnProperty('value')) throw new Error('Condition: constructor "value" property required');
+
       // a non-boolean condition does not have a priority by default. this allows
       // priority to be dictated by the fact definition
       if (properties.hasOwnProperty('priority')) {
@@ -94,7 +97,7 @@ var Condition = function () {
               case 0:
                 value = this.value;
 
-                if (!(isPlainObject(value) && value.hasOwnProperty('fact'))) {
+                if (!(isObjectLike(value) && value.hasOwnProperty('fact'))) {
                   _context.next = 5;
                   break;
                 }
@@ -137,7 +140,7 @@ var Condition = function () {
     key: 'evaluate',
     value: function () {
       var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(almanac, operatorMap) {
-        var op, rightHandSideValue, leftHandSideValue, evaluationResult;
+        var op, rightHandSideValue, leftHandSideValue, result;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -186,10 +189,10 @@ var Condition = function () {
 
               case 14:
                 leftHandSideValue = _context2.sent;
-                evaluationResult = op.evaluate(leftHandSideValue, rightHandSideValue);
+                result = op.evaluate(leftHandSideValue, rightHandSideValue);
 
-                debug('condition::evaluate <' + leftHandSideValue + ' ' + this.operator + ' ' + rightHandSideValue + '?> (' + evaluationResult + ')');
-                return _context2.abrupt('return', evaluationResult);
+                debug('condition::evaluate <' + leftHandSideValue + ' ' + this.operator + ' ' + rightHandSideValue + '?> (' + result + ')');
+                return _context2.abrupt('return', { result: result, leftHandSideValue: leftHandSideValue, rightHandSideValue: rightHandSideValue, operator: this.operator });
 
               case 18:
               case 'end':

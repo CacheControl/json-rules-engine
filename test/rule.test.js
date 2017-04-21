@@ -82,6 +82,16 @@ describe('Rule', () => {
     })
   })
 
+  describe('setEvent()', () => {
+    it('throws if no argument provided', () => {
+      expect(() => rule.setEvent()).to.throw(/Rule: setEvent\(\) requires event object/)
+    })
+
+    it('throws if argument is missing "type" property', () => {
+      expect(() => rule.setEvent({})).to.throw(/Rule: setEvent\(\) requires event object with "type" property/)
+    })
+  })
+
   describe('setConditions()', () => {
     describe('validations', () => {
       it('throws an exception for invalid root conditions', () => {
