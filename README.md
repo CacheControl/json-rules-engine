@@ -16,7 +16,8 @@ A rules engine expressed in JSON
 * Full support for ```ALL``` and ```ANY``` boolean operators, including recursive nesting
 * Fast by default, faster with configuration; priority levels and cache settings for fine tuning performance
 * Secure; no use of eval()
-* Lightweight & extendable; less than 500 lines of javascript w/few dependencies
+* Isomorphic; runs in node and browser
+* Lightweight & extendable; 24kb gzipped w/few dependencies
 
 ## Installation
 
@@ -204,8 +205,16 @@ _Why aren't "fact" methods persistable?_  This is by design, for several reasons
 
 To see what the engine is doing under the hood, debug output can be turned on via:
 
+#### Node
+
 ```bash
 DEBUG=json-rules-engine
+```
+
+#### Browser
+```js
+// set debug flag in local storage & refresh page to see console output
+localStorage.debug = 'json-rules-engine'
 ```
 
 ## License
