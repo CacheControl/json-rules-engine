@@ -8,6 +8,9 @@
     "lint": "standard --verbose | snazzy || true",
     "lint:fix": "standard --fix",
     "prepublish": "npm run compile",
+    "test:browser": "npm run test:browser:setup && npm run test:browser:run",
+    "test:browser:setup": "webpack --config ./test/browser/webpack.config.js",
+    "test:browser:run": "node ./test/browser/index",
     "compile": "babel --stage 1 -d dist/ src/ && regenerator --no-cache-dir --include-runtime src/generator-runtime.js > dist/generator-runtime.js"
   },
   "repository": {
@@ -17,12 +20,16 @@
   "keywords": [
     "rules",
     "engine",
-    "rules engine"
+    "rules engine",
+    "rules processor",
+    "business-rules",
+    "json"
   ],
   "standard": {
     "parser": "babel-eslint",
     "ignore": [
-      "/dist"
+      "/dist",
+      "/test/browser/build"
     ],
     "globals": [
       "context",
@@ -57,12 +64,15 @@
     "chai-as-promised": "^6.0.0",
     "colors": "~1.1.2",
     "dirty-chai": "1.2.2",
+    "glob": "7.1.1",
     "mocha": "^3.2.0",
     "regenerator": "~0.9.7",
+    "selenium-webdriver": "3.4.0",
     "sinon": "^2.1.0",
     "sinon-chai": "^2.8.0",
     "snazzy": "^7.0.0",
-    "standard": "^10.0.1"
+    "standard": "^10.0.1",
+    "webpack": "2.4.1"
   },
   "dependencies": {
     "debug": "~2.6.3",
