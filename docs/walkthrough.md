@@ -7,7 +7,7 @@
   let engine = new Engine()
 ```
 
-More on engines can be found [here](./docs/engine.md)
+More on engines can be found [here](./engine.md)
 
 ## Step 2: Add Rules
 
@@ -57,7 +57,7 @@ engine.addRule(rule)
 
 The example above demonstrates a rule for finding individuals between _18 and 25_ who live in either _Utah or Colorado_.
 
-More on rules can be found [here](./docs/rules.md)
+More on rules can be found [here](./rules.md)
 
 ### Step 3: Define Facts
 
@@ -95,9 +95,9 @@ engine.addFact('age', ageFact)
 
 Now when the engine is run, it will call the methods above whenever it encounters the ```fact: "age"``` or ```fact: "state"``` properties.
 
-**Important:** facts should be *pure functions*; their computed values will vary based on the ```params``` argument.  By establishing facts as pure functions, it allows the rules engine to cache results throughout each ```run()```; facts called multiple times with the same ```params``` will trigger the computation once and cache the results for future calls.  If fact caching not desired, this behavior can be turned off via the options; see the [docs](./docs/facts.md).
+**Important:** facts should be *pure functions*; their computed values will vary based on the ```params``` argument.  By establishing facts as pure functions, it allows the rules engine to cache results throughout each ```run()```; facts called multiple times with the same ```params``` will trigger the computation once and cache the results for future calls.  If fact caching not desired, this behavior can be turned off via the options; see the [docs](./facts.md).
 
-More on facts can be found [here](./docs/facts.md).  More on almanacs can be found [here](./docs/almanac.md)
+More on facts can be found [here](./facts.md).  More on almanacs can be found [here](./almanac.md)
 
 
 ## Step 4: Handing Events
