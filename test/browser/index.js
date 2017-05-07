@@ -29,16 +29,18 @@ server.listen(parseInt(webserver.port), () => {
     console.log('title is: ' + title)
   })
 
-  let passCount = driver.findElement(webdriver.By.css('.passes > em')).innerHTML
-  let failCount = driver.findElement(webdriver.By.css('.failures > em')).innerHTML
-
-  console.log(`${passCount} tests passed; ${failCount} tests failed.`)
-
-  driver.quit()
-  server.close()
-
-  if (Number(passCount) > 0 && Number(failCount) === 0) {
-    return process.exit(0)
-  }
-  process.exit(1)
+  Promise.all([
+    driver.findElement(webdriver.By.css('.passes > em')).getText(),
+    driver.findElement(webdriver.By.css('.failures > em')).getText()
+  ]).then(texts => {
+    let passCount = texts[0]
+    let failCount = texts[1]
+    console.log(`${passCount} tests passed; ${failCount} tests failed.`)
+    driver.quit()
+    server.close()
+    if (Number(passCount) > 0 && Number(failCount) === 0) {
+      return process.exit(0)
+    }
+    process.exit(1)
+  })
 })
