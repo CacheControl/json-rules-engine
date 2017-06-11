@@ -3,13 +3,13 @@
 
 Rules contain a set of _conditions_ and a single _event_.  When the engine is run, each rule condition is evaluated.  If the results are truthy, the rule's _event_ is triggered.
 
-[Methods](#Methods)
+[Methods](#methods)
 
-[Conditions](#Conditions)
+[Conditions](#conditions)
 
-[Events](#Events)
+[Events](#events)
 
-[Operators](#Operators)
+[Operators](#operators)
 
 [Rule Results](#rule-results)
 
