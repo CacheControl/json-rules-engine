@@ -3,8 +3,8 @@
 ## Step 1: Create an Engine
 
 ```js
-  let Engine = require('json-rules-engine')
-  let engine = new Engine()
+  let RuleEngine = require('json-rules-engine');
+  let engine = new RuleEngine.Engine();
 ```
 
 More on engines can be found [here](./engine.md)
@@ -20,7 +20,7 @@ let event = {
     giftCard: 'amazon',
     value: 50
   }
-}
+};
 let conditions = {
   all: [
     {
@@ -32,27 +32,29 @@ let conditions = {
       operator: 'lessThanInclusive',
       value: 25
     },
-    any: [
-      {
-        fact: 'state',
-        params: {
-          country: 'us'
-        },
-        operator: 'equal',
-        value: 'colorado'
-      }, {
-        fact: 'state',
-        params: {
-          country: 'us'
-        },
-        operator: 'equal',
-        value: 'utah'
-      }
-    ]
+    {
+      any: [
+        {
+          fact: 'state',
+          params: {
+            country: 'us'
+          },
+          operator: 'equal',
+          value: 'CO'
+        }, {
+          fact: 'state',
+          params: {
+            country: 'us'
+          },
+          operator: 'equal',
+          value: 'UT'
+        }
+      ]
+    }
   ]
-}
-let rule = new Rule({ conditions, event})
-engine.addRule(rule)
+};
+let rule = new RuleEngine.Rule({ conditions, event});
+engine.addRule(rule);
 ```
 
 The example above demonstrates a rule for finding individuals between _18 and 25_ who live in either _Utah or Colorado_.
@@ -66,7 +68,6 @@ Facts are constant values or pure functions.  Using the current example, if the 
 Let's define some facts:
 
 ```js
-
 /*
  * Define the 'state' fact
  */
@@ -74,9 +75,12 @@ let stateFact = function(params, almanac) {
   // rule "params" value is passed to the fact
   // 'almanac' can be used to lookup other facts
   // via almanac.factValue()
-  return stateLookupByZip(params.country, almanac.factValue('zip-code'))
-}
-engine.addFact('state', stateFact)
+  return almanac.factValue('zip-code')
+    .then(zip => {
+      return stateLookupByZip(params.country, zip);
+    });
+};
+engine.addFact('state', stateFact);
 
 /*
  * Define the 'age' fact
@@ -85,12 +89,24 @@ let ageFact = function(params, almanac) {
   // facts may return a promise when performing asynchronous operations
   // such as database calls, http requests, etc to gather data
   return almanac.factValue('userId').then((userId) => {
-    return db.getUser(userId)
+    return getUser(userId);
   }).then((user) => {
-    return user.age
+    return user.age;
   })
-}
-engine.addFact('age', ageFact)
+};
+engine.addFact('age', ageFact);
+
+/*
+ * Define the 'zip-code' fact
+ */
+let zipCodeFact = function(params, almanac) {
+  return almanac.factValue('userId').then((userId) => {
+    return getUser(userId);
+  }).then((user) => {
+    return user.zipCode;
+  })
+};
+engine.addFact('zip-code', zipCodeFact);
 ```
 
 Now when the engine is run, it will call the methods above whenever it encounters the ```fact: "age"``` or ```fact: "state"``` properties.
@@ -111,12 +127,13 @@ engine.on('young-adult-rocky-mnts', (params) => {
   //   giftCard: 'amazon',
   //   value: 50
   // }
-})
+});
 
 // - OR -
 
 // subscribe to any event emitted by the engine
 engine.on('success', function (event, engine) {
+    console.log('Success event:\n', event);
   // event: {
   //   type: "young-adult-rocky-mnts",
   //   params: {
@@ -124,7 +141,7 @@ engine.on('success', function (event, engine) {
   //     value: 50
   //   }
   // }
-})
+});
 ```
 
 ## Step 5: Run the engine
@@ -133,13 +150,49 @@ Running an engine executes the rules, and fires off event events for conditions 
 
 ```js
 // evaluate the rules
-engine.run()
+//engine.run();
 
 // Optionally, facts known at runtime may be passed to run()
-engine.run({ userId: 1 })  // any time a rule condition requires 'userId', '1' will be returned
+engine.run({ userId: 1 });  // any time a rule condition requires 'userId', '1' will be returned
 
 // run() returns a promise
-engine.run().then((events) => {
+engine.run({ userId: 4 }).then((events) => {
   console.log('all rules executed; the following events were triggered: ', events)
-})
+});
+```
+Helper methods (for this example)
+```js
+function stateLookupByZip(country, zip) {
+  var state;
+  switch (zip.toString()) {
+    case '80014':
+      state = 'CO';
+      break;
+    case '84101':
+      state = 'UT';
+      break;
+    case '90210':
+      state = 'CA';
+      break;
+    default:
+      state = 'NY';
+  }
+
+  return state;
+}
+
+var users = {
+  1: {age: 22, zipCode: 80014},
+  2: {age: 16, zipCode: 80014},
+  3: {age: 35, zipCode: 84101},
+  4: {age: 23, zipCode: 90210},
+};
+
+function getUser(id) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(users[id]);
+    }, 500);
+  });
+}
 ```
