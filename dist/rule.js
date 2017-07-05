@@ -10,11 +10,11 @@ var _condition = require('./condition');
 
 var _condition2 = _interopRequireDefault(_condition);
 
+var _ruleResult = require('./rule-result');
+
+var _ruleResult2 = _interopRequireDefault(_ruleResult);
+
 var _events = require('events');
-
-var _lodash = require('lodash.clonedeep');
-
-var _lodash2 = _interopRequireDefault(_lodash);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -195,11 +195,7 @@ var Rule = function (_EventEmitter) {
           while (1) {
             switch (_context6.prev = _context6.next) {
               case 0:
-                ruleResult = {
-                  conditions: (0, _lodash2.default)(this.conditions),
-                  event: (0, _lodash2.default)(this.event),
-                  priority: (0, _lodash2.default)(this.priority)
-                };
+                ruleResult = new _ruleResult2.default(this.conditions, this.event, this.priority);
 
                 /**
                  * Evaluates the rule conditions
@@ -471,7 +467,8 @@ var Rule = function (_EventEmitter) {
 
 
                 processResult = function processResult(result) {
-                  ruleResult.result = result;
+                  ruleResult.setResult(result);
+
                   if (result) _this3.emit('success', ruleResult.event, almanac, ruleResult);else _this3.emit('failure', ruleResult.event, almanac, ruleResult);
                   return ruleResult;
                 };
