@@ -1,8 +1,8 @@
 'use strict'
 
 import Condition from './condition'
+import RuleResult from './rule-result'
 import { EventEmitter } from 'events'
-import deepClone from 'lodash.clonedeep'
 
 let debug = require('debug')('json-rules-engine')
 
@@ -132,11 +132,7 @@ class Rule extends EventEmitter {
    * @return {Promise(RuleResult)} rule evaluation result
    */
   async evaluate (almanac) {
-    let ruleResult = {
-      conditions: deepClone(this.conditions),
-      event: deepClone(this.event),
-      priority: deepClone(this.priority)
-    }
+    let ruleResult = new RuleResult(this.conditions, this.event, this.priority)
 
     /**
      * Evaluates the rule conditions
@@ -251,7 +247,8 @@ class Rule extends EventEmitter {
      * @param {Boolean} result
      */
     let processResult = (result) => {
-      ruleResult.result = result
+      ruleResult.setResult(result)
+
       if (result) this.emit('success', ruleResult.event, almanac, ruleResult)
       else this.emit('failure', ruleResult.event, almanac, ruleResult)
       return ruleResult

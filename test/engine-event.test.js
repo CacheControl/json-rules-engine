@@ -276,4 +276,17 @@ describe('Engine: event', () => {
       expect(successSpy.callCount).to.equal(0)
     })
   })
+
+  context('rule events: json serializing', () => {
+    beforeEach(() => simpleSetup())
+    it('serializes properties', async () => {
+      let successSpy = sinon.spy()
+      let rule = engine.rules[0]
+      rule.on('success', successSpy)
+      await engine.run()
+      let ruleResult = successSpy.getCall(0).args[2]
+      let expected = '{"conditions":{"priority":1,"any":[{"operator":"greaterThanInclusive","value":21,"fact":"age"},{"operator":"equal","value":true,"fact":"qualified"}]},"event":{"type":"setDrinkingFlag","params":{"canOrderDrinks":true}},"priority":100,"result":true}'
+      expect(JSON.stringify(ruleResult)).to.equal(expected)
+    })
+  })
 })

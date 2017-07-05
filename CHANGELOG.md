@@ -1,3 +1,6 @@
+2.0.1 / 2017-07-05
+  * Bugfix rule result serialization
+
 2.0.0 / 2017-04-21
   * Publishing 2.0.0
 
