@@ -1,6 +1,6 @@
 'use strict'
 
-import deepClone from 'lodash.clonedeep'
+import deepClone from 'clone-deep'
 
 export default class RuleResult {
   constructor (conditions, event, priority) {
