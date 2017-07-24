@@ -65,7 +65,7 @@
     "standard": "^10.0.1"
   },
   "dependencies": {
-    "clone-deep": "^1.0.0",
+    "clone": "^2.1.1",
     "debug": "~2.6.3",
     "lodash.isobjectlike": "~4.0.0",
     "object-hash": "~1.1.8",

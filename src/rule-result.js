@@ -1,6 +1,6 @@
 'use strict'
 
-import deepClone from 'clone-deep'
+import deepClone from 'clone'
 
 export default class RuleResult {
   constructor (conditions, event, priority) {
