@@ -1,3 +1,6 @@
+2.0.2 / 2017-07-24
+  * Bugfix IE8 support
+
 2.0.1 / 2017-07-05
   * Bugfix rule result serialization
 
