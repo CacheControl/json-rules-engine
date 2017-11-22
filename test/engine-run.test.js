@@ -59,15 +59,15 @@ describe('Engine: run', () => {
     it('activated events', () => {
       return engine.run({age: 30}).then(results => {
         expect(results.length).to.equal(1)
-        expect(results).to.include(rule.event)
+        expect(results).to.deep.include(rule.event)
       })
     })
 
     it('multiple activated events', () => {
       return engine.run({age: 90}).then(results => {
         expect(results.length).to.equal(2)
-        expect(results).to.include(rule.event)
-        expect(results).to.include(rule2.event)
+        expect(results).to.deep.include(rule.event)
+        expect(results).to.deep.include(rule2.event)
       })
     })
 

@@ -51,7 +51,7 @@ describe('Almanac', () => {
     })
 
     it('throws an exception if it encounters an undefined fact', () => {
-      expect(almanac.factValue('foo')).to.be.rejectedWith(/Undefined fact: foo/)
+      return expect(almanac.factValue('bar')).to.eventually.be.rejectedWith(/Undefined fact: bar/)
     })
   })
 

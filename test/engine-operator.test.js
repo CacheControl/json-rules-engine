@@ -58,7 +58,7 @@ describe('Engine: operator', () => {
       let conditions = Object.assign({}, baseConditions)
       conditions.any[0].operator = 'unknown-operator'
       let engine = setup()
-      expect(engine.run()).to.eventually.throw('Unknown operator: unknown-operator')
+      return expect(engine.run()).to.eventually.be.rejectedWith('Unknown operator: unknown-operator')
     })
   })
 })
