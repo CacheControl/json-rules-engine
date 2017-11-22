@@ -21,8 +21,10 @@ class Fact {
     }
     if (typeof valueOrMethod !== 'function') {
       this.value = valueOrMethod
+      this.type = this.constructor.CONSTANT
     } else {
       this.calculationMethod = valueOrMethod
+      this.type = this.constructor.DYNAMIC
     }
 
     if (!this.id) throw new Error('factId required')
@@ -34,6 +36,14 @@ class Fact {
     this.options = Object.assign({}, defaultOptions, options)
     this.cacheKeyMethod = this.defaultCacheKeys
     return this
+  }
+
+  isConstant () {
+    return this.type === this.constructor.CONSTANT
+  }
+
+  isDynamic () {
+    return this.type === this.constructor.DYNAMIC
   }
 
   /**
@@ -81,9 +91,13 @@ class Fact {
   getCacheKey (params) {
     if (this.options.cache === true) {
       let cacheProperties = this.cacheKeyMethod(this.id, params)
-      return Fact.hashFromObject(cacheProperties)
+      const hash = Fact.hashFromObject(cacheProperties)
+      return hash
     }
   }
 }
+
+Fact.CONSTANT = 'CONSTANT'
+Fact.DYNAMIC = 'DYNAMIC'
 
 export default Fact

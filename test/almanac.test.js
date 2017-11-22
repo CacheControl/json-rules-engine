@@ -90,6 +90,7 @@ describe('Almanac', () => {
   describe('_setFactValue()', () => {
     function expectFactResultsCache (expected) {
       let promise = almanac.factResultsCache.values().next().value
+      console.log(promise)
       expect(promise).to.be.instanceof(Promise)
       promise.then(value => expect(value).to.equal(expected))
       return promise
