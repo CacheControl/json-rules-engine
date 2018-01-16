@@ -186,9 +186,9 @@ let rule = new Rule({
     all: [
       {
         fact: 'product-price',
+        path: '.price',
         params: {
-          productId: 'widget',
-          path: '.price'
+          productId: 'widget'
         },
         operator: 'greaterThan',
         value: 100
