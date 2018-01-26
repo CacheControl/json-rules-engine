@@ -305,7 +305,7 @@ describe('Engine: event', () => {
       rule.on('success', successSpy)
       await engine.run()
       let ruleResult = successSpy.getCall(0).args[2]
-      let expected = '{"conditions":{"priority":1,"any":[{"operator":"greaterThanInclusive","value":21,"fact":"age"},{"operator":"equal","value":true,"fact":"qualified"}]},"event":{"type":"setDrinkingFlag","params":{"canOrderDrinks":true}},"priority":100,"result":true}'
+      let expected = '{"conditions":{"priority":1,"any":[{"operator":"greaterThanInclusive","value":21,"fact":"age","factResult":21,"result":true},{"operator":"equal","value":true,"fact":"qualified","factResult":false,"result":false}]},"event":{"type":"setDrinkingFlag","params":{"canOrderDrinks":true}},"priority":100,"result":true}'
       expect(JSON.stringify(ruleResult)).to.equal(expected)
     })
   })
