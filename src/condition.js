@@ -49,6 +49,12 @@ export default class Condition {
       props.operator = this.operator
       props.value = this.value
       props.fact = this.fact
+      if (this.factResult !== undefined) {
+        props.factResult = this.factResult
+      }
+      if (this.result !== undefined) {
+        props.result = this.result
+      }
       if (this.params) {
         props.params = this.params
       }
