@@ -1,3 +1,6 @@
+2.0.3 / 2018-01-29
+  * Add factResult and result to the JSON generated for Condition (@bjacobso)
+
 2.0.2 / 2017-07-24
   * Bugfix IE8 support
 
