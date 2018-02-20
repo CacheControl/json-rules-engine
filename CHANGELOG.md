@@ -1,3 +1,6 @@
+2.1.0 / 2018-02-19
+  * Publish dist updates for 2.0.3
+
 2.0.3 / 2018-01-29
   * Add factResult and result to the JSON generated for Condition (@bjacobso)
 
