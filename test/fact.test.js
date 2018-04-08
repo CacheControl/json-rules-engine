@@ -3,11 +3,10 @@
 import { Fact } from '../src/index'
 
 describe('Fact', () => {
+  function subject (id, definition, options) {
+    return new Fact(id, definition, options)
+  }
   describe('Fact::constructor', () => {
-    function subject (id, definition, options) {
-      return new Fact(id, definition, options)
-    }
-
     it('works for constant facts', () => {
       let fact = subject('factId', 10)
       expect(fact.id).to.equal('factId')
@@ -34,6 +33,20 @@ describe('Fact', () => {
       it('throws if no definition provided', () => {
         expect(subject.bind(null, 'factId')).to.throw(/facts must have a value or method/)
       })
+    })
+  })
+
+  describe('Fact::types', () => {
+    it('initializes facts with method values as dynamic', () => {
+      let fact = subject('factId', () => {})
+      expect(fact.type).to.equal(Fact.DYNAMIC)
+      expect(fact.isDynamic()).to.be.true()
+    })
+
+    it('initializes facts with non-methods as constant', () => {
+      let fact = subject('factId', 2)
+      expect(fact.type).to.equal(Fact.CONSTANT)
+      expect(fact.isConstant()).to.be.true()
     })
   })
 })
