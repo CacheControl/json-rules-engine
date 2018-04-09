@@ -131,7 +131,7 @@ class Rule extends EventEmitter {
    * All evaluation is done within the context of an almanac
    * @return {Promise(RuleResult)} rule evaluation result
    */
-  async evaluate (almanac) {
+  evaluate (almanac) {
     let ruleResult = new RuleResult(this.conditions, this.event, this.priority)
 
     /**
@@ -139,31 +139,35 @@ class Rule extends EventEmitter {
      * @param  {Condition} condition - condition to evaluate
      * @return {Promise(true|false)} - resolves with the result of the condition evaluation
      */
-    let evaluateCondition = async (condition) => {
-      let comparisonValue
-      let passes
+    let evaluateCondition = (condition) => {
       if (condition.isBooleanOperator()) {
         let subConditions = condition[condition.operator]
+        let comparisonPromise
         if (condition.operator === 'all') {
-          comparisonValue = await all(subConditions)
+          comparisonPromise = all(subConditions)
         } else {
-          comparisonValue = await any(subConditions)
+          comparisonPromise = any(subConditions)
         }
         // for booleans, rule passing is determined by the all/any result
-        passes = comparisonValue === true
+        return comparisonPromise.then(comparisonValue => {
+          let passes = comparisonValue === true
+          condition.result = passes
+          return passes
+        })
       } else {
-        try {
-          let evaluationResult = await condition.evaluate(almanac, this.engine.operators, comparisonValue)
-          passes = evaluationResult.result
-          condition.factResult = evaluationResult.leftHandSideValue
-        } catch (err) {
-          // any condition raising an undefined fact error is considered falsey when allowUndefinedFacts is enabled
-          if (this.engine.allowUndefinedFacts && err.code === 'UNDEFINED_FACT') passes = false
-          else throw err
-        }
+        return condition.evaluate(almanac, this.engine.operators)
+          .then(evaluationResult => {
+            let passes = evaluationResult.result
+            condition.factResult = evaluationResult.leftHandSideValue
+            condition.result = passes
+            return passes
+          })
+          .catch(err => {
+            // any condition raising an undefined fact error is considered falsey when allowUndefinedFacts is enabled
+            if (this.engine.allowUndefinedFacts && err.code === 'UNDEFINED_FACT') return false
+            throw err
+          })
       }
-      condition.result = passes
-      return passes
     }
 
     /**
@@ -172,13 +176,14 @@ class Rule extends EventEmitter {
      * @param  {string(every|some)} array method to call for determining result
      * @return {Promise(boolean)} whether conditions evaluated truthy or falsey based on condition evaluation + method
      */
-    let evaluateConditions = async (conditions, method) => {
+    let evaluateConditions = (conditions, method) => {
       if (!(Array.isArray(conditions))) conditions = [ conditions ]
-      let conditionResults = await Promise.all(conditions.map((condition) => {
-        return evaluateCondition(condition)
-      }))
-      debug(`rule::evaluateConditions results`, conditionResults)
-      return method.call(conditionResults, (result) => result === true)
+
+      return Promise.all(conditions.map((condition) => evaluateCondition(condition)))
+        .then(conditionResults => {
+          debug(`rule::evaluateConditions results`, conditionResults)
+          return method.call(conditionResults, (result) => result === true)
+        })
     }
 
     /**
@@ -191,9 +196,9 @@ class Rule extends EventEmitter {
      * @param  {string('all'|'any')} operator
      * @return {Promise(boolean)} rule evaluation result
      */
-    let prioritizeAndRun = async (conditions, operator) => {
+    let prioritizeAndRun = (conditions, operator) => {
       if (conditions.length === 0) {
-        return true
+        return Promise.resolve(true)
       }
       let method = Array.prototype.some
       if (operator === 'all') {
@@ -229,7 +234,7 @@ class Rule extends EventEmitter {
      * @param  {Condition[]} conditions to be evaluated
      * @return {Promise(boolean)} condition evaluation result
      */
-    let any = async (conditions) => {
+    let any = (conditions) => {
       return prioritizeAndRun(conditions, 'any')
     }
 
@@ -238,7 +243,7 @@ class Rule extends EventEmitter {
      * @param  {Condition[]} conditions to be evaluated
      * @return {Promise(boolean)} condition evaluation result
      */
-    let all = async (conditions) => {
+    let all = (conditions) => {
       return prioritizeAndRun(conditions, 'all')
     }
 
@@ -255,11 +260,11 @@ class Rule extends EventEmitter {
     }
 
     if (ruleResult.conditions.any) {
-      let result = await any(ruleResult.conditions.any)
-      return processResult(result)
+      return any(ruleResult.conditions.any)
+        .then(result => processResult(result))
     } else {
-      let result = await all(ruleResult.conditions.all)
-      return processResult(result)
+      return all(ruleResult.conditions.all)
+        .then(result => processResult(result))
     }
   }
 }

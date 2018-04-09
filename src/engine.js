@@ -139,7 +139,7 @@ class Engine extends EventEmitter {
    * @param  {Rule[]} array of rules to be evaluated
    * @return {Promise} resolves when all rules in the array have been evaluated
    */
-  async evaluateRules (ruleArray, almanac) {
+  evaluateRules (ruleArray, almanac) {
     return Promise.all(ruleArray.map((rule) => {
       if (this.status !== RUNNING) {
         debug(`engine::run status:${this.status}; skipping remaining rules`)
@@ -164,7 +164,7 @@ class Engine extends EventEmitter {
    * @param  {Object} runOptions - run options
    * @return {Promise} resolves when the engine has completed running
    */
-  async run (runtimeFacts = {}) {
+  run (runtimeFacts = {}) {
     debug(`engine::run started`)
     debug(`engine::run runtimeFacts:`, runtimeFacts)
     runtimeFacts['success-events'] = new Fact('success-events', SuccessEventFact(), { cache: false })

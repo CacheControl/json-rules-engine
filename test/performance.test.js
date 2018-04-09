@@ -47,7 +47,7 @@ describe('Performance', () => {
     perfy.start('any')
     await engine.run()
     const result = perfy.end('any')
-    expect(result.time).to.be.greaterThan(0.05)
+    expect(result.time).to.be.greaterThan(0.02)
     expect(result.time).to.be.lessThan(0.1)
   })
 
@@ -59,7 +59,7 @@ describe('Performance', () => {
     perfy.start('all')
     await engine.run()
     const result = perfy.end('all')
-    expect(result.time).to.be.greaterThan(0.05) // assert lower value
+    expect(result.time).to.be.greaterThan(0.02) // assert lower value
     expect(result.time).to.be.lessThan(0.1)
   })
 })
