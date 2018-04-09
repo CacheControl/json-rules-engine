@@ -8,7 +8,7 @@
     "lint": "standard --verbose | snazzy || true",
     "lint:fix": "standard --fix",
     "prepublishOnly": "npm run compile",
-    "compile": "babel --stage 1 -d dist/ src/ && regenerator --no-cache-dir --include-runtime src/generator-runtime.js > dist/generator-runtime.js"
+    "compile": "babel --stage 1 -d dist/ src/"
   },
   "repository": {
     "type": "git",
@@ -48,7 +48,6 @@
     "babel-core": "6.26.0",
     "babel-eslint": "8.0.2",
     "babel-loader": "7.1.2",
-    "babel-plugin-transform-async-to-generator": "^6.4.6",
     "babel-polyfill": "6.26.0",
     "babel-preset-es2015": "~6.24.1",
     "babel-preset-stage-0": "~6.24.1",
@@ -59,7 +58,6 @@
     "dirty-chai": "2.0.1",
     "mocha": "^5.0.5",
     "perfy": "^1.1.2",
-    "regenerator": "0.11.0",
     "sinon": "^4.1.2",
     "sinon-chai": "^2.14.0",
     "snazzy": "^7.0.0",
