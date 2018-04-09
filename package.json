@@ -7,8 +7,8 @@
     "test": "mocha && npm run lint --silent",
     "lint": "standard --verbose | snazzy || true",
     "lint:fix": "standard --fix",
-    "prepublishOnly": "npm run compile",
-    "compile": "babel --stage 1 -d dist/ src/"
+    "prepublishOnly": "npm run build",
+    "build": "babel --stage 1 -d dist/ src/"
   },
   "repository": {
     "type": "git",
