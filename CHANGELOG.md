@@ -1,3 +1,7 @@
+2.2.0 / 2018-04-19
+  * Performance: Constant facts now perform 18-26X better
+  * Performance: Removes await/async transpilation and json.stringify calls, significantly improving overall performance
+
 2.1.0 / 2018-02-19
   * Publish dist updates for 2.0.3
 
