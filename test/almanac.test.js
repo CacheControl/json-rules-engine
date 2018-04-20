@@ -51,7 +51,7 @@ describe('Almanac', () => {
     })
 
     it('throws an exception if it encounters an undefined fact', () => {
-      return expect(almanac.factValue('bar')).to.eventually.be.rejectedWith(/Undefined fact: bar/)
+      return expect(almanac.factValue('bar')).to.be.rejectedWith(/Undefined fact: bar/)
     })
   })
 
@@ -79,11 +79,6 @@ describe('Almanac', () => {
       facts.set(fact.id, fact)
       almanac = new Almanac(facts)
       expect(almanac._getFact('id')).to.equal(fact)
-    })
-
-    it('raises an exception if fact DNE', () => {
-      almanac = new Almanac(new Map())
-      expect(almanac._getFact.bind(almanac, 'unknown')).to.throw(/Undefined fact/)
     })
   })
 

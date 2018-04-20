@@ -38,11 +38,7 @@ export default class Almanac {
    * @return {Fact}
    */
   _getFact (factId) {
-    let fact = this.factMap.get(factId)
-    if (fact === undefined) {
-      throw new UndefinedFactError(`Undefined fact: ${factId}`)
-    }
-    return fact
+    return this.factMap.get(factId)
   }
 
   /**
@@ -63,7 +59,6 @@ export default class Almanac {
   _setFactValue (fact, params, value) {
     let cacheKey = fact.getCacheKey(params)
     let factValue = Promise.resolve(value)
-    factValue.then(val => debug(`almanac::factValue fact:${fact.id} calculated as: ${JSON.stringify(val)}<${typeof val}>`))
     if (cacheKey) {
       this.factResultsCache.set(cacheKey, factValue)
     }
@@ -88,26 +83,38 @@ export default class Almanac {
    * @param  {String} path - object
    * @return {Promise} a promise which will resolve with the fact computation.
    */
-  async factValue (factId, params = {}, path = '') {
-    let factValue
+  factValue (factId, params = {}, path = '') {
+    let factValuePromise
     let fact = this._getFact(factId)
-    let cacheKey = fact.getCacheKey(params)
-    let cacheVal = cacheKey && this.factResultsCache.get(cacheKey)
-    if (cacheVal) {
-      factValue = await cacheVal
-      debug(`almanac::factValue cache hit for fact:${factId} value: ${JSON.stringify(factValue)}<${typeof factValue}>`)
-    } else {
-      verbose(`almanac::factValue cache miss for fact:${factId}; calculating`)
-      factValue = await this._setFactValue(fact, params, fact.calculate(params, this))
+    if (fact === undefined) {
+      return Promise.reject(new UndefinedFactError(`Undefined fact: ${factId}`))
     }
-    if (path) {
-      if (isObjectLike(factValue)) {
-        factValue = selectn(path)(factValue)
-        debug(`condition::evaluate extracting object property ${path}, received: ${factValue}`)
+    if (fact.isConstant()) {
+      factValuePromise = Promise.resolve(fact.calculate(params, this))
+    } else {
+      let cacheKey = fact.getCacheKey(params)
+      let cacheVal = cacheKey && this.factResultsCache.get(cacheKey)
+      if (cacheVal) {
+        factValuePromise = Promise.resolve(cacheVal)
+        debug(`almanac::factValue cache hit for fact:${factId}`)
       } else {
-        warn(`condition::evaluate could not compute object path(${path}) of non-object: ${factValue} <${typeof factValue}>; continuing with ${factValue}`)
+        verbose(`almanac::factValue cache miss for fact:${factId}; calculating`)
+        factValuePromise = this._setFactValue(fact, params, fact.calculate(params, this))
       }
     }
-    return factValue
+    if (path) {
+      return factValuePromise
+        .then(factValue => {
+          if (isObjectLike(factValue)) {
+            let pathValue = selectn(path)(factValue)
+            debug(`condition::evaluate extracting object property ${path}, received: ${pathValue}`)
+            return pathValue
+          } else {
+            warn(`condition::evaluate could not compute object path(${path}) of non-object: ${factValue} <${typeof factValue}>; continuing with ${factValue}`)
+            return factValue
+          }
+        })
+    }
+    return factValuePromise
   }
 }

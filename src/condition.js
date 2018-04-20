@@ -71,12 +71,12 @@ export default class Condition {
   /**
    * Interprets .value as either a primitive, or if a fact, retrieves the fact value
    */
-  async _getValue (almanac) {
+  _getValue (almanac) {
     let value = this.value
     if (isObjectLike(value) && value.hasOwnProperty('fact')) { // value: { fact: 'xyz' }
-      value = await almanac.factValue(value.fact, value.params, value.path)
+      return almanac.factValue(value.fact, value.params, value.path)
     }
-    return value
+    return Promise.resolve(value)
   }
 
   /**
@@ -88,20 +88,23 @@ export default class Condition {
    * @param   {Map} operatorMap - map of available operators, keyed by operator name
    * @returns {Boolean} - evaluation result
    */
-  async evaluate (almanac, operatorMap) {
-    if (!almanac) throw new Error('almanac required')
-    if (!operatorMap) throw new Error('operatorMap required')
-    if (this.isBooleanOperator()) throw new Error('Cannot evaluate() a boolean condition')
+  evaluate (almanac, operatorMap) {
+    if (!almanac) return Promise.reject(new Error('almanac required'))
+    if (!operatorMap) return Promise.reject(new Error('operatorMap required'))
+    if (this.isBooleanOperator()) return Promise.reject(new Error('Cannot evaluate() a boolean condition'))
 
     let op = operatorMap.get(this.operator)
-    if (!op) throw new Error(`Unknown operator: ${this.operator}`)
+    if (!op) return Promise.reject(new Error(`Unknown operator: ${this.operator}`))
 
-    let rightHandSideValue = await this._getValue(almanac)
-    let leftHandSideValue = await almanac.factValue(this.fact, this.params, this.path)
-
-    let result = op.evaluate(leftHandSideValue, rightHandSideValue)
-    debug(`condition::evaluate <${leftHandSideValue} ${this.operator} ${rightHandSideValue}?> (${result})`)
-    return { result, leftHandSideValue, rightHandSideValue, operator: this.operator }
+    return this._getValue(almanac) // todo - parallelize
+      .then(rightHandSideValue => {
+        return almanac.factValue(this.fact, this.params, this.path)
+          .then(leftHandSideValue => {
+            let result = op.evaluate(leftHandSideValue, rightHandSideValue)
+            debug(`condition::evaluate <${leftHandSideValue} ${this.operator} ${rightHandSideValue}?> (${result})`)
+            return { result, leftHandSideValue, rightHandSideValue, operator: this.operator }
+          })
+      })
   }
 
   /**
