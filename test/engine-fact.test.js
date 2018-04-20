@@ -75,6 +75,34 @@ describe('Engine: fact evaluation', () => {
 
   describe('options', () => {
     describe('options.allowUndefinedFacts', () => {
+      it.only('does a thing', () => {
+        const engine = engineFactory([{
+          conditions: {
+            all: [
+              {
+                fact: 'something',
+                operator: 'equal',
+                value: 'foo'
+              }
+            ]
+          },
+          event: {
+            type: 'bar',
+            params: {
+              other: 'baz'
+            }
+          }
+        }], {
+          allowUndefinedFacts: true
+        });
+
+        return engine.run({
+          something: undefined
+        })
+        .then(events => {
+          expect(events).to.have.length(0);
+        });
+      })
       it('throws when fact is undefined by default', async () => {
         let conditions = Object.assign({}, baseConditions())
         conditions.any.push({
