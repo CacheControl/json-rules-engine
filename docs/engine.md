@@ -44,6 +44,15 @@ engine.addFact('account-type', function getAccountType(params, almanac) {
 }, { cache: false, priority: 500 })
 ```
 
+### engine.removeFact(String id)
+
+```js
+engine.addFact('speed-of-light', 299792458)
+
+// removes the fact
+engine.removeFact('speed-of-light')
+```
+
 ### engine.addRule(Rule instance|Object options)
 
 Adds a rule to the engine.  The engine will execute the rule upon the next ```run()```
@@ -64,6 +73,22 @@ engine.addRule({
 let rule = new Rule()
 engine.addRule(rule)
 ```
+
+ ### engine.removeRule(Rule instance | Object options)
+
+ Removes a rule from the engine.
+
+```javascript
+// adds a rule
+let rule = new Rule()
+engine.addRule(rule)
+
+//remove it
+engine.removeRule(rule)
+```
+
+
+
 
 ### engine.addOperator(String operatorName, Function evaluateFunc(factValue, jsonValue))
 
@@ -96,6 +121,23 @@ let rule = new Rule(
 ```
 
 See the [operator example](../examples/06-custom-operators.js)
+
+
+
+### engine.removeOperator(String operatorName)
+
+Removes a operator from the engine
+
+```javascript
+engine.addOperator('startsWithLetter', (factValue, jsonValue) => {
+  if (!factValue.length) return false
+  return factValue[0].toLowerCase() === jsonValue.toLowerCase()
+})
+
+engine.removeOperator('startsWithLetter');
+```
+
+
 
 ### engine.run([Object facts], [Object options]) -> Promise (Events)
 

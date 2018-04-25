@@ -58,6 +58,26 @@ class Engine extends EventEmitter {
   }
 
   /**
+   * Remove a rule from the engine
+   * @param {object|Rule} properties - rule definition.  can be JSON representation, or instance of Rule
+   * @param {Object} properties.conditions - conditions to evaluate when processing this rule
+   */
+  removeRule (properties) {
+    if (!properties) throw new Error('Engine: removeRule() requires options')
+    if (!properties.hasOwnProperty('conditions')) throw new Error('Engine: removeRule() argument requires "conditions" property')
+
+    let index
+    if (properties instanceof Rule) {
+      index = this.rules.indexOf(properties)
+    } else {
+      index = this.rules.indexOf(r => r.conditions === properties.conditions)
+    }
+
+    if (index === -1) throw new Error('Engine: removeRule() Rule was not found')
+    this.rules.splice(index, 1)
+  }
+
+  /**
    * Add a custom operator definition
    * @param {string}   operatorOrName - operator identifier within the condition; i.e. instead of 'equals', 'greaterThan', etc
    * @param {function(factValue, jsonValue)} callback - the method to execute when the operator is encountered.
@@ -71,6 +91,23 @@ class Engine extends EventEmitter {
     }
     debug(`engine::addOperator name:${operator.name}`)
     this.operators.set(operator.name, operator)
+  }
+
+  /**
+   * Remove a custom operator definition
+   * @param {string}   operatorOrName - operator identifier within the condition; i.e. instead of 'equals', 'greaterThan', etc
+   * @param {function(factValue, jsonValue)} callback - the method to execute when the operator is encountered.
+   */
+  removeOperator (operatorOrName) {
+    let operatorName
+    if (operatorOrName instanceof Operator) {
+      operatorName = operatorOrName.name
+    } else {
+      operatorName = operatorOrName
+    }
+
+    if (!this.operators.has(operatorName)) throw new Error('Engine: removeOperator() Operator was not found')
+    this.operators.delete(operatorName)
   }
 
   /**
@@ -91,6 +128,21 @@ class Engine extends EventEmitter {
     debug(`engine::addFact id:${factId}`)
     this.facts.set(factId, fact)
     return this
+  }
+
+  /**
+   * Add a fact definition to the engine.  Facts are called by rules as they are evaluated.
+   * @param {object|Fact} id - fact identifier or instance of Fact
+   */
+  removeFact (factOrId) {
+    let factId
+    if (!(factOrId instanceof Fact)) {
+      factId = factOrId
+    } else {
+      factId = factOrId.id
+    }
+    if (!this.facts.has(factId)) throw new Error('Engine: removeFact() Fact was not found')
+    this.facts.delete(factId)
   }
 
   /**
