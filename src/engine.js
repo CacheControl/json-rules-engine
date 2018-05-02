@@ -59,22 +59,14 @@ class Engine extends EventEmitter {
 
   /**
    * Remove a rule from the engine
-   * @param {object|Rule} properties - rule definition.  can be JSON representation, or instance of Rule
-   * @param {Object} properties.conditions - conditions to evaluate when processing this rule
+   * @param {object|Rule} rule - rule definition. Must be a instance of Rule
    */
-  removeRule (properties) {
-    if (!properties) throw new Error('Engine: removeRule() requires options')
-    if (!properties.hasOwnProperty('conditions')) throw new Error('Engine: removeRule() argument requires "conditions" property')
+  removeRule (rule) {
+    if ((rule instanceof Rule) === false) throw new Error('Engine: removeRule() rule must be a instance of Rule')
 
-    let index
-    if (properties instanceof Rule) {
-      index = this.rules.indexOf(properties)
-    } else {
-      index = this.rules.indexOf(r => r.conditions === properties.conditions)
-    }
-
-    if (index === -1) throw new Error('Engine: removeRule() Rule was not found')
-    this.rules.splice(index, 1)
+    let index = this.rules.indexOf(rule)
+    if (index === -1) return false
+    return Boolean(this.rules.splice(index, 1).length)
   }
 
   /**
@@ -106,8 +98,7 @@ class Engine extends EventEmitter {
       operatorName = operatorOrName
     }
 
-    if (!this.operators.has(operatorName)) throw new Error('Engine: removeOperator() Operator was not found')
-    this.operators.delete(operatorName)
+    return this.operators.delete(operatorName)
   }
 
   /**
@@ -141,8 +132,8 @@ class Engine extends EventEmitter {
     } else {
       factId = factOrId.id
     }
-    if (!this.facts.has(factId)) throw new Error('Engine: removeFact() Fact was not found')
-    this.facts.delete(factId)
+
+    return this.facts.delete(factId)
   }
 
   /**

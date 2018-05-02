@@ -74,7 +74,7 @@ let rule = new Rule()
 engine.addRule(rule)
 ```
 
- ### engine.removeRule(Rule instance | Object options)
+ ### engine.removeRule(Rule instance)
 
  Removes a rule from the engine.
 

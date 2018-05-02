@@ -87,20 +87,17 @@ describe('Engine', () => {
 
     describe('required fields', () => {
       it('.conditions', () => {
-        let rule = factories.rule()
-        delete rule.conditions
         expect(() => {
-          engine.removeRule(rule)
-        }).to.throw(/Engine: removeRule\(\) argument requires "conditions" property/)
+          engine.removeRule([])
+        }).to.throw(/Engine: removeRule\(\) rule must be a instance of Rule/)
       })
     })
 
     it('can only remove added rules', () => {
       expect(engine.rules.length).to.equal(0)
       let rule = new Rule(factories.rule())
-      expect(() => {
-        engine.removeRule(rule)
-      }).to.throw(/Engine: removeRule\(\) Rule was not found/)
+      const isRemoved = engine.removeRule(rule)
+      expect(isRemoved).to.equal(false)
     })
   })
 
@@ -137,9 +134,8 @@ describe('Engine', () => {
 
     it('can only remove added operators', () => {
       expect(engine.operators.size).to.equal(10)
-      expect(() => {
-        engine.removeOperator('nonExisting')
-      }).to.throw(/Engine: removeOperator\(\) Operator was not found/)
+      const isRemoved = engine.removeOperator('nonExisting')
+      expect(isRemoved).to.equal(false)
     })
   })
 
@@ -206,9 +202,8 @@ describe('Engine', () => {
 
     it('can only remove added facts', () => {
       expect(engine.facts.size).to.equal(0)
-      expect(() => {
-        engine.removeFact('newFact')
-      }).to.throw(/Engine: removeFact\(\) Fact was not found/)
+      const isRemoved = engine.removeFact('newFact')
+      expect(isRemoved).to.equal(false)
     })
   })
 
