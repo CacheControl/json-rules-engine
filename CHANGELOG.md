@@ -1,3 +1,8 @@
+2.3.0 / 2018-05-03
+  * Engine.removeFact() - removes fact from the engine (@SaschaDeWaal)
+  * Engine.removeRule() - removes rule from the engine (@SaschaDeWaal)
+  * Engine.removeOperator() - removes operator from the engine (@SaschaDeWaal)
+
 2.2.0 / 2018-04-19
   * Performance: Constant facts now perform 18-26X better
   * Performance: Removes await/async transpilation and json.stringify calls, significantly improving overall performance
