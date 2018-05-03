@@ -1,6 +1,6 @@
 {
   "name": "json-rules-engine",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Rules Engine expressed in simple json",
   "main": "dist/index.js",
   "scripts": {
