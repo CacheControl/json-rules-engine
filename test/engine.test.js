@@ -11,8 +11,11 @@ describe('Engine', () => {
 
   it('has methods for managing facts and rules, and running itself', () => {
     expect(engine).to.have.property('addRule')
+    expect(engine).to.have.property('removeRule')
     expect(engine).to.have.property('addOperator')
+    expect(engine).to.have.property('removeOperator')
     expect(engine).to.have.property('addFact')
+    expect(engine).to.have.property('removeFact')
     expect(engine).to.have.property('run')
     expect(engine).to.have.property('stop')
   })
@@ -71,6 +74,33 @@ describe('Engine', () => {
     })
   })
 
+  describe('removeRule()', () => {
+    describe('rule instance', () => {
+      it('removes the rule', () => {
+        let rule = new Rule(factories.rule())
+        engine.addRule(rule)
+        expect(engine.rules.length).to.equal(1)
+        engine.removeRule(rule)
+        expect(engine.rules.length).to.equal(0)
+      })
+    })
+
+    describe('required fields', () => {
+      it('.conditions', () => {
+        expect(() => {
+          engine.removeRule([])
+        }).to.throw(/Engine: removeRule\(\) rule must be a instance of Rule/)
+      })
+    })
+
+    it('can only remove added rules', () => {
+      expect(engine.rules.length).to.equal(0)
+      let rule = new Rule(factories.rule())
+      const isRemoved = engine.removeRule(rule)
+      expect(isRemoved).to.equal(false)
+    })
+  })
+
   describe('addOperator()', () => {
     it('adds the operator', () => {
       expect(engine.operators.size).to.equal(10)
@@ -88,6 +118,24 @@ describe('Engine', () => {
       engine.addOperator(op)
       expect(engine.operators.size).to.equal(11)
       expect(engine.operators.get('my-operator')).to.equal(op)
+    })
+  })
+
+  describe('removeOperator()', () => {
+    it('removes the operator', () => {
+      expect(engine.operators.size).to.equal(10)
+      engine.addOperator('startsWithLetter', (factValue, jsonValue) => {
+        return factValue[0] === jsonValue
+      })
+      expect(engine.operators.size).to.equal(11)
+      engine.removeOperator('startsWithLetter')
+      expect(engine.operators.size).to.equal(10)
+    })
+
+    it('can only remove added operators', () => {
+      expect(engine.operators.size).to.equal(10)
+      const isRemoved = engine.removeOperator('nonExisting')
+      expect(isRemoved).to.equal(false)
     })
   })
 
@@ -139,6 +187,23 @@ describe('Engine', () => {
       assertFact(engine)
       expect(engine.facts.get(FACT_NAME)).to.exist()
       expect(engine.facts.get(FACT_NAME).options).to.eql(options)
+    })
+  })
+
+  describe('removeFact()', () => {
+    it('removes a Fact', () => {
+      expect(engine.facts.size).to.equal(0)
+      let fact = new Fact('newFact', 50, { cache: false })
+      engine.addFact(fact)
+      expect(engine.facts.size).to.equal(1)
+      engine.removeFact('newFact')
+      expect(engine.facts.size).to.equal(0)
+    })
+
+    it('can only remove added facts', () => {
+      expect(engine.facts.size).to.equal(0)
+      const isRemoved = engine.removeFact('newFact')
+      expect(isRemoved).to.equal(false)
     })
   })
 
