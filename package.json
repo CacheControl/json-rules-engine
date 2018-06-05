@@ -1,6 +1,6 @@
 {
-  "name": "json-rules-engine",
-  "version": "2.3.0",
+  "name": "@iflix/json-rules-engine",
+  "version": "3.0.2",
   "description": "Rules Engine expressed in simple json",
   "main": "dist/index.js",
   "scripts": {
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/cachecontrol/json-rules-engine"
+    "url": "https://github.com/iflix-letsplay/json-rules-engine"
   },
   "keywords": [
     "rules",

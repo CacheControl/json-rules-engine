@@ -227,7 +227,7 @@ class Engine extends EventEmitter {
       cursor.then(() => {
         this.status = FINISHED
         debug(`engine::run completed`)
-        resolve(almanac.factValue('success-events'))
+        resolve(almanac)
       }).catch(reject)
     })
   }
