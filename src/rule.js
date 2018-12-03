@@ -206,7 +206,9 @@ class Rule extends EventEmitter {
       }
       let orderedSets = this.prioritizeConditions(conditions)
       let cursor = Promise.resolve()
-      orderedSets.forEach((set) => {
+      // use for() loop over Array.forEach to support IE8 without polyfill
+      for (let i = 0; i < orderedSets.length; i++) {
+        let set = orderedSets[i]
         let stop = false
         cursor = cursor.then((setResult) => {
           // after the first set succeeds, don't fire off the remaining promises
@@ -225,7 +227,7 @@ class Rule extends EventEmitter {
           // all conditions passed; proceed with running next set in parallel
           return evaluateConditions(set, method)
         })
-      })
+      }
       return cursor
     }
 
