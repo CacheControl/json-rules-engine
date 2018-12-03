@@ -1,3 +1,6 @@
+2.3.1 / 2018-12-03
+  * IE8 compatibility: replace Array.forEach with for loop (@knalbandianbrightgrove)
+
 2.3.0 / 2018-05-03
   * Engine.removeFact() - removes fact from the engine (@SaschaDeWaal)
   * Engine.removeRule() - removes rule from the engine (@SaschaDeWaal)
