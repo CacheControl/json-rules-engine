@@ -5,6 +5,13 @@ import engineFactory from '../src/index'
 
 describe('Engine: cache', () => {
   let engine
+  let sandbox
+  before(() => {
+    sandbox = sinon.createSandbox()
+  })
+  afterEach(() => {
+    sandbox.restore()
+  })
 
   let event = { type: 'setDrinkingFlag' }
   let collegeSeniorEvent = { type: 'isCollegeSenior' }
@@ -16,15 +23,15 @@ describe('Engine: cache', () => {
     }]
   }
 
-  let factSpy = sinon.spy()
-  let eventSpy = sinon.spy()
+  let factSpy
+  let eventSpy
   let ageFact = () => {
     factSpy()
     return 22
   }
   function setup (factOptions) {
-    factSpy.reset()
-    eventSpy.reset()
+    factSpy = sandbox.spy()
+    eventSpy = sandbox.spy()
     engine = engineFactory()
     let determineDrinkingAge = factories.rule({ conditions, event, priority: 100 })
     engine.addRule(determineDrinkingAge)
@@ -37,14 +44,14 @@ describe('Engine: cache', () => {
   }
 
   it('loads facts once and caches the results for future use', async () => {
-    setup({cache: true})
+    setup({ cache: true })
     await engine.run()
     expect(eventSpy).to.have.been.calledThrice()
     expect(factSpy).to.have.been.calledOnce()
   })
 
   it('allows caching to be turned off', async () => {
-    setup({cache: false})
+    setup({ cache: false })
     await engine.run()
     expect(eventSpy).to.have.been.calledThrice()
     expect(factSpy).to.have.been.calledThrice()

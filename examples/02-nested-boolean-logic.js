@@ -44,7 +44,7 @@ engine.addRule({
       }]
     }]
   },
-  event: {  // define the event to fire when the conditions evaluate truthy
+  event: { // define the event to fire when the conditions evaluate truthy
     type: 'fouledOut',
     params: {
       message: 'Player has fouled out!'

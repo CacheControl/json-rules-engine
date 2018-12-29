@@ -82,7 +82,7 @@ engine
 // define fact(s) known at runtime
 facts = { accountId: 'washington', drinksOrangeJuice: true, enjoysVodka: true, isSociable: true }
 engine
-  .run(facts)  // first run, using washington's facts
+  .run(facts) // first run, using washington's facts
   .then(() => {
     facts = { accountId: 'jefferson', drinksOrangeJuice: true, enjoysVodka: false, isSociable: true }
     return engine.run(facts) // second run, using jefferson's facts; facts & evaluation are independent of the first run

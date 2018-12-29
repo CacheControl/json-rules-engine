@@ -17,6 +17,13 @@ async function factAdult (params, engine) {
 
 describe('Engine: "all" conditions', () => {
   let engine
+  let sandbox
+  before(() => {
+    sandbox = sinon.createSandbox()
+  })
+  afterEach(() => {
+    sandbox.restore()
+  })
 
   describe('supports a single "all" condition', () => {
     let event = {
@@ -32,9 +39,9 @@ describe('Engine: "all" conditions', () => {
         'value': 50
       }]
     }
-    let eventSpy = sinon.spy()
+    let eventSpy
     beforeEach(() => {
-      eventSpy.reset()
+      eventSpy = sandbox.spy()
       let rule = factories.rule({ conditions, event })
       engine = engineFactory()
       engine.addRule(rule)
@@ -72,9 +79,9 @@ describe('Engine: "all" conditions', () => {
         demographic: 'adult'
       }
     }
-    let eventSpy = sinon.spy()
+    let eventSpy
     beforeEach(() => {
-      eventSpy.reset()
+      eventSpy = sandbox.spy()
       let rule = factories.rule({ conditions, event })
       engine = engineFactory()
       engine.addRule(rule)

@@ -33,7 +33,7 @@ let rule = {
         accountType: 'customer'
       },
 
-      operator: 'greaterThanInclusive',  // >=
+      operator: 'greaterThanInclusive', // >=
 
       // "value" in this instance is an object containing a fact definition
       // fact helpers "path" and "params" are supported here as well
@@ -115,7 +115,7 @@ let userFacts = {
 facts = Object.assign({}, userFacts, productList)
 
 engine
-  .run(facts)  // first run, user can afford a gift card
+  .run(facts) // first run, user can afford a gift card
   .then(() => {
     // second run; a user that cannot afford a gift card
     userFacts = {

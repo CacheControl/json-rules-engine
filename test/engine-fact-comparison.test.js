@@ -5,11 +5,18 @@ import sinon from 'sinon'
 
 describe('Engine: fact to fact comparison', () => {
   let engine
-  let eventSpy = sinon.spy()
+  let sandbox
+  before(() => {
+    sandbox = sinon.createSandbox()
+  })
+  afterEach(() => {
+    sandbox.restore()
+  })
+  let eventSpy
 
   function setup (conditions) {
     let event = { type: 'success-event' }
-    eventSpy.reset()
+    eventSpy = sandbox.spy()
     engine = engineFactory()
     let rule = factories.rule({ conditions, event })
     engine.addRule(rule)
@@ -31,7 +38,7 @@ describe('Engine: fact to fact comparison', () => {
       await engine.run({ height: 1, width: 2 })
       expect(eventSpy).to.have.been.calledOnce()
 
-      eventSpy.reset()
+      sandbox.reset()
 
       await engine.run({ height: 2, width: 1 }) // negative case
       expect(eventSpy.callCount).to.equal(0)
@@ -67,7 +74,7 @@ describe('Engine: fact to fact comparison', () => {
       await engine.run({ height: 5, width: 10 })
       expect(eventSpy).to.have.been.calledOnce()
 
-      eventSpy.reset()
+      sandbox.reset()
 
       await engine.run({ height: 5, width: 9 }) // negative case
       expect(eventSpy.callCount).to.equal(0)
@@ -105,7 +112,7 @@ describe('Engine: fact to fact comparison', () => {
       await engine.run({ height: 5, width: 10 })
       expect(eventSpy).to.have.been.calledOnce()
 
-      eventSpy.reset()
+      sandbox.reset()
 
       await engine.run({ height: 5, width: 9 }) // negative case
       expect(eventSpy.callCount).to.equal(0)

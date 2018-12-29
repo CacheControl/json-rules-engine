@@ -5,6 +5,13 @@ import sinon from 'sinon'
 
 describe('Engine: failure', () => {
   let engine
+  let sandbox
+  before(() => {
+    sandbox = sinon.createSandbox()
+  })
+  afterEach(() => {
+    sandbox.restore()
+  })
 
   let event = { type: 'generic' }
   let conditions = {
@@ -22,14 +29,14 @@ describe('Engine: failure', () => {
   })
 
   it('emits an event on a rule failing', async () => {
-    let failureSpy = sinon.spy()
+    let failureSpy = sandbox.spy()
     engine.on('failure', failureSpy)
     await engine.run()
     expect(failureSpy).to.have.been.calledWith(engine.rules[0].event)
   })
 
   it('does not emit when a rule passes', async () => {
-    let failureSpy = sinon.spy()
+    let failureSpy = sandbox.spy()
     engine.on('failure', failureSpy)
     engine.addFact('age', 50)
     await engine.run()

@@ -110,7 +110,7 @@ engine.addFact('employee-tenure', (params, almanac) => {
 // define fact(s) known at runtime
 facts = { accountId: 'washington' }
 engine
-  .run(facts)  // first run, using washington's facts
+  .run(facts) // first run, using washington's facts
   .then(() => {
     facts = { accountId: 'jefferson' }
     return engine.run(facts) // second run, using jefferson's facts; facts & evaluation are independent of the first run

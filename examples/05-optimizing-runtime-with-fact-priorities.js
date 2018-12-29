@@ -67,9 +67,9 @@ engine.addFact('account-information', (params, almanac) => {
   // this fact will not be evaluated, because the "date" fact will fail first
   console.log('Checking the "account-information" fact...') // this message will not appear
   return almanac.factValue('accountId')
-  .then((accountId) => {
-    return accountClient.getAccountInformation(accountId)
-  })
+    .then((accountId) => {
+      return accountClient.getAccountInformation(accountId)
+    })
 }, { priority: LOW })
 
 /**

@@ -5,6 +5,13 @@ import engineFactory from '../src/index'
 
 describe('Engine: "any" conditions', () => {
   let engine
+  let sandbox
+  before(() => {
+    sandbox = sinon.createSandbox()
+  })
+  afterEach(() => {
+    sandbox.restore()
+  })
 
   describe('supports a single "any" condition', () => {
     let event = {
@@ -20,10 +27,11 @@ describe('Engine: "any" conditions', () => {
         'value': 50
       }]
     }
-    let eventSpy = sinon.spy()
-    let ageSpy = sinon.stub()
+    let eventSpy
+    let ageSpy
     beforeEach(() => {
-      eventSpy.reset()
+      eventSpy = sandbox.spy()
+      ageSpy = sandbox.stub()
       let rule = factories.rule({ conditions, event })
       engine = engineFactory()
       engine.addRule(rule)
@@ -62,13 +70,13 @@ describe('Engine: "any" conditions', () => {
         demographic: 'under50'
       }
     }
-    let eventSpy = sinon.spy()
-    let ageSpy = sinon.stub()
-    let segmentSpy = sinon.stub()
+    let eventSpy
+    let ageSpy
+    let segmentSpy
     beforeEach(() => {
-      eventSpy.reset()
-      ageSpy.reset()
-      segmentSpy.reset()
+      eventSpy = sandbox.spy()
+      ageSpy = sandbox.stub()
+      segmentSpy = sandbox.stub()
       let rule = factories.rule({ conditions, event })
       engine = engineFactory()
       engine.addRule(rule)

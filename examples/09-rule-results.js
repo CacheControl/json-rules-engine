@@ -30,7 +30,7 @@ engine.addRule({
       value: 3.5
     }]
   },
-  event: {  // define the event to fire when the conditions evaluate truthy
+  event: { // define the event to fire when the conditions evaluate truthy
     type: 'honor-roll',
     params: {
       message: 'Student made the athletics honor-roll'
@@ -45,14 +45,14 @@ function render (message, ruleResult) {
   }
   // if rule failed, iterate over each failed condition to determine why the student didn't qualify for athletics honor roll
   let detail = ruleResult.conditions.all.filter(condition => !condition.result)
-  .map(condition => {
-    switch (condition.operator) {
-      case 'equal':
-        return `was not an ${condition.fact}`
-      case 'greaterThanInclusive':
-        return `${condition.fact} of ${condition.factResult} was too low`
-    }
-  }).join(' and ')
+    .map(condition => {
+      switch (condition.operator) {
+        case 'equal':
+          return `was not an ${condition.fact}`
+        case 'greaterThanInclusive':
+          return `${condition.fact} of ${condition.factResult} was too low`
+      }
+    }).join(' and ')
   console.log(`${message} ${detail}`.red)
 }
 

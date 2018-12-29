@@ -91,7 +91,7 @@ facts = {
   word: 'bacon'
 }
 engine
-  .run(facts)  // first run, using 'bacon'
+  .run(facts) // first run, using 'bacon'
   .then(() => {
     facts = {
       word: 'antelope'

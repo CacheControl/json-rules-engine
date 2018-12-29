@@ -6,6 +6,13 @@ import sinon from 'sinon'
 
 describe('Engine: event', () => {
   let engine
+  let sandbox
+  before(() => {
+    sandbox = sinon.createSandbox()
+  })
+  afterEach(() => {
+    sandbox.restore()
+  })
 
   let event = {
     type: 'setDrinkingFlag',
@@ -78,8 +85,8 @@ describe('Engine: event', () => {
     beforeEach(() => simpleSetup())
 
     it('"success" passes the event, almanac, and results', async () => {
-      let failureSpy = sinon.spy()
-      let successSpy = sinon.spy()
+      let failureSpy = sandbox.spy()
+      let successSpy = sandbox.spy()
       engine.on('success', function (e, almanac, ruleResult) {
         expect(e).to.eql(event)
         expect(almanac).to.be.an.instanceof(Almanac)
@@ -97,8 +104,8 @@ describe('Engine: event', () => {
     })
 
     it('"event.type" passes the event parameters, almanac, and results', async () => {
-      let failureSpy = sinon.spy()
-      let successSpy = sinon.spy()
+      let failureSpy = sandbox.spy()
+      let successSpy = sandbox.spy()
       engine.on(event.type, function (params, almanac, ruleResult) {
         expect(params).to.eql(event.params)
         expect(almanac).to.be.an.instanceof(Almanac)
@@ -117,8 +124,8 @@ describe('Engine: event', () => {
 
     it('"failure" passes the event, almanac, and results', async () => {
       let AGE = 10
-      let failureSpy = sinon.spy()
-      let successSpy = sinon.spy()
+      let failureSpy = sandbox.spy()
+      let successSpy = sandbox.spy()
       engine.on('failure', function (e, almanac, ruleResult) {
         expect(e).to.eql(event)
         expect(almanac).to.be.an.instanceof(Almanac)
@@ -177,8 +184,8 @@ describe('Engine: event', () => {
     beforeEach(() => advancedSetup())
 
     it('"success" passes the event, almanac, and results', async () => {
-      let failureSpy = sinon.spy()
-      let successSpy = sinon.spy()
+      let failureSpy = sandbox.spy()
+      let successSpy = sandbox.spy()
       engine.on('success', function (e, almanac, ruleResult) {
         expect(e).to.eql(event)
         expect(almanac).to.be.an.instanceof(Almanac)
@@ -203,8 +210,8 @@ describe('Engine: event', () => {
     it('"failure" passes the event, almanac, and results', async () => {
       let ZIP_CODE = 99992
       let GENDER = 'female'
-      let failureSpy = sinon.spy()
-      let successSpy = sinon.spy()
+      let failureSpy = sandbox.spy()
+      let successSpy = sandbox.spy()
       engine.on('failure', function (e, almanac, ruleResult) {
         expect(e).to.eql(event)
         expect(almanac).to.be.an.instanceof(Almanac)
@@ -252,8 +259,8 @@ describe('Engine: event', () => {
     })
 
     it('on-success, it passes the event type and params', async () => {
-      let failureSpy = sinon.spy()
-      let successSpy = sinon.spy()
+      let failureSpy = sandbox.spy()
+      let successSpy = sandbox.spy()
       let rule = engine.rules[0]
       rule.on('success', function (e, almanac, ruleResult) {
         expect(e).to.eql(event)
@@ -274,8 +281,8 @@ describe('Engine: event', () => {
 
     it('on-failure, it passes the event type and params', async () => {
       let AGE = 10
-      let successSpy = sinon.spy()
-      let failureSpy = sinon.spy()
+      let successSpy = sandbox.spy()
+      let failureSpy = sandbox.spy()
       let rule = engine.rules[0]
       rule.on('failure', function (e, almanac, ruleResult) {
         expect(e).to.eql(event)
@@ -300,7 +307,7 @@ describe('Engine: event', () => {
   context('rule events: json serializing', () => {
     beforeEach(() => simpleSetup())
     it('serializes properties', async () => {
-      let successSpy = sinon.spy()
+      let successSpy = sandbox.spy()
       let rule = engine.rules[0]
       rule.on('success', successSpy)
       await engine.run()

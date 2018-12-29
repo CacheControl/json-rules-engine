@@ -16,11 +16,17 @@ describe('Engine: cache', () => {
     }]
   }
 
-  let factSpy = sinon.stub().returns(22)
-  let eventSpy = sinon.spy()
+  let sandbox
+  before(() => {
+    sandbox = sinon.createSandbox()
+  })
+  afterEach(() => {
+    sandbox.restore()
+  })
+
   function setup () {
-    factSpy.reset()
-    eventSpy.reset()
+    let factSpy = sandbox.stub().returns(22)
+    let eventSpy = sandbox.spy()
     engine = engineFactory()
     let over20 = factories.rule({ conditions, event: collegeSeniorEvent, priority: 50 })
     engine.addRule(over20)

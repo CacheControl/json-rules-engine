@@ -35,9 +35,17 @@ describe('Engine: recursive rules', () => {
     ]
   }
 
-  let eventSpy = sinon.spy()
+  let sandbox
+  before(() => {
+    sandbox = sinon.createSandbox()
+  })
+  afterEach(() => {
+    sandbox.restore()
+  })
+
+  let eventSpy
   function setup (conditions = nestedAnyCondition) {
-    eventSpy.reset()
+    eventSpy = sandbox.spy()
 
     engine = engineFactory()
     let rule = factories.rule({ conditions, event })
