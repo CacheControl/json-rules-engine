@@ -1,3 +1,6 @@
+2.3.2 / 2018-12-28
+  * Upgrade all dependencies to latest
+
 2.3.1 / 2018-12-03
   * IE8 compatibility: replace Array.forEach with for loop (@knalbandianbrightgrove)
 
