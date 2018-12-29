@@ -9,6 +9,13 @@ async function dictionary (params, engine) {
 }
 
 describe('Engine: operator', () => {
+  let sandbox
+  before(() => {
+    sandbox = sinon.createSandbox()
+  })
+  afterEach(() => {
+    sandbox.restore()
+  })
   let event = {
     type: 'operatorTrigger'
   }
@@ -22,9 +29,9 @@ describe('Engine: operator', () => {
       }
     }]
   }
-  let eventSpy = sinon.spy()
+  let eventSpy
   function setup (conditions = baseConditions) {
-    eventSpy.reset()
+    eventSpy = sandbox.spy()
     let engine = engineFactory()
     let rule = factories.rule({ conditions, event })
     engine.addRule(rule)

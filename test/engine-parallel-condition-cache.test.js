@@ -5,6 +5,13 @@ import sinon from 'sinon'
 
 describe('Engine', () => {
   let engine
+  let sandbox
+  before(() => {
+    sandbox = sinon.createSandbox()
+  })
+  afterEach(() => {
+    sandbox.restore()
+  })
   let event = { type: 'early-twenties' }
   let conditions = {
     all: [{
@@ -22,11 +29,11 @@ describe('Engine', () => {
     }]
   }
 
-  let eventSpy = sinon.spy()
-  let factSpy = sinon.spy()
+  let eventSpy
+  let factSpy
   function setup (factOptions) {
-    factSpy.reset()
-    eventSpy.reset()
+    factSpy = sandbox.spy()
+    eventSpy = sandbox.spy()
 
     let factDefinition = () => {
       factSpy()

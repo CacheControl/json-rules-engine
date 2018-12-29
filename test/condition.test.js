@@ -185,13 +185,13 @@ describe('Condition', () => {
       })
 
       it('returns false when using comparison operators with non-numbers', async () => {
-        setup({operator: 'lessThan'}, 'non-number')
+        setup({ operator: 'lessThan' }, 'non-number')
         expect((await condition.evaluate(almanac, operators)).result).to.equal(false)
-        setup({operator: 'lessThan'}, null)
+        setup({ operator: 'lessThan' }, null)
         expect((await condition.evaluate(almanac, operators)).result).to.equal(false)
-        setup({operator: 'lessThan'}, [])
+        setup({ operator: 'lessThan' }, [])
         expect((await condition.evaluate(almanac, operators)).result).to.equal(false)
-        setup({operator: 'lessThan'}, {})
+        setup({ operator: 'lessThan' }, {})
         expect((await condition.evaluate(almanac, operators)).result).to.equal(false)
       })
     })
@@ -199,7 +199,7 @@ describe('Condition', () => {
 
   describe('objects', () => {
     it('extracts the object property values using its "path" property', async () => {
-      let condition = new Condition({operator: 'equal', path: '[0].id', fact: 'age', value: 50})
+      let condition = new Condition({ operator: 'equal', path: '[0].id', fact: 'age', value: 50 })
       let ageFact = new Fact('age', [{ id: 50 }, { id: 60 }])
       let facts = new Map([[ageFact.id, ageFact]])
       let almanac = new Almanac(facts)
@@ -214,7 +214,7 @@ describe('Condition', () => {
       let facts = new Map([[ageFact.id, ageFact]])
       let almanac = new Almanac(facts)
 
-      let condition = new Condition({operator: 'equal', path: '[0].id', fact: 'age', value: 50})
+      let condition = new Condition({ operator: 'equal', path: '[0].id', fact: 'age', value: 50 })
       expect((await condition.evaluate(almanac, operators, 50)).result).to.equal(true)
 
       condition.value = 100 // negative case

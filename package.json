@@ -5,8 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "mocha && npm run lint --silent",
-    "lint": "standard --verbose | snazzy || true",
-    "lint:fix": "standard --fix",
+    "lint": "standard --verbose --env mocha | snazzy || true",
+    "lint:fix": "standard --fix --env mocha",
     "prepublishOnly": "npm run build",
     "build": "babel --stage 1 -d dist/ src/"
   },
@@ -45,29 +45,29 @@
   "homepage": "https://github.com/cachecontrol/json-rules-engine",
   "devDependencies": {
     "babel-cli": "6.26.0",
-    "babel-core": "6.26.0",
-    "babel-eslint": "8.0.2",
-    "babel-loader": "7.1.2",
+    "babel-core": "6.26.3",
+    "babel-eslint": "10.0.1",
+    "babel-loader": "8.0.4",
     "babel-polyfill": "6.26.0",
     "babel-preset-es2015": "~6.24.1",
     "babel-preset-stage-0": "~6.24.1",
     "babel-register": "6.26.0",
-    "chai": "^4.1.2",
+    "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
-    "colors": "~1.1.2",
+    "colors": "~1.3.3",
     "dirty-chai": "2.0.1",
-    "mocha": "^5.0.5",
-    "perfy": "^1.1.2",
-    "sinon": "^4.1.2",
-    "sinon-chai": "^2.14.0",
-    "snazzy": "^7.0.0",
-    "standard": "^10.0.3"
+    "mocha": "^5.2.0",
+    "perfy": "^1.1.5",
+    "sinon": "^7.2.2",
+    "sinon-chai": "^3.3.0",
+    "snazzy": "^8.0.0",
+    "standard": "^12.0.1"
   },
   "dependencies": {
-    "clone": "^2.1.1",
-    "debug": "^3.1.0",
+    "clone": "^2.1.2",
+    "debug": "^4.1.1",
     "lodash.isobjectlike": "^4.0.0",
-    "object-hash": "^1.2.0",
+    "object-hash": "^1.3.1",
     "selectn": "^1.1.2"
   }
 }

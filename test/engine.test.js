@@ -5,6 +5,13 @@ import engineFactory, { Fact, Rule, Operator } from '../src/index'
 
 describe('Engine', () => {
   let engine
+  let sandbox
+  before(() => {
+    sandbox = sinon.createSandbox()
+  })
+  afterEach(() => {
+    sandbox.restore()
+  })
   beforeEach(() => {
     engine = engineFactory()
   })
@@ -223,7 +230,7 @@ describe('Engine', () => {
     })
 
     it('changes the status to "RUNNING"', () => {
-      let eventSpy = sinon.spy()
+      let eventSpy = sandbox.spy()
       engine.on('success', (event, almanac) => {
         eventSpy()
         expect(engine.status).to.equal('RUNNING')

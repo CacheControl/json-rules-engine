@@ -5,6 +5,13 @@ import sinon from 'sinon'
 
 describe('Engine: custom cache keys', () => {
   let engine
+  let sandbox
+  before(() => {
+    sandbox = sinon.createSandbox()
+  })
+  afterEach(() => {
+    sandbox.restore()
+  })
   let event = { type: 'early-twenties' }
   let conditions = {
     all: [{
@@ -24,13 +31,13 @@ describe('Engine: custom cache keys', () => {
     }]
   }
 
-  let eventSpy = sinon.spy()
-  let demographicDataSpy = sinon.spy()
-  let demographicSpy = sinon.spy()
+  let eventSpy
+  let demographicDataSpy
+  let demographicSpy
   beforeEach(() => {
-    demographicSpy.reset()
-    demographicDataSpy.reset()
-    eventSpy.reset()
+    demographicSpy = sandbox.spy()
+    demographicDataSpy = sandbox.spy()
+    eventSpy = sandbox.spy()
 
     let demographicsDataDefinition = async (params, engine) => {
       demographicDataSpy()

@@ -5,16 +5,23 @@ import sinon from 'sinon'
 
 describe('Engine: fact priority', () => {
   let engine
+  let sandbox
+  before(() => {
+    sandbox = sinon.createSandbox()
+  })
+  afterEach(() => {
+    sandbox.restore()
+  })
   let event = { type: 'adult-human-admins' }
 
-  let eventSpy = sinon.spy()
-  let ageStub = sinon.stub()
-  let segmentStub = sinon.stub()
+  let eventSpy
+  let ageStub
+  let segmentStub
 
   function setup () {
-    ageStub.reset()
-    segmentStub.reset()
-    eventSpy.reset()
+    ageStub = sandbox.stub()
+    segmentStub = sandbox.stub()
+    eventSpy = sandbox.stub()
     engine = engineFactory()
 
     let conditions = {

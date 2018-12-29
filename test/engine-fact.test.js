@@ -37,6 +37,13 @@ async function eligibilityData (params, engine) {
 
 describe('Engine: fact evaluation', () => {
   let engine
+  let sandbox
+  before(() => {
+    sandbox = sinon.createSandbox()
+  })
+  afterEach(() => {
+    sandbox.restore()
+  })
   let event = {
     type: 'ageTrigger',
     params: {
@@ -56,11 +63,11 @@ describe('Engine: fact evaluation', () => {
       }]
     }
   }
-  let successSpy = sinon.spy()
-  let failureSpy = sinon.spy()
+  let successSpy
+  let failureSpy
   beforeEach(() => {
-    successSpy.reset()
-    failureSpy.reset()
+    successSpy = sandbox.spy()
+    failureSpy = sandbox.spy()
   })
 
   function setup (conditions = baseConditions(), engineOptions = {}) {

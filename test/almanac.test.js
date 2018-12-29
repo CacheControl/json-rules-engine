@@ -4,7 +4,17 @@ import sinon from 'sinon'
 
 describe('Almanac', () => {
   let almanac
-  let factSpy = sinon.spy()
+  let factSpy
+  let sandbox
+  before(() => {
+    sandbox = sinon.createSandbox()
+  })
+  beforeEach(() => {
+    factSpy = sandbox.spy()
+  })
+  afterEach(() => {
+    sandbox.restore()
+  })
 
   describe('properties', () => {
     it('has methods for managing facts', () => {
@@ -115,7 +125,6 @@ describe('Almanac', () => {
 
   describe('factValue()', () => {
     function setup (factOptions) {
-      factSpy.reset()
       let fact = new Fact('foo', async (params, facts) => {
         factSpy()
         return 'unknown'

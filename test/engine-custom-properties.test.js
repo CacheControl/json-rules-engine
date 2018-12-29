@@ -54,8 +54,8 @@ describe('Engine: custom properties', () => {
       let rule = new Rule()
       let ruleProperties = factories.rule()
       rule.setPriority(ruleProperties.priority)
-          .setConditions(ruleProperties.conditions)
-          .setEvent(ruleProperties.event)
+        .setConditions(ruleProperties.conditions)
+        .setEvent(ruleProperties.event)
       rule.customId = 'uuid'
       engine.addRule(rule)
       expect(engine.rules[0]).to.have.property('customId')
