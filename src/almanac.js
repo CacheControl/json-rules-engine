@@ -87,7 +87,11 @@ export default class Almanac {
     let factValuePromise
     let fact = this._getFact(factId)
     if (fact === undefined) {
-      return Promise.reject(new UndefinedFactError(`Undefined fact: ${factId}`))
+      // if (engine.processUndefinedFacts) {
+        fact = new Fact(factId, null)
+      // } else {
+        // return Promise.reject(new UndefinedFactError(`Undefined fact: ${factId}`))
+      // }
     }
     if (fact.isConstant()) {
       factValuePromise = Promise.resolve(fact.calculate(params, this))
