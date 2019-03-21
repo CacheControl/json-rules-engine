@@ -4,6 +4,7 @@
 [![Build Status](https://travis-ci.org/CacheControl/json-rules-engine.svg?branch=master)](https://travis-ci.org/CacheControl/json-rules-engine)
 [![npm version](https://badge.fury.io/js/json-rules-engine.svg)](https://badge.fury.io/js/json-rules-engine)
 [![install size](https://packagephobia.now.sh/badge?p=json-rules-engine)](https://packagephobia.now.sh/result?p=json-rules-engine)
+[![npm downloads](https://img.shields.io/npm/dm/json-rules-engine.svg)](https://www.npmjs.com/package/json-rules-engine)
 
 A rules engine expressed in JSON
 
