@@ -1,6 +1,6 @@
 'use strict'
 
-let debug = require('debug')('json-rules-engine')
+let debug = require('./debugger')('json-rules-engine')
 let isObjectLike = require('lodash.isobjectlike')
 
 export default class Condition {

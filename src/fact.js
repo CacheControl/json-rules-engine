@@ -2,7 +2,7 @@
 
 import hash from 'object-hash'
 
-let verbose = require('debug')('json-rules-engine-verbose')
+let verbose = require('./debugger')('json-rules-engine-verbose')
 
 class Fact {
   /**

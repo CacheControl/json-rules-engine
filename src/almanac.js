@@ -3,11 +3,11 @@
 import Fact from './fact'
 import { UndefinedFactError } from './errors'
 
-let debug = require('debug')('json-rules-engine')
-let verbose = require('debug')('json-rules-engine-verbose')
+let debug = require('./debugger')('json-rules-engine')
+let verbose = require('./debugger')('json-rules-engine-verbose')
 let selectn = require('selectn')
 let isObjectLike = require('lodash.isobjectlike')
-let warn = require('debug')('json-rules-engine:warn')
+let warn = require('./debugger')('json-rules-engine:warn')
 
 /**
  * Fact results lookup

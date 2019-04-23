@@ -8,7 +8,7 @@ import { EventEmitter } from 'events'
 import { SuccessEventFact } from './engine-facts'
 import defaultOperators from './engine-default-operators'
 
-let debug = require('debug')('json-rules-engine')
+let debug = require('./debugger')('json-rules-engine')
 
 export const READY = 'READY'
 export const RUNNING = 'RUNNING'

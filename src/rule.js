@@ -4,7 +4,7 @@ import Condition from './condition'
 import RuleResult from './rule-result'
 import { EventEmitter } from 'events'
 
-let debug = require('debug')('json-rules-engine')
+let debug = require('./debugger')('json-rules-engine')
 
 class Rule extends EventEmitter {
   /**
