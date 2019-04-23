@@ -108,7 +108,7 @@ describe('Engine', () => {
       expect(isRemoved).to.equal(false)
     })
 
-    it('has to remove prioritizedRules list after prioritizeRules() called', () => {
+    it('clears the "prioritizedRules" cache', () => {
       let rule = new Rule(factories.rule())
       engine.addRule(rule)
       engine.prioritizeRules()
