@@ -89,6 +89,7 @@ describe('Engine', () => {
         expect(engine.rules.length).to.equal(1)
         engine.removeRule(rule)
         expect(engine.rules.length).to.equal(0)
+        expect(engine.prioritizedRules).to.equal(null)
       })
     })
 
@@ -105,6 +106,14 @@ describe('Engine', () => {
       let rule = new Rule(factories.rule())
       const isRemoved = engine.removeRule(rule)
       expect(isRemoved).to.equal(false)
+    })
+
+    it('clears the "prioritizedRules" cache', () => {
+      let rule = new Rule(factories.rule())
+      engine.addRule(rule)
+      engine.prioritizeRules()
+      engine.removeRule(rule)
+      expect(engine.prioritizedRules).to.equal(null)
     })
   })
 

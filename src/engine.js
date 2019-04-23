@@ -66,6 +66,7 @@ class Engine extends EventEmitter {
 
     let index = this.rules.indexOf(rule)
     if (index === -1) return false
+    this.prioritizedRules = null
     return Boolean(this.rules.splice(index, 1).length)
   }
 
