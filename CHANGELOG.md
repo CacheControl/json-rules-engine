@@ -1,3 +1,9 @@
+2.3.4 / 2019-04-26
+  * Use Array.isArray instead of instanceof to test Array parameters to address edge cases
+
+2.3.3 / 2019-04-23
+  * Fix rules cache not clearing after removeRule()
+
 2.3.2 / 2018-12-28
   * Upgrade all dependencies to latest
 
