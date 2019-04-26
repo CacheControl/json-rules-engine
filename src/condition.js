@@ -10,7 +10,7 @@ export default class Condition {
     Object.assign(this, properties)
     if (booleanOperator) {
       let subConditions = properties[booleanOperator]
-      if (!(subConditions instanceof Array)) {
+      if (!(Array.isArray(subConditions))) {
         throw new Error(`"${booleanOperator}" must be an array`)
       }
       this.operator = booleanOperator
