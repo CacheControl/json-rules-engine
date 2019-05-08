@@ -1,3 +1,6 @@
+2.3.5 / 2019-04-26
+  * Replace debug with vanilla console.log
+
 2.3.4 / 2019-04-26
   * Use Array.isArray instead of instanceof to test Array parameters to address edge cases
 

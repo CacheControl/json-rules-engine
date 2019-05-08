@@ -2,12 +2,10 @@
 
 import Fact from './fact'
 import { UndefinedFactError } from './errors'
+import debug from './debug'
 
-let debug = require('debug')('json-rules-engine')
-let verbose = require('debug')('json-rules-engine-verbose')
-let selectn = require('selectn')
-let isObjectLike = require('lodash.isobjectlike')
-let warn = require('debug')('json-rules-engine:warn')
+import selectn from 'selectn'
+import isObjectLike from 'lodash.isobjectlike'
 
 /**
  * Fact results lookup
@@ -98,7 +96,7 @@ export default class Almanac {
         factValuePromise = Promise.resolve(cacheVal)
         debug(`almanac::factValue cache hit for fact:${factId}`)
       } else {
-        verbose(`almanac::factValue cache miss for fact:${factId}; calculating`)
+        debug(`almanac::factValue cache miss for fact:${factId}; calculating`)
         factValuePromise = this._setFactValue(fact, params, fact.calculate(params, this))
       }
     }
@@ -110,7 +108,7 @@ export default class Almanac {
             debug(`condition::evaluate extracting object property ${path}, received: ${pathValue}`)
             return pathValue
           } else {
-            warn(`condition::evaluate could not compute object path(${path}) of non-object: ${factValue} <${typeof factValue}>; continuing with ${factValue}`)
+            debug(`condition::evaluate could not compute object path(${path}) of non-object: ${factValue} <${typeof factValue}>; continuing with ${factValue}`)
             return factValue
           }
         })

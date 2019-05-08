@@ -2,8 +2,6 @@
 
 import hash from 'object-hash'
 
-let verbose = require('debug')('json-rules-engine-verbose')
-
 class Fact {
   /**
    * Returns a new fact instance
@@ -66,7 +64,6 @@ class Fact {
    * @return {string} MD5 string based on the hash'd object
    */
   static hashFromObject (obj) {
-    verbose(`fact::hashFromObject generating cache key from:`, obj)
     return hash(obj)
   }
 
