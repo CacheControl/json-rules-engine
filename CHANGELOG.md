@@ -1,3 +1,9 @@
+3.0.0-beta1 / 2019-05-17
+  * BREAKING CHANGES
+    * Previously all conditions with undefined facts would resolve false. With this change, undefined facts values are treated as `undefined`.
+  * Greatly improved performance of `allowUndefinedfacts = true` engine option
+  * Reduce package bundle size by ~40%
+
 2.3.5 / 2019-04-26
   * Replace debug with vanilla console.log
 
