@@ -1,6 +1,6 @@
 'use strict'
 
-import hash from 'object-hash'
+import hash from 'hash-it'
 
 class Fact {
   /**
