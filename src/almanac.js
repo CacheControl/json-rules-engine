@@ -13,9 +13,10 @@ import isObjectLike from 'lodash.isobjectlike'
  * A new almanac is used for every engine run()
  */
 export default class Almanac {
-  constructor (factMap, runtimeFacts = {}) {
+  constructor (factMap, runtimeFacts = {}, options = {}) {
     this.factMap = new Map(factMap)
     this.factResultsCache = new Map() // { cacheKey:  Promise<factValu> }
+    this.allowUndefinedFacts = Boolean(options.allowUndefinedFacts)
 
     for (let factId in runtimeFacts) {
       let fact
@@ -85,7 +86,11 @@ export default class Almanac {
     let factValuePromise
     let fact = this._getFact(factId)
     if (fact === undefined) {
-      return Promise.reject(new UndefinedFactError(`Undefined fact: ${factId}`))
+      if (this.allowUndefinedFacts) {
+        return Promise.resolve(undefined)
+      } else {
+        return Promise.reject(new UndefinedFactError(`Undefined fact: ${factId}`))
+      }
     }
     if (fact.isConstant()) {
       factValuePromise = Promise.resolve(fact.calculate(params, this))

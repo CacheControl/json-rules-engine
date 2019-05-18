@@ -25,7 +25,7 @@ let engine = new Engine([Array rules], options)
 
 `allowUndefinedFacts` - By default, when a running engine encounters an undefined fact,
 an exception is thrown.  Turning this option on will cause the engine to treat
-undefined facts as falsey conditions.  (default: false)
+undefined facts as `undefined`.  (default: false)
 
 ### engine.addFact(String id, Function [definitionFunc], Object [options])
 

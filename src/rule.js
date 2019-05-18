@@ -161,11 +161,6 @@ class Rule extends EventEmitter {
             condition.result = passes
             return passes
           })
-          .catch(err => {
-            // any condition raising an undefined fact error is considered falsey when allowUndefinedFacts is enabled
-            if (this.engine.allowUndefinedFacts && err.code === 'UNDEFINED_FACT') return false
-            throw err
-          })
       }
     }
 
