@@ -1,4 +1,7 @@
-3.0.0-beta1 / 2019-05-17
+3.0.2 / 2019-05-23
+  * Fix "process" not defined error in browsers lacking node.js global shims
+
+3.0.0 / 2019-05-17
   * BREAKING CHANGES
     * Previously all conditions with undefined facts would resolve false. With this change, undefined facts values are treated as `undefined`.
   * Greatly improved performance of `allowUndefinedfacts = true` engine option
