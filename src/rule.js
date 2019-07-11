@@ -14,6 +14,7 @@ class Rule extends EventEmitter {
    * @param {string} options.event.type - name of event to emit
    * @param {string} options.event.params - parameters to pass to the event listener
    * @param {Object} options.conditions - conditions to evaluate when processing this rule
+   * @param {string} options.name - identifier for a particular rule, particularly valuable in RuleResult output
    * @return {Rule} instance
    */
   constructor (options) {
@@ -29,6 +30,9 @@ class Rule extends EventEmitter {
     }
     if (options && options.onFailure) {
       this.on('failure', options.onFailure)
+    }
+    if (options && options.name) {
+      this.setName(options.name)
     }
 
     let priority = (options && options.priority) || 1
@@ -46,6 +50,18 @@ class Rule extends EventEmitter {
     priority = parseInt(priority, 10)
     if (priority <= 0) throw new Error('Priority must be greater than zero')
     this.priority = priority
+    return this
+  }
+
+  /**
+   * Sets the name of the rule
+   * @param {string} name - only non-empty strings are allowed
+   */
+  setName (name) {
+    if (!name || typeof name !== 'string') {
+      throw new Error('Rule "name" must be either undefined or a non-empty string')
+    }
+    this.name = name
     return this
   }
 
@@ -91,7 +107,8 @@ class Rule extends EventEmitter {
     let props = {
       conditions: this.conditions.toJSON(false),
       priority: this.priority,
-      event: this.event
+      event: this.event,
+      name: this.name
     }
     if (stringify) {
       return JSON.stringify(props)
@@ -131,7 +148,7 @@ class Rule extends EventEmitter {
    * @return {Promise(RuleResult)} rule evaluation result
    */
   evaluate (almanac) {
-    let ruleResult = new RuleResult(this.conditions, this.event, this.priority)
+    let ruleResult = new RuleResult(this.conditions, this.event, this.priority, this.name)
 
     /**
      * Evaluates the rule conditions

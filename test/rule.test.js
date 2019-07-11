@@ -12,7 +12,7 @@ describe('Rule', () => {
   })
 
   describe('constructor()', () => {
-    it('can be initialized with priority, conditions, and event', () => {
+    it('can be initialized with priority, conditions, event, and name', () => {
       let condition = {
         all: [ Object.assign({}, conditionBase) ]
       }
@@ -23,12 +23,14 @@ describe('Rule', () => {
         conditions: condition,
         event: {
           type: 'awesome'
-        }
+        },
+        name: 'testName'
       }
       let rule = new Rule(opts)
       expect(rule.priority).to.eql(opts.priority)
       expect(rule.conditions).to.eql(opts.conditions)
       expect(rule.event).to.eql(opts.event)
+      expect(rule.name).to.eql(opts.name)
     })
 
     it('it can be initialized with a json string', () => {
@@ -42,13 +44,15 @@ describe('Rule', () => {
         conditions: condition,
         event: {
           type: 'awesome'
-        }
+        },
+        name: 'testName'
       }
       let json = JSON.stringify(opts)
       let rule = new Rule(json)
       expect(rule.priority).to.eql(opts.priority)
       expect(rule.conditions).to.eql(opts.conditions)
       expect(rule.event).to.eql(opts.event)
+      expect(rule.name).to.eql(opts.name)
     })
   })
 
@@ -112,6 +116,25 @@ describe('Rule', () => {
 
     it('errors if priority is less than 0', () => {
       expect(rule.setPriority.bind(null, 0)).to.throw(/greater than zero/)
+    })
+  })
+
+  describe('setName', () => {
+    it('defaults to undefined', () => {
+      expect(rule.name).to.equal(undefined)
+    })
+
+    it('allows the name to be set', () => {
+      rule.setName('Test Name')
+      expect(rule.name).to.equal('Test Name')
+    })
+
+    it('errors if name is an empty string', () => {
+      expect(rule.setName.bind(null, '')).to.throw(/Rule "name" must be either undefined or a non-empty string/)
+    })
+
+    it('errors if name is not a string', () => {
+      expect(rule.setName.bind(null, 3)).to.throw(/Rule "name" must be either undefined or a non-empty string/)
     })
   })
 
@@ -185,30 +208,34 @@ describe('Rule', () => {
         path: '.id'
       }]
     }
+    let name = 'testName'
     let rule
     beforeEach(() => {
       rule = new Rule()
       rule.setConditions(conditions)
       rule.setPriority(priority)
       rule.setEvent(event)
+      rule.setName(name)
     })
 
     it('serializes itself', () => {
       let json = rule.toJSON(false)
-      expect(Object.keys(json).length).to.equal(3)
+      expect(Object.keys(json).length).to.equal(4)
       expect(json.conditions).to.eql(conditions)
       expect(json.priority).to.eql(priority)
       expect(json.event).to.eql(event)
+      expect(json.name).to.eql(name)
     })
 
     it('serializes itself as json', () => {
       let jsonString = rule.toJSON()
       expect(jsonString).to.be.a('string')
       let json = JSON.parse(jsonString)
-      expect(Object.keys(json).length).to.equal(3)
+      expect(Object.keys(json).length).to.equal(4)
       expect(json.conditions).to.eql(conditions)
       expect(json.priority).to.eql(priority)
       expect(json.event).to.eql(event)
+      expect(json.name).to.eql(name)
     })
 
     it('rehydrates itself using a JSON string', () => {
@@ -218,6 +245,7 @@ describe('Rule', () => {
       expect(hydratedRule.conditions).to.eql(rule.conditions)
       expect(hydratedRule.priority).to.eql(rule.priority)
       expect(hydratedRule.event).to.eql(rule.event)
+      expect(hydratedRule.name).to.eql(rule.name)
     })
 
     it('rehydrates itself using an object from JSON.parse()', () => {
@@ -228,6 +256,8 @@ describe('Rule', () => {
       expect(hydratedRule.conditions).to.eql(rule.conditions)
       expect(hydratedRule.priority).to.eql(rule.priority)
       expect(hydratedRule.event).to.eql(rule.event)
+      expect(hydratedRule.name).to.eql(rule.name)
     })
   })
 })
+
