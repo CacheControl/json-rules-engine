@@ -1,3 +1,6 @@
+3.0.3 / 2019-07-15
+  * Fix "localStorage.debug" not working in browsers
+
 3.0.2 / 2019-05-23
   * Fix "process" not defined error in browsers lacking node.js global shims
 
