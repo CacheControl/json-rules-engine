@@ -129,12 +129,24 @@ describe('Rule', () => {
       expect(rule.name).to.equal('Test Name')
     })
 
-    it('errors if name is an empty string', () => {
-      expect(rule.setName.bind(null, '')).to.throw(/Rule "name" must be either undefined or a non-empty string/)
+    it('allows input of the number 0', () => {
+      rule.setName(0)
+      expect(rule.name).to.equal(0)
     })
 
-    it('errors if name is not a string', () => {
-      expect(rule.setName.bind(null, 3)).to.throw(/Rule "name" must be either undefined or a non-empty string/)
+    it('allows input of an object', () => {
+      rule.setName({
+        id: 123,
+        name: 'myRule'
+      })
+      expect(rule.name).to.eql({
+        id: 123,
+        name: 'myRule'
+      })
+    })
+
+    it('errors if name is an empty string', () => {
+      expect(rule.setName.bind(null, '')).to.throw(/Rule "name" must be defined/)
     })
   })
 
