@@ -36,6 +36,7 @@ let options = {
       customProperty: 'customValue'
     }
   },
+  name: any,                               // optional
   priority: 1,                             // optional, default: 1
   onSuccess: function (event, almanac) {}, // optional
   onFailure: function (event, almanac) {}, // optional
@@ -52,6 +53,8 @@ let rule = new Rule(options)
 **options.onSuccess** : `[Function(Object event, Almanac almanac)]` Registers callback with the rule's `on('success')` listener.  The rule's `event` property and the current [Almanac](./almanac.md) are passed as arguments.
 
 **options.onFailure** : `[Function(Object event, Almanac almanac)]` Registers callback with the rule's `on('failure')` listener.  The rule's `event` property and the current [Almanac](./almanac.md) are passed as arguments.
+
+**options.name** : `[Any]` A way of naming your rules, allowing them to be easily identifiable in [Rule Results](#rule-results).  This is usually of type `String`, but could also be `Object`, `Array`, or `Number`. Note that the name need not be unique, and that it has no impact on execution of the rule.
 
 ### setConditions(Array conditions)
 
@@ -315,7 +318,7 @@ The ```operator``` compares the value returned by the ```fact``` to what is stor
 
 ## Rule Results
 
-After a rule is evaluated, a `rule result` object is provided to the `success` and `failure` events.  This argument is similar to a regular rule, and contains additional metadata about how the rule was evaluated.  Rule results can be used to extract the results of individual conditions, computed fact values, and boolean logic results.
+After a rule is evaluated, a `rule result` object is provided to the `success` and `failure` events.  This argument is similar to a regular rule, and contains additional metadata about how the rule was evaluated.  Rule results can be used to extract the results of individual conditions, computed fact values, and boolean logic results.  `name` can be used to easily identify a given rule.
 
 Rule results are structured similar to rules, with two additional pieces of metadata sprinkled throughout: `result` and `factResult`
 ```js
@@ -339,6 +342,7 @@ Rule results are structured similar to rules, with two additional pieces of meta
     }
   },
   priority: 1,
+  name: 'someName'
 }
 ```
 
