@@ -17,7 +17,7 @@ let Engine = require('../dist').Engine
  */
 let engine = new Engine()
 
-// rule for determining honor role student atheletes (student has GPA >= 3.5 AND is an athlete)
+// rule for determining honor role student athletes (student has GPA >= 3.5 AND is an athlete)
 engine.addRule({
   conditions: {
     all: [{
@@ -35,7 +35,8 @@ engine.addRule({
     params: {
       message: 'Student made the athletics honor-roll'
     }
-  }
+  },
+  name: 'Athlete GPA Rule'
 })
 
 function render (message, ruleResult) {
@@ -57,20 +58,20 @@ function render (message, ruleResult) {
 }
 
 /**
- * On success, retrieve the student's username for display purposes, and render
+ * On success, retrieve the student's username and print rule name for display purposes, and render
  */
 engine.on('success', (event, almanac, ruleResult) => {
   almanac.factValue('username').then(username => {
-    render(`${username.bold} succeeded! ${event.params.message}`, ruleResult)
+    render(`${username.bold} succeeded ${ruleResult.name}! ${event.params.message}`, ruleResult)
   })
 })
 
 /**
- * On failure, retrieve the student's username for display purposes, and render
+ * On failure, retrieve the student's username and print rule name for display purposes, and render
  */
 engine.on('failure', (event, almanac, ruleResult) => {
   almanac.factValue('username').then(username => {
-    render(`${username.bold} failed - `, ruleResult)
+    render(`${username.bold} failed ${ruleResult.name} - `, ruleResult)
   })
 })
 
@@ -86,9 +87,9 @@ Promise.all([
 /*
  * OUTPUT:
  *
- * joe failed -  was not an athlete
- * larry succeeded! Student made the athletics honor-roll
- * jane failed -  was not an athlete and GPA of 3.1 was too low
- * janet succeeded! Student made the athletics honor-roll
- * sarah failed -  GPA of 1.1 was too low
+ * joe failed Athlete GPA Rule -  was not an athlete
+ * larry succeeded Athlete GPA Rule! Student made the athletics honor-roll
+ * jane failed Athlete GPA Rule -  was not an athlete and GPA of 3.1 was too low
+ * janet succeeded Athlete GPA Rule! Student made the athletics honor-roll
+ * sarah failed Athlete GPA Rule -  GPA of 1.1 was too low
  */
