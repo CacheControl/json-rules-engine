@@ -14,7 +14,7 @@ class Rule extends EventEmitter {
    * @param {string} options.event.type - name of event to emit
    * @param {string} options.event.params - parameters to pass to the event listener
    * @param {Object} options.conditions - conditions to evaluate when processing this rule
-   * @param {string} options.name - identifier for a particular rule, particularly valuable in RuleResult output
+   * @param {any} options.name - identifier for a particular rule, particularly valuable in RuleResult output
    * @return {Rule} instance
    */
   constructor (options) {
@@ -31,7 +31,7 @@ class Rule extends EventEmitter {
     if (options && options.onFailure) {
       this.on('failure', options.onFailure)
     }
-    if (options && options.name) {
+    if (options && (options.name || options.name === 0)) {
       this.setName(options.name)
     }
 
@@ -55,11 +55,11 @@ class Rule extends EventEmitter {
 
   /**
    * Sets the name of the rule
-   * @param {string} name - only non-empty strings are allowed
+   * @param {any} name - any truthy input and zero is allowed
    */
   setName (name) {
-    if (!name || typeof name !== 'string') {
-      throw new Error('Rule "name" must be either undefined or a non-empty string')
+    if (!name && name !== 0) {
+      throw new Error('Rule "name" must be defined')
     }
     this.name = name
     return this
