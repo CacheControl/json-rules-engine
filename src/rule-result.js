@@ -3,10 +3,11 @@
 import deepClone from 'clone'
 
 export default class RuleResult {
-  constructor (conditions, event, priority) {
+  constructor (conditions, event, priority, name) {
     this.conditions = deepClone(conditions)
     this.event = deepClone(event)
     this.priority = deepClone(priority)
+    this.name = deepClone(name)
     this.result = null
   }
 
@@ -19,6 +20,7 @@ export default class RuleResult {
       conditions: this.conditions.toJSON(false),
       event: this.event,
       priority: this.priority,
+      name: this.name,
       result: this.result
     }
     if (stringify) {
