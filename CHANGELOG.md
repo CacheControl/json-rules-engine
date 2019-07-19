@@ -1,3 +1,6 @@
+3.1.0 / 2019-07-19
+  * Feature: `rule.setName()` and `ruleResult.name`
+
 3.0.3 / 2019-07-15
   * Fix "localStorage.debug" not working in browsers
 
