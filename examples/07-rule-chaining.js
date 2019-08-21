@@ -2,7 +2,8 @@
 
 /*
  * This is an advanced example demonstrating rules that passed based off the
- * results of other rules
+ * results of other rules by adding runtime facts.  It also demonstrates
+ * accessing the runtime facts after engine execution.
  *
  * Usage:
  *   node ./examples/07-rule-chaining.js
@@ -83,9 +84,25 @@ engine
 facts = { accountId: 'washington', drinksOrangeJuice: true, enjoysVodka: true, isSociable: true }
 engine
   .run(facts) // first run, using washington's facts
+  .then((results) => {
+    // access whether washington is a screwdriverAficionado,
+    // which was determined at runtime via the rules `drinkRules`
+    return results.almanac.factValue('screwdriverAficionado')
+  })
+  .then(isScrewdriverAficionado => {
+    console.log(`${facts.accountId} ${isScrewdriverAficionado ? 'IS'.green : 'IS NOT'.red} a screwdriver aficionado`)
+  })
   .then(() => {
     facts = { accountId: 'jefferson', drinksOrangeJuice: true, enjoysVodka: false, isSociable: true }
     return engine.run(facts) // second run, using jefferson's facts; facts & evaluation are independent of the first run
+  })
+  .then((results) => {
+    // access whether jefferson is a screwdriverAficionado,
+    // which was determined at runtime via the rules `drinkRules`
+    return results.almanac.factValue('screwdriverAficionado')
+  })
+  .then(isScrewdriverAficionado => {
+    console.log(`${facts.accountId} ${isScrewdriverAficionado ? 'IS'.green : 'IS NOT'.red} a screwdriver aficionado`)
   })
   .catch(console.log)
 
@@ -94,6 +111,8 @@ engine
  *
  * washington DID meet conditions for the drinks-screwdrivers rule.
  * washington DID meet conditions for the invite-to-screwdriver-social rule.
+ * washington IS a screwdriver aficionado
  * jefferson did NOT meet conditions for the drinks-screwdrivers rule.
  * jefferson did NOT meet conditions for the invite-to-screwdriver-social rule.
+ * jefferson IS NOT a screwdriver aficionado
  */

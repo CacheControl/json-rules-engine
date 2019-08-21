@@ -139,7 +139,7 @@ engine.removeOperator('startsWithLetter');
 
 
 
-### engine.run([Object facts], [Object options]) -> Promise (Events)
+### engine.run([Object facts], [Object options]) -> Promise ({ events: Events, almanac: Almanac})
 
 Runs the rules engine.  Returns a promise which resolves when all rules have been run.
 
@@ -153,10 +153,12 @@ engine.run({ userId: 1 })
 // returns rule events that were triggered
 engine
   .run({ userId: 1 })
-  .then(function(events) {
-    console.log(events)
+  .then(function(results) {
+    console.log(results.events)
+    // almanac available via results.almanac to interact with as defined in Almanac docs
   })
 ```
+Link to the [Almanac documentation](./almanac.md)
 
 ### engine.stop() -> Engine
 

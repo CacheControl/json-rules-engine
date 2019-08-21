@@ -13,7 +13,6 @@ describe('Engine: run', () => {
     sandbox.restore()
   })
 
-  let event = { type: 'generic' }
   let condition21 = {
     any: [{
       fact: 'age',
@@ -33,9 +32,9 @@ describe('Engine: run', () => {
   beforeEach(() => {
     eventSpy = sandbox.spy()
     engine = engineFactory()
-    rule = factories.rule({ conditions: condition21, event })
+    rule = factories.rule({ conditions: condition21, event: { type: 'generic1' } })
     engine.addRule(rule)
-    rule2 = factories.rule({ conditions: condition75, event })
+    rule2 = factories.rule({ conditions: condition75, event: { type: 'generic2' } })
     engine.addRule(rule2)
     engine.on('success', eventSpy)
   })
@@ -65,22 +64,52 @@ describe('Engine: run', () => {
   describe('returns', () => {
     it('activated events', () => {
       return engine.run({ age: 30 }).then(results => {
-        expect(results.length).to.equal(1)
-        expect(results).to.deep.include(rule.event)
+        expect(results.events.length).to.equal(1)
+        expect(results.events).to.deep.include(rule.event)
       })
     })
 
     it('multiple activated events', () => {
       return engine.run({ age: 90 }).then(results => {
-        expect(results.length).to.equal(2)
-        expect(results).to.deep.include(rule.event)
-        expect(results).to.deep.include(rule2.event)
+        expect(results.events.length).to.equal(2)
+        expect(results.events).to.deep.include(rule.event)
+        expect(results.events).to.deep.include(rule2.event)
       })
     })
 
     it('does not include unactived triggers', () => {
       return engine.run({ age: 10 }).then(results => {
-        expect(results.length).to.equal(0)
+        expect(results.events.length).to.equal(0)
+      })
+    })
+
+    it('includes the almanac', () => {
+      return engine.run({ age: 10 }).then(results => {
+        // expect(results.almanac).assert.instanceOf
+        return results.almanac.factValue('age')
+      }).then(ageFact => expect(ageFact).to.equal(10))
+    })
+  })
+
+  describe('facts updated during run', () => {
+    beforeEach(() => {
+      engine.on('success', (event, almanac, ruleResult) => {
+        console.log(ruleResult)
+        // Assign unique runtime facts per event
+        almanac.addRuntimeFact(`runtime-fact-${event.type}`, ruleResult.conditions.any[0].value)
+      })
+    })
+
+    it('returns an almanac with runtime facts added', () => {
+      return engine.run({ age: 90 }).then(results => {
+        console.log(results)
+        return Promise.all([
+          results.almanac.factValue('runtime-fact-generic1'),
+          results.almanac.factValue('runtime-fact-generic2')
+        ])
+      }).then(promiseValues => {
+        expect(promiseValues[0]).to.equal(21)
+        expect(promiseValues[1]).to.equal(75)
       })
     })
   })

@@ -53,8 +53,8 @@ let facts = { displayMessage: true }
 // run the engine
 engine
   .run(facts)
-  .then(triggeredEvents => { // engine returns a list of events with truthy conditions
-    triggeredEvents.map(event => console.log(event.params.data.green))
+  .then(results => { // engine returns an object with a list of events with truthy conditions
+    results.events.map(event => console.log(event.params.data.green))
   })
   .catch(console.log)
 
