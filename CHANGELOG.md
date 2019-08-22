@@ -1,3 +1,9 @@
+4.0.0 / 2019-08-22
+  * BREAKING CHANGES
+    * `engine.run()` now returns a hash of events and almanac: `{ events: [], almanac: Almanac instance }`. Previously in v3, the `run()` returned the `events` array.
+       *  For example, `const events = await engine.run()` under v3 will need to be changed to `const { events } = await engine.run()` under v4.
+
+
 3.1.0 / 2019-07-19
   * Feature: `rule.setName()` and `ruleResult.name`
 
