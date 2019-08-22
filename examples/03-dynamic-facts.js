@@ -71,9 +71,9 @@ engine.addFact('account-information', function (params, almanac) {
 let facts = { accountId: 'lincoln' }
 engine
   .run(facts)
-  .then(events => {
-    if (!events.length) return
-    console.log(facts.accountId + ' is a ' + events.map(event => event.params.message))
+  .then(results => {
+    if (!results.events.length) return
+    console.log(facts.accountId + ' is a ' + results.events.map(event => event.params.message))
   })
   .catch(err => console.log(err.stack))
 
