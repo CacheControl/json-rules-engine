@@ -89,7 +89,7 @@ export default class Almanac {
       if (this.allowUndefinedFacts) {
         return Promise.resolve(undefined)
       } else {
-        return Promise.reject(new UndefinedFactError(`Undefined fact: ${factId}`))
+        return Promise.reject(new UndefinedFactError(factId))
       }
     }
     if (fact.isConstant()) {
