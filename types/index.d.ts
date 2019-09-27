@@ -129,8 +129,10 @@ export class Rule implements RuleProperties {
   setConditions(conditions: TopLevelCondition): this;
   setEvent(event: Event): this;
   setPriority(priority: number): this;
-  toJSON(): RuleSerializable;
-  toJSON(stringify: false): string;
+  toJSON(): string;
+  toJSON<T extends boolean>(
+    stringify: T
+  ): T extends true ? string : RuleSerializable;
 }
 
 interface ConditionProperties {

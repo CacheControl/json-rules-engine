@@ -57,8 +57,9 @@ expectType<boolean>(engine.removeRule(ruleFromString));
 expectType<Rule>(rule.setConditions({ any: [] }));
 expectType<Rule>(rule.setEvent({ type: "test" }));
 expectType<Rule>(rule.setPriority(1));
-expectType<RuleSerializable>(rule.toJSON());
-expectType<string>(rule.toJSON(false));
+expectType<string>(rule.toJSON());
+expectType<string>(rule.toJSON(true));
+expectType<RuleSerializable>(rule.toJSON(false));
 
 // Operator tests
 const operatorEvaluator: OperatorEvaluator<number, number> = (
