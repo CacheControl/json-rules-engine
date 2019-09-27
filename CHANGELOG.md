@@ -1,3 +1,6 @@
+4.1.0 / 2019-09-27
+  * Export Typescript definitions (@brianphillips)
+
 4.0.0 / 2019-08-22
   * BREAKING CHANGES
     * `engine.run()` now returns a hash of events and almanac: `{ events: [], almanac: Almanac instance }`. Previously in v3, the `run()` returned the `events` array.
