@@ -4,7 +4,7 @@ import Fact from './fact'
 import { UndefinedFactError } from './errors'
 import debug from './debug'
 
-import selectn from 'selectn'
+import { JSONPath } from 'jsonpath-plus'
 import isObjectLike from 'lodash.isobjectlike'
 
 /**
@@ -105,19 +105,37 @@ export default class Almanac {
         factValuePromise = this._setFactValue(fact, params, fact.calculate(params, this))
       }
     }
-    if (path) {
-      return factValuePromise
-        .then(factValue => {
-          if (isObjectLike(factValue)) {
-            let pathValue = selectn(path)(factValue)
-            debug(`condition::evaluate extracting object property ${path}, received: ${pathValue}`)
-            return pathValue
-          } else {
-            debug(`condition::evaluate could not compute object path(${path}) of non-object: ${factValue} <${typeof factValue}>; continuing with ${factValue}`)
-            return factValue
-          }
-        })
+    if (path) { // selectn supports arrays and strings as a 'path'
+      // strings starting with '$' denotes json path. otherwise fall back to deprecated 'selectn' syntax
+      if (typeof path === 'string' && path.startsWith('$')) {
+        debug(`condition::evaluate extracting object property ${path}`)
+        return factValuePromise
+          .then(factValue => JSONPath({ path, json: factValue }))
+      } else {
+        let selectn
+        try {
+          selectn = require('selectn')
+        } catch (err) {
+          console.error('selectn support has been deprecated in json-rules-engine.')
+          console.error('Please convert your "path" properties to json-path syntax.')
+          console.error('Alternatively if you wish to continue using selectn syntax, you may "npm install selectn" as a direct dependency.')
+          console.error('See https://github.com/CacheControl/json-rules-engine/tree/master/docs for more information.')
+          throw err
+        }
+        return factValuePromise
+          .then(factValue => {
+            if (isObjectLike(factValue)) {
+              let pathValue = selectn(path)(factValue)
+              debug(`condition::evaluate extracting object property ${path}, received: ${pathValue}`)
+              return pathValue
+            } else {
+              debug(`condition::evaluate could not compute object path(${path}) of non-object: ${factValue} <${typeof factValue}>; continuing with ${factValue}`)
+              return factValue
+            }
+          })
+      }
     }
+
     return factValuePromise
   }
 }

@@ -198,27 +198,55 @@ describe('Condition', () => {
   })
 
   describe('objects', () => {
-    it('extracts the object property values using its "path" property', async () => {
-      let condition = new Condition({ operator: 'equal', path: '[0].id', fact: 'age', value: 50 })
-      let ageFact = new Fact('age', [{ id: 50 }, { id: 60 }])
-      let facts = new Map([[ageFact.id, ageFact]])
-      let almanac = new Almanac(facts)
-      expect((await condition.evaluate(almanac, operators)).result).to.equal(true)
+    describe('.path', () => {
+      it('extracts the object property values using its "path" property', async () => {
+        let condition = new Condition({ operator: 'equal', path: '[0].id', fact: 'age', value: 50 })
+        let ageFact = new Fact('age', [{ id: 50 }, { id: 60 }])
+        let facts = new Map([[ageFact.id, ageFact]])
+        let almanac = new Almanac(facts)
+        expect((await condition.evaluate(almanac, operators)).result).to.equal(true)
 
-      condition.value = 100 // negative case
-      expect((await condition.evaluate(almanac, operators)).result).to.equal(false)
+        condition.value = 100 // negative case
+        expect((await condition.evaluate(almanac, operators)).result).to.equal(false)
+      })
+
+      it('ignores "path" when non-objects are returned by the fact', async () => {
+        let ageFact = new Fact('age', 50)
+        let facts = new Map([[ageFact.id, ageFact]])
+        let almanac = new Almanac(facts)
+
+        let condition = new Condition({ operator: 'equal', path: '[0].id', fact: 'age', value: 50 })
+        expect((await condition.evaluate(almanac, operators, 50)).result).to.equal(true)
+
+        condition.value = 100 // negative case
+        expect((await condition.evaluate(almanac, operators, 50)).result).to.equal(false)
+      })
     })
 
-    it('ignores "path" when non-objects are returned by the fact', async () => {
-      let ageFact = new Fact('age', 50)
-      let facts = new Map([[ageFact.id, ageFact]])
-      let almanac = new Almanac(facts)
+    describe('jsonPath', () => {
+      it('allows json path to extract values from complex facts', async () => {
+        let condition = new Condition({ operator: 'contains', path: '$.phoneNumbers[*].type', fact: 'users', value: 'iPhone' })
+        const userData = {
+          phoneNumbers: [
+            {
+              type: 'iPhone',
+              number: '0123-4567-8888'
+            },
+            {
+              type: 'home',
+              number: '0123-4567-8910'
+            }
+          ]
+        }
 
-      let condition = new Condition({ operator: 'equal', path: '[0].id', fact: 'age', value: 50 })
-      expect((await condition.evaluate(almanac, operators, 50)).result).to.equal(true)
+        let usersFact = new Fact('users', userData)
+        let facts = new Map([[usersFact.id, usersFact]])
+        let almanac = new Almanac(facts)
+        expect((await condition.evaluate(almanac, operators)).result).to.equal(true)
 
-      condition.value = 100 // negative case
-      expect((await condition.evaluate(almanac, operators, 50)).result).to.equal(false)
+        condition.value = 'work' // negative case
+        expect((await condition.evaluate(almanac, operators)).result).to.equal(false)
+      })
     })
   })
 

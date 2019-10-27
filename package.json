@@ -61,6 +61,7 @@
     "dirty-chai": "2.0.1",
     "mocha": "^6.1.4",
     "perfy": "^1.1.5",
+    "selectn": "^1.1.2",
     "sinon": "^7.3.2",
     "sinon-chai": "^3.3.0",
     "snazzy": "^8.0.0",
@@ -71,7 +72,7 @@
     "clone": "^2.1.2",
     "events": "^3.0.0",
     "hash-it": "^4.0.4",
-    "lodash.isobjectlike": "^4.0.0",
-    "selectn": "^1.1.2"
+    "jsonpath-plus": "^1.1.0",
+    "lodash.isobjectlike": "^4.0.0"
   }
 }
