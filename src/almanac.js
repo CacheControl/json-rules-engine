@@ -116,10 +116,10 @@ export default class Almanac {
         try {
           selectn = require('selectn')
         } catch (err) {
-          console.error('selectn support has been deprecated in json-rules-engine.')
-          console.error('Please convert your "path" properties to json-path syntax.')
-          console.error('Alternatively if you wish to continue using selectn syntax, you may "npm install selectn" as a direct dependency.')
-          console.error('See https://github.com/CacheControl/json-rules-engine/tree/master/docs for more information.')
+          console.error('Oops! Looks like you\'re trying to use the deprecated syntax for the ".path" property.')
+          console.error('Please convert your "path" properties to JsonPath syntax (ensure your path starts with "$")')
+          console.error('Alternatively, if you wish to continue using old syntax (provided by selectn), you may "npm install selectn" as a direct dependency.')
+          console.error('See https://github.com/CacheControl/json-rules-engine/blob/master/CHANGELOG.md#500--2019-10-27 for more information.')
           throw err
         }
         return factValuePromise
