@@ -124,30 +124,47 @@ describe('Almanac', () => {
   })
 
   describe('factValue()', () => {
-    function setup (factOptions) {
-      let fact = new Fact('foo', async (params, facts) => {
-        factSpy()
-        return 'unknown'
-      }, factOptions)
+    it('allows "path" to be specified to traverse the fact data with json-path', async () => {
+      let fact = new Fact('foo', {
+        users: [{
+          name: 'George'
+        }, {
+          name: 'Thomas'
+        }]
+      })
       let factMap = new Map()
       factMap.set(fact.id, fact)
       almanac = new Almanac(factMap)
-    }
-
-    it('evaluates the fact every time when fact caching is off', () => {
-      setup({ cache: false })
-      almanac.factValue('foo')
-      almanac.factValue('foo')
-      almanac.factValue('foo')
-      expect(factSpy).to.have.been.calledThrice()
+      const result = await almanac.factValue('foo', null, '$..name')
+      expect(result).to.deep.equal(['George', 'Thomas'])
     })
 
-    it('evaluates the fact once when fact caching is on', () => {
-      setup({ cache: true })
-      almanac.factValue('foo')
-      almanac.factValue('foo')
-      almanac.factValue('foo')
-      expect(factSpy).to.have.been.calledOnce()
+    describe('caching', () => {
+      function setup (factOptions) {
+        let fact = new Fact('foo', async (params, facts) => {
+          factSpy()
+          return 'unknown'
+        }, factOptions)
+        let factMap = new Map()
+        factMap.set(fact.id, fact)
+        almanac = new Almanac(factMap)
+      }
+
+      it('evaluates the fact every time when fact caching is off', () => {
+        setup({ cache: false })
+        almanac.factValue('foo')
+        almanac.factValue('foo')
+        almanac.factValue('foo')
+        expect(factSpy).to.have.been.calledThrice()
+      })
+
+      it('evaluates the fact once when fact caching is on', () => {
+        setup({ cache: true })
+        almanac.factValue('foo')
+        almanac.factValue('foo')
+        almanac.factValue('foo')
+        expect(factSpy).to.have.been.calledOnce()
+      })
     })
   })
 })
