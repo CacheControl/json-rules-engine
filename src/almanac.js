@@ -120,7 +120,7 @@ export default class Almanac {
           console.error('Please convert your "path" properties to JsonPath syntax (ensure your path starts with "$")')
           console.error('Alternatively, if you wish to continue using old syntax (provided by selectn), you may "npm install selectn" as a direct dependency.')
           console.error('See https://github.com/CacheControl/json-rules-engine/blob/master/CHANGELOG.md#500--2019-10-27 for more information.')
-          throw err
+          throw new Error('json-rules-engine: Unmet peer dependency "selectn" required for use of deprecated ".path" syntax. please "npm install selectn" or convert to json-path syntax')
         }
         return factValuePromise
           .then(factValue => {
