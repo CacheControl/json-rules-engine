@@ -10,12 +10,12 @@
  *   DEBUG=json-rules-engine node ./examples/09-rule-results.js
  */
 require('colors')
-let Engine = require('../dist').Engine
+const Engine = require('../dist').Engine
 
 /**
  * Setup a new engine
  */
-let engine = new Engine()
+const engine = new Engine()
 
 // rule for determining honor role student athletes (student has GPA >= 3.5 AND is an athlete)
 engine.addRule({
@@ -45,7 +45,7 @@ function render (message, ruleResult) {
     return console.log(`${message}`.green)
   }
   // if rule failed, iterate over each failed condition to determine why the student didn't qualify for athletics honor roll
-  let detail = ruleResult.conditions.all.filter(condition => !condition.result)
+  const detail = ruleResult.conditions.all.filter(condition => !condition.result)
     .map(condition => {
       switch (condition.operator) {
         case 'equal':

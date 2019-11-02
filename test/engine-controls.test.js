@@ -12,7 +12,7 @@ describe('Engine: fact priority', () => {
   afterEach(() => {
     sandbox.restore()
   })
-  let event = { type: 'adult-human-admins' }
+  const event = { type: 'adult-human-admins' }
 
   let eventSpy
   let ageStub

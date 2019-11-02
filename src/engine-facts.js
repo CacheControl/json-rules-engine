@@ -1,7 +1,7 @@
 'use strict'
 
-let SuccessEventFact = function () {
-  let successTriggers = []
+const SuccessEventFact = function () {
+  const successTriggers = []
   return (params = {}) => {
     if (params.event) {
       successTriggers.push(params.event)

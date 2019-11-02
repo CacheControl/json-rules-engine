@@ -18,7 +18,7 @@ export default class Almanac {
     this.factResultsCache = new Map() // { cacheKey:  Promise<factValu> }
     this.allowUndefinedFacts = Boolean(options.allowUndefinedFacts)
 
-    for (let factId in runtimeFacts) {
+    for (const factId in runtimeFacts) {
       let fact
       if (runtimeFacts[factId] instanceof Fact) {
         fact = runtimeFacts[factId]
@@ -56,8 +56,8 @@ export default class Almanac {
    * @param {Mixed} value - computed value
    */
   _setFactValue (fact, params, value) {
-    let cacheKey = fact.getCacheKey(params)
-    let factValue = Promise.resolve(value)
+    const cacheKey = fact.getCacheKey(params)
+    const factValue = Promise.resolve(value)
     if (cacheKey) {
       this.factResultsCache.set(cacheKey, factValue)
     }
@@ -70,7 +70,7 @@ export default class Almanac {
    * @param {Mixed} value - constant value of the fact
    */
   addRuntimeFact (factId, value) {
-    let fact = new Fact(factId, value)
+    const fact = new Fact(factId, value)
     return this._addConstantFact(fact)
   }
 
@@ -84,7 +84,7 @@ export default class Almanac {
    */
   factValue (factId, params = {}, path = '') {
     let factValuePromise
-    let fact = this._getFact(factId)
+    const fact = this._getFact(factId)
     if (fact === undefined) {
       if (this.allowUndefinedFacts) {
         return Promise.resolve(undefined)
@@ -95,8 +95,8 @@ export default class Almanac {
     if (fact.isConstant()) {
       factValuePromise = Promise.resolve(fact.calculate(params, this))
     } else {
-      let cacheKey = fact.getCacheKey(params)
-      let cacheVal = cacheKey && this.factResultsCache.get(cacheKey)
+      const cacheKey = fact.getCacheKey(params)
+      const cacheVal = cacheKey && this.factResultsCache.get(cacheKey)
       if (cacheVal) {
         factValuePromise = Promise.resolve(cacheVal)
         debug(`almanac::factValue cache hit for fact:${factId}`)
@@ -125,7 +125,7 @@ export default class Almanac {
         return factValuePromise
           .then(factValue => {
             if (isObjectLike(factValue)) {
-              let pathValue = selectn(path)(factValue)
+              const pathValue = selectn(path)(factValue)
               debug(`condition::evaluate extracting object property ${path}, received: ${pathValue}`)
               return pathValue
             } else {

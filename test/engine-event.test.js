@@ -14,7 +14,7 @@ describe('Engine: event', () => {
     sandbox.restore()
   })
 
-  let event = {
+  const event = {
     type: 'setDrinkingFlag',
     params: {
       canOrderDrinks: true
@@ -24,7 +24,7 @@ describe('Engine: event', () => {
    * sets up a simple 'any' rule with 2 conditions
    */
   function simpleSetup () {
-    let conditions = {
+    const conditions = {
       any: [{
         fact: 'age',
         operator: 'greaterThanInclusive',
@@ -36,8 +36,8 @@ describe('Engine: event', () => {
       }]
     }
     engine = engineFactory()
-    let ruleOptions = { conditions, event, priority: 100 }
-    let determineDrinkingAgeRule = factories.rule(ruleOptions)
+    const ruleOptions = { conditions, event, priority: 100 }
+    const determineDrinkingAgeRule = factories.rule(ruleOptions)
     engine.addRule(determineDrinkingAgeRule)
     // age will succeed because 21 >= 21
     engine.addFact('age', 21)
@@ -49,7 +49,7 @@ describe('Engine: event', () => {
    * sets up a complex rule with nested conditions
    */
   function advancedSetup () {
-    let conditions = {
+    const conditions = {
       any: [{
         fact: 'age',
         operator: 'greaterThanInclusive',
@@ -71,8 +71,8 @@ describe('Engine: event', () => {
       }]
     }
     engine = engineFactory()
-    let ruleOptions = { conditions, event, priority: 100 }
-    let determineDrinkingAgeRule = factories.rule(ruleOptions)
+    const ruleOptions = { conditions, event, priority: 100 }
+    const determineDrinkingAgeRule = factories.rule(ruleOptions)
     engine.addRule(determineDrinkingAgeRule)
     // rule will succeed because of 'any'
     engine.addFact('age', 10) // age fails
@@ -85,8 +85,8 @@ describe('Engine: event', () => {
     beforeEach(() => simpleSetup())
 
     it('"success" passes the event, almanac, and results', async () => {
-      let failureSpy = sandbox.spy()
-      let successSpy = sandbox.spy()
+      const failureSpy = sandbox.spy()
+      const successSpy = sandbox.spy()
       engine.on('success', function (e, almanac, ruleResult) {
         expect(e).to.eql(event)
         expect(almanac).to.be.an.instanceof(Almanac)
@@ -104,8 +104,8 @@ describe('Engine: event', () => {
     })
 
     it('"event.type" passes the event parameters, almanac, and results', async () => {
-      let failureSpy = sandbox.spy()
-      let successSpy = sandbox.spy()
+      const failureSpy = sandbox.spy()
+      const successSpy = sandbox.spy()
       engine.on(event.type, function (params, almanac, ruleResult) {
         expect(params).to.eql(event.params)
         expect(almanac).to.be.an.instanceof(Almanac)
@@ -123,9 +123,9 @@ describe('Engine: event', () => {
     })
 
     it('"failure" passes the event, almanac, and results', async () => {
-      let AGE = 10
-      let failureSpy = sandbox.spy()
-      let successSpy = sandbox.spy()
+      const AGE = 10
+      const failureSpy = sandbox.spy()
+      const successSpy = sandbox.spy()
       engine.on('failure', function (e, almanac, ruleResult) {
         expect(e).to.eql(event)
         expect(almanac).to.be.an.instanceof(Almanac)
@@ -144,19 +144,19 @@ describe('Engine: event', () => {
     })
 
     it('allows facts to be added by the event handler, affecting subsequent rules', () => {
-      let drinkOrderParams = { wine: 'merlot', quantity: 2 }
-      let drinkOrderEvent = {
+      const drinkOrderParams = { wine: 'merlot', quantity: 2 }
+      const drinkOrderEvent = {
         type: 'offerDrink',
         params: drinkOrderParams
       }
-      let drinkOrderConditions = {
+      const drinkOrderConditions = {
         any: [{
           fact: 'canOrderDrinks',
           operator: 'equal',
           value: true
         }]
       }
-      let drinkOrderRule = factories.rule({
+      const drinkOrderRule = factories.rule({
         conditions: drinkOrderConditions,
         event: drinkOrderEvent,
         priority: 1
@@ -184,8 +184,8 @@ describe('Engine: event', () => {
     beforeEach(() => advancedSetup())
 
     it('"success" passes the event, almanac, and results', async () => {
-      let failureSpy = sandbox.spy()
-      let successSpy = sandbox.spy()
+      const failureSpy = sandbox.spy()
+      const successSpy = sandbox.spy()
       engine.on('success', function (e, almanac, ruleResult) {
         expect(e).to.eql(event)
         expect(almanac).to.be.an.instanceof(Almanac)
@@ -208,10 +208,10 @@ describe('Engine: event', () => {
     })
 
     it('"failure" passes the event, almanac, and results', async () => {
-      let ZIP_CODE = 99992
-      let GENDER = 'female'
-      let failureSpy = sandbox.spy()
-      let successSpy = sandbox.spy()
+      const ZIP_CODE = 99992
+      const GENDER = 'female'
+      const failureSpy = sandbox.spy()
+      const successSpy = sandbox.spy()
       engine.on('failure', function (e, almanac, ruleResult) {
         expect(e).to.eql(event)
         expect(almanac).to.be.an.instanceof(Almanac)
@@ -240,7 +240,7 @@ describe('Engine: event', () => {
     beforeEach(() => simpleSetup())
 
     it('the rule result is a _copy_ of the rule`s conditions, and unaffected by mutation', async () => {
-      let rule = engine.rules[0]
+      const rule = engine.rules[0]
       let firstPass
       rule.on('success', function (e, almanac, ruleResult) {
         firstPass = ruleResult
@@ -259,9 +259,9 @@ describe('Engine: event', () => {
     })
 
     it('on-success, it passes the event type and params', async () => {
-      let failureSpy = sandbox.spy()
-      let successSpy = sandbox.spy()
-      let rule = engine.rules[0]
+      const failureSpy = sandbox.spy()
+      const successSpy = sandbox.spy()
+      const rule = engine.rules[0]
       rule.on('success', function (e, almanac, ruleResult) {
         expect(e).to.eql(event)
         expect(almanac).to.be.an.instanceof(Almanac)
@@ -280,10 +280,10 @@ describe('Engine: event', () => {
     })
 
     it('on-failure, it passes the event type and params', async () => {
-      let AGE = 10
-      let successSpy = sandbox.spy()
-      let failureSpy = sandbox.spy()
-      let rule = engine.rules[0]
+      const AGE = 10
+      const successSpy = sandbox.spy()
+      const failureSpy = sandbox.spy()
+      const rule = engine.rules[0]
       rule.on('failure', function (e, almanac, ruleResult) {
         expect(e).to.eql(event)
         expect(almanac).to.be.an.instanceof(Almanac)
@@ -307,12 +307,12 @@ describe('Engine: event', () => {
   context('rule events: json serializing', () => {
     beforeEach(() => simpleSetup())
     it('serializes properties', async () => {
-      let successSpy = sandbox.spy()
-      let rule = engine.rules[0]
+      const successSpy = sandbox.spy()
+      const rule = engine.rules[0]
       rule.on('success', successSpy)
       await engine.run()
-      let ruleResult = successSpy.getCall(0).args[2]
-      let expected = '{"conditions":{"priority":1,"any":[{"operator":"greaterThanInclusive","value":21,"fact":"age","factResult":21,"result":true},{"operator":"equal","value":true,"fact":"qualified","factResult":false,"result":false}]},"event":{"type":"setDrinkingFlag","params":{"canOrderDrinks":true}},"priority":100,"result":true}'
+      const ruleResult = successSpy.getCall(0).args[2]
+      const expected = '{"conditions":{"priority":1,"any":[{"operator":"greaterThanInclusive","value":21,"fact":"age","factResult":21,"result":true},{"operator":"equal","value":true,"fact":"qualified","factResult":false,"result":false}]},"event":{"type":"setDrinkingFlag","params":{"canOrderDrinks":true}},"priority":100,"result":true}'
       expect(JSON.stringify(ruleResult)).to.equal(expected)
     })
   })

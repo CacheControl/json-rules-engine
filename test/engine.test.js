@@ -35,7 +35,7 @@ describe('Engine', () => {
     })
 
     it('can be initialized with rules', () => {
-      let rules = [
+      const rules = [
         factories.rule(),
         factories.rule(),
         factories.rule()
@@ -54,7 +54,7 @@ describe('Engine', () => {
   describe('addRule()', () => {
     describe('rule instance', () => {
       it('adds the rule', () => {
-        let rule = new Rule(factories.rule())
+        const rule = new Rule(factories.rule())
         expect(engine.rules.length).to.equal(0)
         engine.addRule(rule)
         expect(engine.rules.length).to.equal(1)
@@ -64,7 +64,7 @@ describe('Engine', () => {
 
     describe('required fields', () => {
       it('.conditions', () => {
-        let rule = factories.rule()
+        const rule = factories.rule()
         delete rule.conditions
         expect(() => {
           engine.addRule(rule)
@@ -72,7 +72,7 @@ describe('Engine', () => {
       })
 
       it('.event', () => {
-        let rule = factories.rule()
+        const rule = factories.rule()
         delete rule.event
         expect(() => {
           engine.addRule(rule)
@@ -84,7 +84,7 @@ describe('Engine', () => {
   describe('removeRule()', () => {
     describe('rule instance', () => {
       it('removes the rule', () => {
-        let rule = new Rule(factories.rule())
+        const rule = new Rule(factories.rule())
         engine.addRule(rule)
         expect(engine.rules.length).to.equal(1)
         engine.removeRule(rule)
@@ -103,13 +103,13 @@ describe('Engine', () => {
 
     it('can only remove added rules', () => {
       expect(engine.rules.length).to.equal(0)
-      let rule = new Rule(factories.rule())
+      const rule = new Rule(factories.rule())
       const isRemoved = engine.removeRule(rule)
       expect(isRemoved).to.equal(false)
     })
 
     it('clears the "prioritizedRules" cache', () => {
-      let rule = new Rule(factories.rule())
+      const rule = new Rule(factories.rule())
       engine.addRule(rule)
       engine.prioritizeRules()
       engine.removeRule(rule)
@@ -130,7 +130,7 @@ describe('Engine', () => {
 
     it('accepts an operator instance', () => {
       expect(engine.operators.size).to.equal(10)
-      let op = new Operator('my-operator', _ => true)
+      const op = new Operator('my-operator', _ => true)
       engine.addOperator(op)
       expect(engine.operators.size).to.equal(11)
       expect(engine.operators.get('my-operator')).to.equal(op)
@@ -171,7 +171,7 @@ describe('Engine', () => {
     })
 
     it('allows options to be passed', () => {
-      let options = { cache: false }
+      const options = { cache: false }
       engine.addFact(FACT_NAME, FACT_VALUE, options)
       assertFact(engine)
       expect(engine.facts.get(FACT_NAME).value).to.equal(FACT_VALUE)
@@ -187,7 +187,7 @@ describe('Engine', () => {
     })
 
     it('allows a lamba fact with options', () => {
-      let options = { cache: false }
+      const options = { cache: false }
       engine.addFact(FACT_NAME, async (params, engine) => {
         return FACT_VALUE
       }, options)
@@ -197,8 +197,8 @@ describe('Engine', () => {
     })
 
     it('allows a fact instance', () => {
-      let options = { cache: false }
-      let fact = new Fact(FACT_NAME, 50, options)
+      const options = { cache: false }
+      const fact = new Fact(FACT_NAME, 50, options)
       engine.addFact(fact)
       assertFact(engine)
       expect(engine.facts.get(FACT_NAME)).to.exist()
@@ -209,7 +209,7 @@ describe('Engine', () => {
   describe('removeFact()', () => {
     it('removes a Fact', () => {
       expect(engine.facts.size).to.equal(0)
-      let fact = new Fact('newFact', 50, { cache: false })
+      const fact = new Fact('newFact', 50, { cache: false })
       engine.addFact(fact)
       expect(engine.facts.size).to.equal(1)
       engine.removeFact('newFact')
@@ -225,21 +225,21 @@ describe('Engine', () => {
 
   describe('run()', () => {
     beforeEach(() => {
-      let conditions = {
+      const conditions = {
         all: [{
           fact: 'age',
           operator: 'greaterThanInclusive',
           value: 18
         }]
       }
-      let event = { type: 'generic' }
-      let rule = factories.rule({ conditions, event })
+      const event = { type: 'generic' }
+      const rule = factories.rule({ conditions, event })
       engine.addRule(rule)
       engine.addFact('age', 20)
     })
 
     it('changes the status to "RUNNING"', () => {
-      let eventSpy = sandbox.spy()
+      const eventSpy = sandbox.spy()
       engine.on('success', (event, almanac) => {
         eventSpy()
         expect(engine.status).to.equal('RUNNING')

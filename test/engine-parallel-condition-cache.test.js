@@ -12,8 +12,8 @@ describe('Engine', () => {
   afterEach(() => {
     sandbox.restore()
   })
-  let event = { type: 'early-twenties' }
-  let conditions = {
+  const event = { type: 'early-twenties' }
+  const conditions = {
     all: [{
       fact: 'age',
       operator: 'lessThanInclusive',
@@ -35,13 +35,13 @@ describe('Engine', () => {
     factSpy = sandbox.spy()
     eventSpy = sandbox.spy()
 
-    let factDefinition = () => {
+    const factDefinition = () => {
       factSpy()
       return 24
     }
 
     engine = engineFactory()
-    let rule = factories.rule({ conditions, event })
+    const rule = factories.rule({ conditions, event })
     engine.addRule(rule)
     engine.addFact('age', factDefinition, factOptions)
     engine.on('success', eventSpy)
@@ -66,14 +66,14 @@ describe('Engine', () => {
   describe('2 rules with parallel conditions', () => {
     it('calls the fact definition once', async () => {
       setup()
-      let conditions = {
+      const conditions = {
         all: [{
           fact: 'age',
           operator: 'notIn',
           value: [21, 22]
         }]
       }
-      let rule = factories.rule({ conditions, event })
+      const rule = factories.rule({ conditions, event })
       engine.addRule(rule)
 
       await engine.run()

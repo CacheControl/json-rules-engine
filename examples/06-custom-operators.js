@@ -17,12 +17,12 @@
  */
 
 require('colors')
-let Engine = require('../dist').Engine
+const Engine = require('../dist').Engine
 
 /**
  * Setup a new engine
  */
-let engine = new Engine()
+const engine = new Engine()
 
 /**
  * Define a 'startsWith' custom operator, for use in later rules
@@ -35,7 +35,7 @@ engine.addOperator('startsWith', (factValue, jsonValue) => {
 /**
  * Add rule for detecting words that start with 'a'
  */
-let ruleA = {
+const ruleA = {
   conditions: {
     all: [{
       fact: 'word',
@@ -52,7 +52,7 @@ engine.addRule(ruleA)
 /*
  * Add rule for detecting words that start with 'b'
  */
-let ruleB = {
+const ruleB = {
   conditions: {
     all: [{
       fact: 'word',
@@ -67,7 +67,7 @@ let ruleB = {
 engine.addRule(ruleB)
 
 // utility for printing output
-let printEventType = {
+const printEventType = {
   'start-with-a': 'start with "a"',
   'start-with-b': 'start with "b"'
 }

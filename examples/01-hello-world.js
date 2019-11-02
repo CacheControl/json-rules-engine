@@ -11,18 +11,18 @@
  */
 
 require('colors')
-let Engine = require('../dist').Engine
-let Rule = require('../dist').Rule
+const Engine = require('../dist').Engine
+const Rule = require('../dist').Rule
 
 /**
  * Setup a new engine
  */
-let engine = new Engine()
+const engine = new Engine()
 
 /**
  * Create a rule
  */
-let rule = new Rule({
+const rule = new Rule({
   // define the 'conditions' for when "hello world" should display
   conditions: {
     all: [{
@@ -48,7 +48,7 @@ engine.addRule(rule)
  * Fact values do NOT need to be known at engine runtime; see the
  * 03-dynamic-facts.js example for how to pull in data asynchronously during runtime
  */
-let facts = { displayMessage: true }
+const facts = { displayMessage: true }
 
 // run the engine
 engine

@@ -11,19 +11,19 @@
  */
 
 require('colors')
-let Engine = require('../dist').Engine
+const Engine = require('../dist').Engine
 
 /**
  * Setup a new engine
  */
-let engine = new Engine()
+const engine = new Engine()
 
 /**
  * Rule for determining if account has enough money to purchase a $50 gift card product
  *
  * customer-account-balance >= $50 gift card
  */
-let rule = {
+const rule = {
   conditions: {
     all: [{
       // extract 'balance' from the 'customer' account type
@@ -55,7 +55,7 @@ engine.addFact('account', (params, almanac) => {
   return almanac.factValue('accounts')
     .then(accounts => {
       // use "params" to filter down to the type specified, in this case the "customer" account
-      let customerAccount = accounts.filter(account => account.type === params.accountType)
+      const customerAccount = accounts.filter(account => account.type === params.accountType)
       // return the customerAccount object, which "path" will use to pull the "balance" property
       return customerAccount[0]
     })
@@ -66,7 +66,7 @@ engine.addFact('product', (params, almanac) => {
   return almanac.factValue('products')
     .then(products => {
       // use "params" to filter down to the product specified, in this case the "giftCard" product
-      let product = products.filter(product => product.productId === params.productId)
+      const product = products.filter(product => product.productId === params.productId)
       // return the product object, which "path" will use to pull the "price" property
       return product[0]
     })
@@ -85,7 +85,7 @@ engine
   })
 
 // define fact(s) known at runtime
-let productList = {
+const productList = {
   products: [
     {
       productId: 'giftCard',

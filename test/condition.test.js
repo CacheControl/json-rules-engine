@@ -5,7 +5,7 @@ import defaultOperators from '../src/engine-default-operators'
 import Almanac from '../src/almanac'
 import Fact from '../src/fact'
 
-let operators = new Map()
+const operators = new Map()
 defaultOperators.forEach(o => operators.set(o.name, o))
 
 function condition () {
@@ -23,8 +23,8 @@ function condition () {
 describe('Condition', () => {
   describe('constructor', () => {
     it('fact conditions have properties', () => {
-      let properties = condition()
-      let subject = new Condition(properties.all[0])
+      const properties = condition()
+      const subject = new Condition(properties.all[0])
       expect(subject).to.have.property('fact')
       expect(subject).to.have.property('operator')
       expect(subject).to.have.property('value')
@@ -32,8 +32,8 @@ describe('Condition', () => {
     })
 
     it('boolean conditions have properties', () => {
-      let properties = condition()
-      let subject = new Condition(properties)
+      const properties = condition()
+      const subject = new Condition(properties)
       expect(subject).to.have.property('operator')
       expect(subject).to.have.property('priority')
       expect(subject.priority).to.equal(1)
@@ -42,7 +42,7 @@ describe('Condition', () => {
 
   describe('toJSON', () => {
     it('converts the condition into a json string', () => {
-      let properties = factories.condition({
+      const properties = factories.condition({
         fact: 'age',
         value: {
           fact: 'weight',
@@ -52,14 +52,14 @@ describe('Condition', () => {
           path: '.value'
         }
       })
-      let condition = new Condition(properties)
-      let json = condition.toJSON()
+      const condition = new Condition(properties)
+      const json = condition.toJSON()
       expect(json).to.equal('{"operator":"equal","value":{"fact":"weight","params":{"unit":"lbs"},"path":".value"},"fact":"age"}')
     })
   })
 
   describe('evaluate', () => {
-    let conditionBase = factories.condition({
+    const conditionBase = factories.condition({
       fact: 'age',
       value: 50
     })
@@ -67,9 +67,9 @@ describe('Condition', () => {
     let almanac
     function setup (options, factValue) {
       if (typeof factValue === 'undefined') factValue = 1
-      let properties = Object.assign({}, conditionBase, options)
+      const properties = Object.assign({}, conditionBase, options)
       condition = new Condition(properties)
-      let fact = new Fact(conditionBase.fact, factValue)
+      const fact = new Fact(conditionBase.fact, factValue)
       almanac = new Almanac(new Map([[fact.id, fact]]))
     }
 
@@ -200,10 +200,10 @@ describe('Condition', () => {
   describe('objects', () => {
     describe('.path', () => {
       it('extracts the object property values using its "path" property', async () => {
-        let condition = new Condition({ operator: 'equal', path: '[0].id', fact: 'age', value: 50 })
-        let ageFact = new Fact('age', [{ id: 50 }, { id: 60 }])
-        let facts = new Map([[ageFact.id, ageFact]])
-        let almanac = new Almanac(facts)
+        const condition = new Condition({ operator: 'equal', path: '[0].id', fact: 'age', value: 50 })
+        const ageFact = new Fact('age', [{ id: 50 }, { id: 60 }])
+        const facts = new Map([[ageFact.id, ageFact]])
+        const almanac = new Almanac(facts)
         expect((await condition.evaluate(almanac, operators)).result).to.equal(true)
 
         condition.value = 100 // negative case
@@ -211,11 +211,11 @@ describe('Condition', () => {
       })
 
       it('ignores "path" when non-objects are returned by the fact', async () => {
-        let ageFact = new Fact('age', 50)
-        let facts = new Map([[ageFact.id, ageFact]])
-        let almanac = new Almanac(facts)
+        const ageFact = new Fact('age', 50)
+        const facts = new Map([[ageFact.id, ageFact]])
+        const almanac = new Almanac(facts)
 
-        let condition = new Condition({ operator: 'equal', path: '[0].id', fact: 'age', value: 50 })
+        const condition = new Condition({ operator: 'equal', path: '[0].id', fact: 'age', value: 50 })
         expect((await condition.evaluate(almanac, operators, 50)).result).to.equal(true)
 
         condition.value = 100 // negative case
@@ -225,7 +225,7 @@ describe('Condition', () => {
 
     describe('jsonPath', () => {
       it('allows json path to extract values from complex facts', async () => {
-        let condition = new Condition({ operator: 'contains', path: '$.phoneNumbers[*].type', fact: 'users', value: 'iPhone' })
+        const condition = new Condition({ operator: 'contains', path: '$.phoneNumbers[*].type', fact: 'users', value: 'iPhone' })
         const userData = {
           phoneNumbers: [
             {
@@ -239,9 +239,9 @@ describe('Condition', () => {
           ]
         }
 
-        let usersFact = new Fact('users', userData)
-        let facts = new Map([[usersFact.id, usersFact]])
-        let almanac = new Almanac(facts)
+        const usersFact = new Fact('users', userData)
+        const facts = new Map([[usersFact.id, usersFact]])
+        const almanac = new Almanac(facts)
         expect((await condition.evaluate(almanac, operators)).result).to.equal(true)
 
         condition.value = 'work' // negative case
@@ -252,7 +252,7 @@ describe('Condition', () => {
 
   describe('boolean operators', () => {
     it('throws if not not an array', () => {
-      let conditions = condition()
+      const conditions = condition()
       conditions.all = { foo: true }
       expect(() => new Condition(conditions)).to.throw(/"all" must be an array/)
     })
@@ -264,19 +264,19 @@ describe('Condition', () => {
     })
 
     it('throws for a missing "operator"', () => {
-      let conditions = condition()
+      const conditions = condition()
       delete conditions.all[0].operator
       expect(() => new Condition(conditions)).to.throw(/Condition: constructor "operator" property required/)
     })
 
     it('throws for a missing "fact"', () => {
-      let conditions = condition()
+      const conditions = condition()
       delete conditions.all[0].fact
       expect(() => new Condition(conditions)).to.throw(/Condition: constructor "fact" property required/)
     })
 
     it('throws for a missing "value"', () => {
-      let conditions = condition()
+      const conditions = condition()
       delete conditions.all[0].value
       expect(() => new Condition(conditions)).to.throw(/Condition: constructor "value" property required/)
     })
@@ -287,26 +287,26 @@ describe('Condition', () => {
       return {
         all: [
           {
-            'fact': 'age',
-            'operator': 'lessThan',
-            'value': 45
+            fact: 'age',
+            operator: 'lessThan',
+            value: 45
           },
           {
-            'fact': 'pointBalance',
-            'operator': 'greaterThanInclusive',
-            'value': 1000
+            fact: 'pointBalance',
+            operator: 'greaterThanInclusive',
+            value: 1000
           },
           {
             any: [
               {
-                'fact': 'gender',
-                'operator': 'equal',
-                'value': 'female'
+                fact: 'gender',
+                operator: 'equal',
+                value: 'female'
               },
               {
-                'fact': 'income',
-                'operator': 'greaterThanInclusive',
-                'value': 50000
+                fact: 'income',
+                operator: 'greaterThanInclusive',
+                value: 50000
               }
             ]
           }
@@ -318,7 +318,7 @@ describe('Condition', () => {
     })
 
     it('throws if a nested condition is invalid', () => {
-      let conditions = complexCondition()
+      const conditions = complexCondition()
       delete conditions.all[2].any[0].fact
       expect(() => new Condition(conditions)).to.throw(/Condition: constructor "fact" property required/)
     })

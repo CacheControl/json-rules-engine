@@ -2,7 +2,7 @@
 
 require('colors')
 
-let accountData = {
+const accountData = {
   washington: {
     company: 'microsoft',
     status: 'terminated',

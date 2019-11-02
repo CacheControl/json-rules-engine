@@ -40,8 +40,8 @@ class Engine extends EventEmitter {
    */
   addRule (properties) {
     if (!properties) throw new Error('Engine: addRule() requires options')
-    if (!properties.hasOwnProperty('conditions')) throw new Error('Engine: addRule() argument requires "conditions" property')
-    if (!properties.hasOwnProperty('event')) throw new Error('Engine: addRule() argument requires "event" property')
+    if (!Object.prototype.hasOwnProperty.call(properties, 'conditions')) throw new Error('Engine: addRule() argument requires "conditions" property')
+    if (!Object.prototype.hasOwnProperty.call(properties, 'event')) throw new Error('Engine: addRule() argument requires "event" property')
 
     let rule
     if (properties instanceof Rule) {
@@ -63,7 +63,7 @@ class Engine extends EventEmitter {
   removeRule (rule) {
     if ((rule instanceof Rule) === false) throw new Error('Engine: removeRule() rule must be a instance of Rule')
 
-    let index = this.rules.indexOf(rule)
+    const index = this.rules.indexOf(rule)
     if (index === -1) return false
     this.prioritizedRules = null
     return Boolean(this.rules.splice(index, 1).length)
@@ -144,8 +144,8 @@ class Engine extends EventEmitter {
    */
   prioritizeRules () {
     if (!this.prioritizedRules) {
-      let ruleSets = this.rules.reduce((sets, rule) => {
-        let priority = rule.priority
+      const ruleSets = this.rules.reduce((sets, rule) => {
+        const priority = rule.priority
         if (!sets[priority]) sets[priority] = []
         sets[priority].push(rule)
         return sets
@@ -208,12 +208,12 @@ class Engine extends EventEmitter {
    * @return {Promise} resolves when the engine has completed running
    */
   run (runtimeFacts = {}) {
-    debug(`engine::run started`)
-    debug(`engine::run runtimeFacts:`, runtimeFacts)
+    debug('engine::run started')
+    debug('engine::run runtimeFacts:', runtimeFacts)
     runtimeFacts['success-events'] = new Fact('success-events', SuccessEventFact(), { cache: false })
     this.status = RUNNING
-    let almanac = new Almanac(this.facts, runtimeFacts, { allowUndefinedFacts: this.allowUndefinedFacts })
-    let orderedSets = this.prioritizeRules()
+    const almanac = new Almanac(this.facts, runtimeFacts, { allowUndefinedFacts: this.allowUndefinedFacts })
+    const orderedSets = this.prioritizeRules()
     let cursor = Promise.resolve()
     // for each rule set, evaluate in parallel,
     // before proceeding to the next priority set.
@@ -226,7 +226,7 @@ class Engine extends EventEmitter {
       })
       cursor.then(() => {
         this.status = FINISHED
-        debug(`engine::run completed`)
+        debug('engine::run completed')
         return almanac.factValue('success-events')
       }).then(events => {
         resolve({

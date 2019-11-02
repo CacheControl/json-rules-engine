@@ -13,14 +13,14 @@ describe('Engine: run', () => {
     sandbox.restore()
   })
 
-  let condition21 = {
+  const condition21 = {
     any: [{
       fact: 'age',
       operator: 'greaterThanInclusive',
       value: 21
     }]
   }
-  let condition75 = {
+  const condition75 = {
     any: [{
       fact: 'age',
       operator: 'greaterThanInclusive',

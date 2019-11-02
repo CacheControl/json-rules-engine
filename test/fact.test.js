@@ -8,20 +8,20 @@ describe('Fact', () => {
   }
   describe('Fact::constructor', () => {
     it('works for constant facts', () => {
-      let fact = subject('factId', 10)
+      const fact = subject('factId', 10)
       expect(fact.id).to.equal('factId')
       expect(fact.value).to.equal(10)
     })
 
     it('works for dynamic facts', () => {
-      let fact = subject('factId', () => 10)
+      const fact = subject('factId', () => 10)
       expect(fact.id).to.equal('factId')
       expect(fact.calculate()).to.equal(10)
     })
 
     it('allows options to be passed', () => {
-      let opts = { test: true, cache: false }
-      let fact = subject('factId', 10, opts)
+      const opts = { test: true, cache: false }
+      const fact = subject('factId', 10, opts)
       expect(fact.options).to.eql(opts)
     })
 
@@ -38,13 +38,13 @@ describe('Fact', () => {
 
   describe('Fact::types', () => {
     it('initializes facts with method values as dynamic', () => {
-      let fact = subject('factId', () => {})
+      const fact = subject('factId', () => {})
       expect(fact.type).to.equal(Fact.DYNAMIC)
       expect(fact.isDynamic()).to.be.true()
     })
 
     it('initializes facts with non-methods as constant', () => {
-      let fact = subject('factId', 2)
+      const fact = subject('factId', 2)
       expect(fact.type).to.equal(Fact.CONSTANT)
       expect(fact.isConstant()).to.be.true()
     })

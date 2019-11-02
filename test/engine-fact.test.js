@@ -16,7 +16,7 @@ async function eligibilityField (params, engine) {
 }
 
 async function eligibilityData (params, engine) {
-  let address = {
+  const address = {
     street: '123 Fake Street',
     state: {
       abbreviation: 'CO',
@@ -44,7 +44,7 @@ describe('Engine: fact evaluation', () => {
   afterEach(() => {
     sandbox.restore()
   })
-  let event = {
+  const event = {
     type: 'ageTrigger',
     params: {
       demographic: 'under50'
@@ -72,7 +72,7 @@ describe('Engine: fact evaluation', () => {
 
   function setup (conditions = baseConditions(), engineOptions = {}) {
     engine = engineFactory([], engineOptions)
-    let rule = factories.rule({ conditions, event })
+    const rule = factories.rule({ conditions, event })
     engine.addRule(rule)
     engine.addFact('eligibilityField', eligibilityField)
     engine.addFact('eligibilityData', eligibilityData)
@@ -83,7 +83,7 @@ describe('Engine: fact evaluation', () => {
   describe('options', () => {
     describe('options.allowUndefinedFacts', () => {
       it('throws when fact is undefined by default', async () => {
-        let conditions = Object.assign({}, baseConditions())
+        const conditions = Object.assign({}, baseConditions())
         conditions.any.push({
           fact: 'undefined-fact',
           operator: 'equal',
@@ -95,7 +95,7 @@ describe('Engine: fact evaluation', () => {
 
       context('treats undefined facts as falsey when allowUndefinedFacts is set', () => {
         it('emits "success" when the condition succeeds', async () => {
-          let conditions = Object.assign({}, baseConditions())
+          const conditions = Object.assign({}, baseConditions())
           conditions.any.push({
             fact: 'undefined-fact',
             operator: 'equal',
@@ -108,7 +108,7 @@ describe('Engine: fact evaluation', () => {
         })
 
         it('emits "failure" when the condition fails', async () => {
-          let conditions = Object.assign({}, baseConditions())
+          const conditions = Object.assign({}, baseConditions())
           conditions.any.push({
             fact: 'undefined-fact',
             operator: 'equal',
@@ -132,7 +132,7 @@ describe('Engine: fact evaluation', () => {
     })
 
     it('does not emit when the condition fails', async () => {
-      let conditions = Object.assign({}, baseConditions())
+      const conditions = Object.assign({}, baseConditions())
       conditions.any[0].params.eligibilityId = 2
       setup(conditions)
       await engine.run()
@@ -161,7 +161,7 @@ describe('Engine: fact evaluation', () => {
     })
 
     it('does not emit when the condition fails', async () => {
-      let failureCondition = conditions()
+      const failureCondition = conditions()
       failureCondition.any[0].params.eligibilityId = 2
       setup(failureCondition)
       await engine.run()
@@ -170,7 +170,7 @@ describe('Engine: fact evaluation', () => {
 
     context('complex paths', () => {
       it('correctly interprets "path" when dynamic facts return objects', async () => {
-        let complexCondition = conditions()
+        const complexCondition = conditions()
         complexCondition.any[0].path = '.address.occupantHistory[0].year'
         complexCondition.any[0].value = 2011
         complexCondition.any[0].operator = 'equal'
@@ -180,7 +180,7 @@ describe('Engine: fact evaluation', () => {
       })
 
       it('correctly interprets "path" when target object properties have dots', async () => {
-        let complexCondition = conditions()
+        const complexCondition = conditions()
         complexCondition.any[0].path = ['address', 'dot.property']
         complexCondition.any[0].value = 'dot-property-value'
         complexCondition.any[0].operator = 'equal'
@@ -190,8 +190,8 @@ describe('Engine: fact evaluation', () => {
       })
 
       it('correctly interprets "path" with runtime fact objects', async () => {
-        let fact = { x: { y: 1 }, a: 2 }
-        let conditions = {
+        const fact = { x: { y: 1 }, a: 2 }
+        const conditions = {
           all: [{
             fact: 'x',
             path: '.y',
@@ -199,12 +199,12 @@ describe('Engine: fact evaluation', () => {
             value: 1
           }]
         }
-        let event = {
+        const event = {
           type: 'runtimeEvent'
         }
 
         engine = engineFactory([])
-        let rule = factories.rule({ conditions, event })
+        const rule = factories.rule({ conditions, event })
         engine.addRule(rule)
         engine.on('success', successSpy)
         engine.on('failure', failureSpy)
@@ -215,7 +215,7 @@ describe('Engine: fact evaluation', () => {
     })
 
     it('does not emit when complex object paths fail the condition', async () => {
-      let complexCondition = conditions()
+      const complexCondition = conditions()
       complexCondition.any[0].path = '.address.occupantHistory[0].year'
       complexCondition.any[0].value = 2010
       complexCondition.any[0].operator = 'equal'
@@ -225,7 +225,7 @@ describe('Engine: fact evaluation', () => {
     })
 
     it('treats invalid object paths as undefined', async () => {
-      let complexCondition = conditions()
+      const complexCondition = conditions()
       complexCondition.any[0].path = '.invalid.object[99].path'
       complexCondition.any[0].value = undefined
       complexCondition.any[0].operator = 'equal'
@@ -236,7 +236,7 @@ describe('Engine: fact evaluation', () => {
 
     it('ignores "path" when facts return non-objects', async () => {
       setup(conditions())
-      let eligibilityData = async (params, engine) => {
+      const eligibilityData = async (params, engine) => {
         return CHILD
       }
       engine.addFact('eligibilityData', eligibilityData)
@@ -248,7 +248,7 @@ describe('Engine: fact evaluation', () => {
   describe('promises', () => {
     it('works with asynchronous evaluations', async () => {
       setup()
-      let eligibilityField = function (params, engine) {
+      const eligibilityField = function (params, engine) {
         return new Promise((resolve, reject) => {
           setImmediate(() => {
             resolve(30)
@@ -264,7 +264,7 @@ describe('Engine: fact evaluation', () => {
   describe('synchronous functions', () => {
     it('works with synchronous, non-promise evaluations that are truthy', async () => {
       setup()
-      let eligibilityField = function (params, engine) {
+      const eligibilityField = function (params, engine) {
         return 20
       }
       engine.addFact('eligibilityField', eligibilityField)
@@ -274,7 +274,7 @@ describe('Engine: fact evaluation', () => {
 
     it('works with synchronous, non-promise evaluations that are falsey', async () => {
       setup()
-      let eligibilityField = function (params, engine) {
+      const eligibilityField = function (params, engine) {
         return 100
       }
       engine.addFact('eligibilityField', eligibilityField)

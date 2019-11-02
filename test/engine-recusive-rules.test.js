@@ -5,30 +5,30 @@ import sinon from 'sinon'
 
 describe('Engine: recursive rules', () => {
   let engine
-  let event = { type: 'middle-income-adult' }
-  let nestedAnyCondition = {
+  const event = { type: 'middle-income-adult' }
+  const nestedAnyCondition = {
     all: [
       {
-        'fact': 'age',
-        'operator': 'lessThan',
-        'value': 65
+        fact: 'age',
+        operator: 'lessThan',
+        value: 65
       },
       {
-        'fact': 'age',
-        'operator': 'greaterThan',
-        'value': 21
+        fact: 'age',
+        operator: 'greaterThan',
+        value: 21
       },
       {
         any: [
           {
-            'fact': 'income',
-            'operator': 'lessThanInclusive',
-            'value': 100
+            fact: 'income',
+            operator: 'lessThanInclusive',
+            value: 100
           },
           {
-            'fact': 'family-size',
-            'operator': 'lessThanInclusive',
-            'value': 3
+            fact: 'family-size',
+            operator: 'lessThanInclusive',
+            value: 3
           }
         ]
       }
@@ -48,7 +48,7 @@ describe('Engine: recursive rules', () => {
     eventSpy = sandbox.spy()
 
     engine = engineFactory()
-    let rule = factories.rule({ conditions, event })
+    const rule = factories.rule({ conditions, event })
     engine.addRule(rule)
     engine.on('success', eventSpy)
   }
@@ -73,29 +73,29 @@ describe('Engine: recursive rules', () => {
     })
   })
 
-  let nestedAllCondition = {
+  const nestedAllCondition = {
     any: [
       {
-        'fact': 'age',
-        'operator': 'lessThan',
-        'value': 65
+        fact: 'age',
+        operator: 'lessThan',
+        value: 65
       },
       {
-        'fact': 'age',
-        'operator': 'equal',
-        'value': 70
+        fact: 'age',
+        operator: 'equal',
+        value: 70
       },
       {
         all: [
           {
-            'fact': 'income',
-            'operator': 'lessThanInclusive',
-            'value': 100
+            fact: 'income',
+            operator: 'lessThanInclusive',
+            value: 100
           },
           {
-            'fact': 'family-size',
-            'operator': 'lessThanInclusive',
-            'value': 3
+            fact: 'family-size',
+            operator: 'lessThanInclusive',
+            value: 3
           }
         ]
       }
@@ -122,23 +122,23 @@ describe('Engine: recursive rules', () => {
     })
   })
 
-  let thriceNestedCondition = {
+  const thriceNestedCondition = {
     any: [
       {
         all: [
           {
             any: [
               {
-                'fact': 'income',
-                'operator': 'lessThanInclusive',
-                'value': 100
+                fact: 'income',
+                operator: 'lessThanInclusive',
+                value: 100
               }
             ]
           },
           {
-            'fact': 'family-size',
-            'operator': 'lessThanInclusive',
-            'value': 3
+            fact: 'family-size',
+            operator: 'lessThanInclusive',
+            value: 3
           }
         ]
       }

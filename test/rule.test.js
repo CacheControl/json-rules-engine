@@ -5,20 +5,20 @@ import Rule from '../src/rule'
 import sinon from 'sinon'
 
 describe('Rule', () => {
-  let rule = new Rule()
-  let conditionBase = factories.condition({
+  const rule = new Rule()
+  const conditionBase = factories.condition({
     fact: 'age',
     value: 50
   })
 
   describe('constructor()', () => {
     it('can be initialized with priority, conditions, event, and name', () => {
-      let condition = {
-        all: [ Object.assign({}, conditionBase) ]
+      const condition = {
+        all: [Object.assign({}, conditionBase)]
       }
       condition.operator = 'all'
       condition.priority = 25
-      let opts = {
+      const opts = {
         priority: 50,
         conditions: condition,
         event: {
@@ -26,7 +26,7 @@ describe('Rule', () => {
         },
         name: 'testName'
       }
-      let rule = new Rule(opts)
+      const rule = new Rule(opts)
       expect(rule.priority).to.eql(opts.priority)
       expect(rule.conditions).to.eql(opts.conditions)
       expect(rule.event).to.eql(opts.event)
@@ -34,12 +34,12 @@ describe('Rule', () => {
     })
 
     it('it can be initialized with a json string', () => {
-      let condition = {
-        all: [ Object.assign({}, conditionBase) ]
+      const condition = {
+        all: [Object.assign({}, conditionBase)]
       }
       condition.operator = 'all'
       condition.priority = 25
-      let opts = {
+      const opts = {
         priority: 50,
         conditions: condition,
         event: {
@@ -47,8 +47,8 @@ describe('Rule', () => {
         },
         name: 'testName'
       }
-      let json = JSON.stringify(opts)
-      let rule = new Rule(json)
+      const json = JSON.stringify(opts)
+      const rule = new Rule(json)
       expect(rule.priority).to.eql(opts.priority)
       expect(rule.conditions).to.eql(opts.conditions)
       expect(rule.event).to.eql(opts.event)
@@ -58,30 +58,30 @@ describe('Rule', () => {
 
   describe('event emissions', () => {
     it('can emit', () => {
-      let rule = new Rule()
-      let successSpy = sinon.spy()
+      const rule = new Rule()
+      const successSpy = sinon.spy()
       rule.on('test', successSpy)
       rule.emit('test')
       expect(successSpy.callCount).to.equal(1)
     })
 
     it('can be initialized with an onSuccess option', (done) => {
-      let event = { type: 'test' }
-      let onSuccess = function (e) {
+      const event = { type: 'test' }
+      const onSuccess = function (e) {
         expect(e).to.equal(event)
         done()
       }
-      let rule = new Rule({ onSuccess })
+      const rule = new Rule({ onSuccess })
       rule.emit('success', event)
     })
 
     it('can be initialized with an onFailure option', (done) => {
-      let event = { type: 'test' }
-      let onFailure = function (e) {
+      const event = { type: 'test' }
+      const onFailure = function (e) {
         expect(e).to.equal(event)
         done()
       }
-      let rule = new Rule({ onFailure })
+      const rule = new Rule({ onFailure })
       rule.emit('failure', event)
     })
   })
@@ -151,7 +151,7 @@ describe('Rule', () => {
   })
 
   describe('priotizeConditions()', () => {
-    let conditions = [{
+    const conditions = [{
       fact: 'age',
       operator: 'greaterThanInclusive',
       value: 18
@@ -170,15 +170,15 @@ describe('Rule', () => {
     }]
 
     it('orders based on priority', async () => {
-      let engine = new Engine()
+      const engine = new Engine()
       engine.addFact('state', async () => {}, { priority: 500 })
       engine.addFact('segment', async () => {}, { priority: 50 })
       engine.addFact('accountType', async () => {}, { priority: 25 })
       engine.addFact('age', async () => {}, { priority: 100 })
-      let rule = new Rule()
+      const rule = new Rule()
       rule.setEngine(engine)
 
-      let prioritizedConditions = rule.prioritizeConditions(conditions)
+      const prioritizedConditions = rule.prioritizeConditions(conditions)
       expect(prioritizedConditions.length).to.equal(4)
       expect(prioritizedConditions[0][0].fact).to.equal('state')
       expect(prioritizedConditions[1][0].fact).to.equal('age')
@@ -189,9 +189,9 @@ describe('Rule', () => {
 
   describe('evaluate()', () => {
     it('evalutes truthy when there are no conditions', async () => {
-      let eventSpy = sinon.spy()
-      let engine = new Engine()
-      let rule = new Rule()
+      const eventSpy = sinon.spy()
+      const engine = new Engine()
+      const rule = new Rule()
       rule.setConditions({
         all: []
       })
@@ -203,12 +203,12 @@ describe('Rule', () => {
   })
 
   describe('toJSON() and fromJSON()', () => {
-    let priority = 50
-    let event = {
+    const priority = 50
+    const event = {
       type: 'to-json!',
       params: { id: 1 }
     }
-    let conditions = {
+    const conditions = {
       priority: 1,
       all: [{
         value: 10,
@@ -220,7 +220,7 @@ describe('Rule', () => {
         path: '.id'
       }]
     }
-    let name = 'testName'
+    const name = 'testName'
     let rule
     beforeEach(() => {
       rule = new Rule()
@@ -231,7 +231,7 @@ describe('Rule', () => {
     })
 
     it('serializes itself', () => {
-      let json = rule.toJSON(false)
+      const json = rule.toJSON(false)
       expect(Object.keys(json).length).to.equal(4)
       expect(json.conditions).to.eql(conditions)
       expect(json.priority).to.eql(priority)
@@ -240,9 +240,9 @@ describe('Rule', () => {
     })
 
     it('serializes itself as json', () => {
-      let jsonString = rule.toJSON()
+      const jsonString = rule.toJSON()
       expect(jsonString).to.be.a('string')
-      let json = JSON.parse(jsonString)
+      const json = JSON.parse(jsonString)
       expect(Object.keys(json).length).to.equal(4)
       expect(json.conditions).to.eql(conditions)
       expect(json.priority).to.eql(priority)
@@ -251,9 +251,9 @@ describe('Rule', () => {
     })
 
     it('rehydrates itself using a JSON string', () => {
-      let jsonString = rule.toJSON()
+      const jsonString = rule.toJSON()
       expect(jsonString).to.be.a('string')
-      let hydratedRule = new Rule(jsonString)
+      const hydratedRule = new Rule(jsonString)
       expect(hydratedRule.conditions).to.eql(rule.conditions)
       expect(hydratedRule.priority).to.eql(rule.priority)
       expect(hydratedRule.event).to.eql(rule.event)
@@ -261,10 +261,10 @@ describe('Rule', () => {
     })
 
     it('rehydrates itself using an object from JSON.parse()', () => {
-      let jsonString = rule.toJSON()
+      const jsonString = rule.toJSON()
       expect(jsonString).to.be.a('string')
-      let json = JSON.parse(jsonString)
-      let hydratedRule = new Rule(json)
+      const json = JSON.parse(jsonString)
+      const hydratedRule = new Rule(json)
       expect(hydratedRule.conditions).to.eql(rule.conditions)
       expect(hydratedRule.priority).to.eql(rule.priority)
       expect(hydratedRule.event).to.eql(rule.event)

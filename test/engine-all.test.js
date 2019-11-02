@@ -26,23 +26,23 @@ describe('Engine: "all" conditions', () => {
   })
 
   describe('supports a single "all" condition', () => {
-    let event = {
+    const event = {
       type: 'ageTrigger',
       params: {
         demographic: 'under50'
       }
     }
-    let conditions = {
+    const conditions = {
       all: [{
-        'fact': 'age',
-        'operator': 'lessThan',
-        'value': 50
+        fact: 'age',
+        operator: 'lessThan',
+        value: 50
       }]
     }
     let eventSpy
     beforeEach(() => {
       eventSpy = sandbox.spy()
-      let rule = factories.rule({ conditions, event })
+      const rule = factories.rule({ conditions, event })
       engine = engineFactory()
       engine.addRule(rule)
       engine.on('success', eventSpy)
@@ -62,18 +62,18 @@ describe('Engine: "all" conditions', () => {
   })
 
   describe('supports "any" with multiple conditions', () => {
-    let conditions = {
+    const conditions = {
       all: [{
-        'fact': 'age',
-        'operator': 'lessThan',
-        'value': 50
+        fact: 'age',
+        operator: 'lessThan',
+        value: 50
       }, {
-        'fact': 'age',
-        'operator': 'greaterThan',
-        'value': 21
+        fact: 'age',
+        operator: 'greaterThan',
+        value: 21
       }]
     }
-    let event = {
+    const event = {
       type: 'ageTrigger',
       params: {
         demographic: 'adult'
@@ -82,7 +82,7 @@ describe('Engine: "all" conditions', () => {
     let eventSpy
     beforeEach(() => {
       eventSpy = sandbox.spy()
-      let rule = factories.rule({ conditions, event })
+      const rule = factories.rule({ conditions, event })
       engine = engineFactory()
       engine.addRule(rule)
       engine.on('success', eventSpy)

@@ -11,18 +11,18 @@
  */
 
 require('colors')
-let Engine = require('../dist').Engine
-let accountClient = require('./support/account-api-client')
+const Engine = require('../dist').Engine
+const accountClient = require('./support/account-api-client')
 
 /**
  * Setup a new engine
  */
-let engine = new Engine()
+const engine = new Engine()
 
 /**
  * - Demonstrates setting high performance (cpu) facts higher than low performing (network call) facts.
  */
-let microsoftRule = {
+const microsoftRule = {
   conditions: {
     all: [{
       fact: 'account-information',
@@ -41,7 +41,7 @@ engine.addRule(microsoftRule)
 /**
  * Register listeners with the engine for rule success and failure
  */
-let facts
+const facts = { accountId: 'washington' }
 engine
   .on('success', event => {
     console.log(facts.accountId + ' DID '.green + 'meet conditions for the ' + event.type.underline + ' rule.')
@@ -55,8 +55,8 @@ engine
  * Facts that do not have a priority set default to 1
  * @type {Integer} - Facts are run in priority from highest to lowest.
  */
-let HIGH = 100
-let LOW = 1
+const HIGH = 100
+const LOW = 1
 
 /**
  * 'account-information' fact executes an api call - network calls are expensive, so
@@ -82,7 +82,6 @@ engine.addFact('date', (params, almanac) => {
 }, { priority: HIGH })
 
 // define fact(s) known at runtime
-facts = { accountId: 'washington' }
 engine.run(facts).catch(console.log)
 
 /*

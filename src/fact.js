@@ -13,7 +13,7 @@ class Fact {
    */
   constructor (id, valueOrMethod, options) {
     this.id = id
-    let defaultOptions = { cache: true }
+    const defaultOptions = { cache: true }
     if (typeof options === 'undefined') {
       options = defaultOptions
     }
@@ -52,7 +52,7 @@ class Fact {
    */
   calculate (params, almanac) {
     // if constant fact w/set value, return immediately
-    if (this.hasOwnProperty('value')) {
+    if (Object.prototype.hasOwnProperty.call(this, 'value')) {
       return this.value
     }
     return this.calculationMethod(params, almanac)
@@ -87,7 +87,7 @@ class Fact {
    */
   getCacheKey (params) {
     if (this.options.cache === true) {
-      let cacheProperties = this.cacheKeyMethod(this.id, params)
+      const cacheProperties = this.cacheKeyMethod(this.id, params)
       const hash = Fact.hashFromObject(cacheProperties)
       return hash
     }

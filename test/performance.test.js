@@ -5,19 +5,19 @@ import perfy from 'perfy'
 import deepClone from 'clone'
 
 describe('Performance', () => {
-  let baseConditions = {
+  const baseConditions = {
     any: [{
-      'fact': 'age',
-      'operator': 'lessThan',
-      'value': 50
+      fact: 'age',
+      operator: 'lessThan',
+      value: 50
     },
     {
-      'fact': 'segment',
-      'operator': 'equal',
-      'value': 'european'
+      fact: 'segment',
+      operator: 'equal',
+      value: 'european'
     }]
   }
-  let event = {
+  const event = {
     type: 'ageTrigger',
     params: {
       demographic: 'under50'
@@ -31,10 +31,10 @@ describe('Performance', () => {
   }
 
   function setup (conditions) {
-    let engine = engineFactory()
+    const engine = engineFactory()
     const config = deepClone({ conditions, event })
     range(1000).forEach(() => {
-      let rule = factories.rule(config)
+      const rule = factories.rule(config)
       engine.addRule(rule)
     })
     engine.addFact('segment', 'european', { cache: true })
@@ -43,7 +43,7 @@ describe('Performance', () => {
   }
 
   it('performs "any" quickly', async () => {
-    let engine = setup(baseConditions)
+    const engine = setup(baseConditions)
     perfy.start('any')
     await engine.run()
     const result = perfy.end('any')
@@ -55,7 +55,7 @@ describe('Performance', () => {
     const conditions = deepClone(baseConditions)
     conditions.all = conditions.any
     delete conditions.any
-    let engine = setup(conditions)
+    const engine = setup(conditions)
     perfy.start('all')
     await engine.run()
     const result = perfy.end('all')
