@@ -28,7 +28,7 @@ let rule = {
     all: [{
       // extract 'balance' from the 'customer' account type
       fact: 'account',
-      path: '.balance',
+      path: '$.balance',
       params: {
         accountType: 'customer'
       },
@@ -39,7 +39,7 @@ let rule = {
       // fact helpers "path" and "params" are supported here as well
       value: {
         fact: 'product',
-        path: '.price',
+        path: '$.price',
         params: {
           productId: 'giftCard'
         }

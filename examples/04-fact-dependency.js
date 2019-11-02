@@ -32,12 +32,12 @@ let microsoftRule = {
       fact: 'account-information',
       operator: 'equal',
       value: 'microsoft',
-      path: '.company'
+      path: '$.company'
     }, {
       fact: 'account-information',
       operator: 'equal',
       value: 'terminated',
-      path: '.status'
+      path: '$.status'
     }]
   },
   event: { type: 'microsoft-terminated-employees' }
