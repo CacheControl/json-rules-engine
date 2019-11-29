@@ -88,14 +88,14 @@ describe('Engine: fact to fact comparison', () => {
         params: {
           multiplier: 2
         },
-        path: '.feet',
+        path: '$.feet',
         operator: 'equal',
         value: {
           fact: 'heightMultiplier',
           params: {
             multiplier: 4
           },
-          path: '.meters'
+          path: '$.meters'
         }
       }]
     }

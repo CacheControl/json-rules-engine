@@ -217,7 +217,7 @@ describe('Rule', () => {
         params: {
           foo: true
         },
-        path: '.id'
+        path: '$.id'
       }]
     }
     const name = 'testName'

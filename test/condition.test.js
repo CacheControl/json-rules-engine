@@ -200,7 +200,7 @@ describe('Condition', () => {
   describe('objects', () => {
     describe('.path', () => {
       it('extracts the object property values using its "path" property', async () => {
-        const condition = new Condition({ operator: 'equal', path: '[0].id', fact: 'age', value: 50 })
+        const condition = new Condition({ operator: 'equal', path: '$.[0].id', fact: 'age', value: 50 })
         const ageFact = new Fact('age', [{ id: 50 }, { id: 60 }])
         const facts = new Map([[ageFact.id, ageFact]])
         const almanac = new Almanac(facts)
@@ -215,7 +215,7 @@ describe('Condition', () => {
         const facts = new Map([[ageFact.id, ageFact]])
         const almanac = new Almanac(facts)
 
-        const condition = new Condition({ operator: 'equal', path: '[0].id', fact: 'age', value: 50 })
+        const condition = new Condition({ operator: 'equal', path: '$.[0].id', fact: 'age', value: 50 })
         expect((await condition.evaluate(almanac, operators, 50)).result).to.equal(true)
 
         condition.value = 100 // negative case

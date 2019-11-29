@@ -61,7 +61,6 @@
     "dirty-chai": "2.0.1",
     "mocha": "^6.2.2",
     "perfy": "^1.1.5",
-    "selectn": "^1.1.2",
     "sinon": "^7.5.0",
     "sinon-chai": "^3.3.0",
     "snazzy": "^8.0.0",

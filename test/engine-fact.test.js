@@ -146,7 +146,7 @@ describe('Engine: fact evaluation', () => {
         any: [{
           fact: 'eligibilityData',
           operator: 'lessThan',
-          path: '.age',
+          path: '$.age',
           params: {
             eligibilityId: 1
           },
@@ -171,7 +171,7 @@ describe('Engine: fact evaluation', () => {
     context('complex paths', () => {
       it('correctly interprets "path" when dynamic facts return objects', async () => {
         const complexCondition = conditions()
-        complexCondition.any[0].path = '.address.occupantHistory[0].year'
+        complexCondition.any[0].path = '$.address.occupantHistory[0].year'
         complexCondition.any[0].value = 2011
         complexCondition.any[0].operator = 'equal'
         setup(complexCondition)
@@ -181,7 +181,7 @@ describe('Engine: fact evaluation', () => {
 
       it('correctly interprets "path" when target object properties have dots', async () => {
         const complexCondition = conditions()
-        complexCondition.any[0].path = ['address', 'dot.property']
+        complexCondition.any[0].path = '$.address.[\'dot.property\']'
         complexCondition.any[0].value = 'dot-property-value'
         complexCondition.any[0].operator = 'equal'
         setup(complexCondition)
@@ -194,7 +194,7 @@ describe('Engine: fact evaluation', () => {
         const conditions = {
           all: [{
             fact: 'x',
-            path: '.y',
+            path: '$.y',
             operator: 'equal',
             value: 1
           }]
@@ -216,7 +216,7 @@ describe('Engine: fact evaluation', () => {
 
     it('does not emit when complex object paths fail the condition', async () => {
       const complexCondition = conditions()
-      complexCondition.any[0].path = '.address.occupantHistory[0].year'
+      complexCondition.any[0].path = '$.address.occupantHistory[0].year'
       complexCondition.any[0].value = 2010
       complexCondition.any[0].operator = 'equal'
       setup(complexCondition)
@@ -226,7 +226,7 @@ describe('Engine: fact evaluation', () => {
 
     it('treats invalid object paths as undefined', async () => {
       const complexCondition = conditions()
-      complexCondition.any[0].path = '.invalid.object[99].path'
+      complexCondition.any[0].path = '$.invalid.object[99].path'
       complexCondition.any[0].value = undefined
       complexCondition.any[0].operator = 'equal'
       setup(complexCondition)
