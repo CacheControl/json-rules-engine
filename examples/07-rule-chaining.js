@@ -13,17 +13,17 @@
  */
 
 require('colors')
-let Engine = require('../dist').Engine
+const Engine = require('../dist').Engine
 
 /**
  * Setup a new engine
  */
-let engine = new Engine()
+const engine = new Engine()
 
 /**
  * Rule for identifying people who may like screwdrivers
  */
-let drinkRule = {
+const drinkRule = {
   conditions: {
     all: [{
       fact: 'drinksOrangeJuice',
@@ -51,7 +51,7 @@ engine.addRule(drinkRule)
  * - Only invite people who enjoy screw drivers
  * - Only invite people who are sociable
  */
-let inviteRule = {
+const inviteRule = {
   conditions: {
     all: [{
       fact: 'screwdriverAficionado', // this fact value is set when the drinkRule is evaluated

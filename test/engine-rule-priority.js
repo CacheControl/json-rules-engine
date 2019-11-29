@@ -6,9 +6,9 @@ import sinon from 'sinon'
 describe('Engine: cache', () => {
   let engine
 
-  let event = { type: 'setDrinkingFlag' }
-  let collegeSeniorEvent = { type: 'isCollegeSenior' }
-  let conditions = {
+  const event = { type: 'setDrinkingFlag' }
+  const collegeSeniorEvent = { type: 'isCollegeSenior' }
+  const conditions = {
     any: [{
       fact: 'age',
       operator: 'greaterThanInclusive',
@@ -25,14 +25,14 @@ describe('Engine: cache', () => {
   })
 
   function setup () {
-    let factSpy = sandbox.stub().returns(22)
-    let eventSpy = sandbox.spy()
+    const factSpy = sandbox.stub().returns(22)
+    const eventSpy = sandbox.spy()
     engine = engineFactory()
-    let over20 = factories.rule({ conditions, event: collegeSeniorEvent, priority: 50 })
+    const over20 = factories.rule({ conditions, event: collegeSeniorEvent, priority: 50 })
     engine.addRule(over20)
-    let determineDrinkingAge = factories.rule({ conditions, event, priority: 100 })
+    const determineDrinkingAge = factories.rule({ conditions, event, priority: 100 })
     engine.addRule(determineDrinkingAge)
-    let determineCollegeSenior = factories.rule({ conditions, event: collegeSeniorEvent, priority: 1 })
+    const determineCollegeSenior = factories.rule({ conditions, event: collegeSeniorEvent, priority: 1 })
     engine.addRule(determineCollegeSenior)
     engine.addFact('age', factSpy)
     engine.on('success', eventSpy)

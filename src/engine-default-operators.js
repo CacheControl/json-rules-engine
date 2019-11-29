@@ -2,7 +2,7 @@
 
 import Operator from './operator'
 
-let Operators = []
+const Operators = []
 Operators.push(new Operator('equal', (a, b) => a === b))
 Operators.push(new Operator('notEqual', (a, b) => a !== b))
 Operators.push(new Operator('in', (a, b) => b.indexOf(a) > -1))

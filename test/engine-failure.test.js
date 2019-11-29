@@ -13,8 +13,8 @@ describe('Engine: failure', () => {
     sandbox.restore()
   })
 
-  let event = { type: 'generic' }
-  let conditions = {
+  const event = { type: 'generic' }
+  const conditions = {
     any: [{
       fact: 'age',
       operator: 'greaterThanInclusive',
@@ -23,20 +23,20 @@ describe('Engine: failure', () => {
   }
   beforeEach(() => {
     engine = engineFactory()
-    let determineDrinkingAgeRule = factories.rule({ conditions, event })
+    const determineDrinkingAgeRule = factories.rule({ conditions, event })
     engine.addRule(determineDrinkingAgeRule)
     engine.addFact('age', 10)
   })
 
   it('emits an event on a rule failing', async () => {
-    let failureSpy = sandbox.spy()
+    const failureSpy = sandbox.spy()
     engine.on('failure', failureSpy)
     await engine.run()
     expect(failureSpy).to.have.been.calledWith(engine.rules[0].event)
   })
 
   it('does not emit when a rule passes', async () => {
-    let failureSpy = sandbox.spy()
+    const failureSpy = sandbox.spy()
     engine.on('failure', failureSpy)
     engine.addFact('age', 50)
     await engine.run()

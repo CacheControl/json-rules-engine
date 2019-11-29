@@ -5,8 +5,8 @@ import engineFactory from '../src/index'
 describe('Engine: failure', () => {
   let engine
 
-  let event = { type: 'generic' }
-  let conditions = {
+  const event = { type: 'generic' }
+  const conditions = {
     any: [{
       fact: 'age',
       operator: 'greaterThanInclusive',
@@ -15,7 +15,7 @@ describe('Engine: failure', () => {
   }
   beforeEach(() => {
     engine = engineFactory()
-    let determineDrinkingAgeRule = factories.rule({ conditions, event })
+    const determineDrinkingAgeRule = factories.rule({ conditions, event })
     engine.addRule(determineDrinkingAgeRule)
     engine.addFact('age', function (params, engine) {
       throw new Error('problem occurred')

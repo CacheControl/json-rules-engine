@@ -12,8 +12,8 @@ describe('Engine: custom cache keys', () => {
   afterEach(() => {
     sandbox.restore()
   })
-  let event = { type: 'early-twenties' }
-  let conditions = {
+  const event = { type: 'early-twenties' }
+  const conditions = {
     all: [{
       fact: 'demographics',
       params: {
@@ -39,7 +39,7 @@ describe('Engine: custom cache keys', () => {
     demographicDataSpy = sandbox.spy()
     eventSpy = sandbox.spy()
 
-    let demographicsDataDefinition = async (params, engine) => {
+    const demographicsDataDefinition = async (params, engine) => {
       demographicDataSpy()
       return {
         age: 20,
@@ -47,16 +47,16 @@ describe('Engine: custom cache keys', () => {
       }
     }
 
-    let demographicsDefinition = async (params, engine) => {
+    const demographicsDefinition = async (params, engine) => {
       demographicSpy()
-      let data = await engine.factValue('demographic-data')
+      const data = await engine.factValue('demographic-data')
       return data[params.field]
     }
-    let demographicsFact = new Fact('demographics', demographicsDefinition)
-    let demographicsDataFact = new Fact('demographic-data', demographicsDataDefinition)
+    const demographicsFact = new Fact('demographics', demographicsDefinition)
+    const demographicsDataFact = new Fact('demographic-data', demographicsDataDefinition)
 
     engine = engineFactory()
-    let rule = factories.rule({ conditions, event })
+    const rule = factories.rule({ conditions, event })
     engine.addRule(rule)
     engine.addFact(demographicsFact)
     engine.addFact(demographicsDataFact)
@@ -74,7 +74,7 @@ describe('Engine: custom cache keys', () => {
 
   describe('2 rules with parallel conditions', () => {
     it('calls the fact definition once', async () => {
-      let conditions = {
+      const conditions = {
         all: [{
           fact: 'demographics',
           params: {
@@ -84,7 +84,7 @@ describe('Engine: custom cache keys', () => {
           value: 20
         }]
       }
-      let rule = factories.rule({ conditions, event })
+      const rule = factories.rule({ conditions, event })
       engine.addRule(rule)
 
       await engine.run()

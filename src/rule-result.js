@@ -16,7 +16,7 @@ export default class RuleResult {
   }
 
   toJSON (stringify = true) {
-    let props = {
+    const props = {
       conditions: this.conditions.toJSON(false),
       event: this.event,
       priority: this.priority,

@@ -15,16 +15,16 @@ describe('Engine: fact to fact comparison', () => {
   let eventSpy
 
   function setup (conditions) {
-    let event = { type: 'success-event' }
+    const event = { type: 'success-event' }
     eventSpy = sandbox.spy()
     engine = engineFactory()
-    let rule = factories.rule({ conditions, event })
+    const rule = factories.rule({ conditions, event })
     engine.addRule(rule)
     engine.on('success', eventSpy)
   }
 
   context('constant facts', () => {
-    let constantCondition = {
+    const constantCondition = {
       all: [{
         fact: 'height',
         operator: 'lessThanInclusive',
@@ -46,7 +46,7 @@ describe('Engine: fact to fact comparison', () => {
   })
 
   context('rules with parameterized conditions', () => {
-    let paramsCondition = {
+    const paramsCondition = {
       all: [{
         fact: 'widthMultiplier',
         params: {
@@ -64,11 +64,11 @@ describe('Engine: fact to fact comparison', () => {
     it('honors the params', async () => {
       setup(paramsCondition)
       engine.addFact('heightMultiplier', async (params, almanac) => {
-        let height = await almanac.factValue('height')
+        const height = await almanac.factValue('height')
         return params.multiplier * height
       })
       engine.addFact('widthMultiplier', async (params, almanac) => {
-        let width = await almanac.factValue('width')
+        const width = await almanac.factValue('width')
         return params.multiplier * width
       })
       await engine.run({ height: 5, width: 10 })
@@ -82,31 +82,31 @@ describe('Engine: fact to fact comparison', () => {
   })
 
   context('rules with parameterized conditions and path values', () => {
-    let pathCondition = {
+    const pathCondition = {
       all: [{
         fact: 'widthMultiplier',
         params: {
           multiplier: 2
         },
-        path: '.feet',
+        path: '$.feet',
         operator: 'equal',
         value: {
           fact: 'heightMultiplier',
           params: {
             multiplier: 4
           },
-          path: '.meters'
+          path: '$.meters'
         }
       }]
     }
     it('honors the path', async () => {
       setup(pathCondition)
       engine.addFact('heightMultiplier', async (params, almanac) => {
-        let height = await almanac.factValue('height')
+        const height = await almanac.factValue('height')
         return { meters: params.multiplier * height }
       })
       engine.addFact('widthMultiplier', async (params, almanac) => {
-        let width = await almanac.factValue('width')
+        const width = await almanac.factValue('width')
         return { feet: params.multiplier * width }
       })
       await engine.run({ height: 5, width: 10 })

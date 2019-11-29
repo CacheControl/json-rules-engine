@@ -9,7 +9,7 @@ describe('Operator', () => {
     }
 
     it('adds the operator', () => {
-      let operator = subject('startsWithLetter', (factValue, jsonValue) => {
+      const operator = subject('startsWithLetter', (factValue, jsonValue) => {
         return factValue[0] === jsonValue
       })
       expect(operator.name).to.equal('startsWithLetter')

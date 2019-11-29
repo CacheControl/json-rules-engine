@@ -6,10 +6,10 @@ import isObjectLike from 'lodash.isobjectlike'
 export default class Condition {
   constructor (properties) {
     if (!properties) throw new Error('Condition: constructor options required')
-    let booleanOperator = Condition.booleanOperator(properties)
+    const booleanOperator = Condition.booleanOperator(properties)
     Object.assign(this, properties)
     if (booleanOperator) {
-      let subConditions = properties[booleanOperator]
+      const subConditions = properties[booleanOperator]
       if (!(Array.isArray(subConditions))) {
         throw new Error(`"${booleanOperator}" must be an array`)
       }
@@ -20,13 +20,13 @@ export default class Condition {
         return new Condition(c)
       })
     } else {
-      if (!properties.hasOwnProperty('fact')) throw new Error('Condition: constructor "fact" property required')
-      if (!properties.hasOwnProperty('operator')) throw new Error('Condition: constructor "operator" property required')
-      if (!properties.hasOwnProperty('value')) throw new Error('Condition: constructor "value" property required')
+      if (!Object.prototype.hasOwnProperty.call(properties, 'fact')) throw new Error('Condition: constructor "fact" property required')
+      if (!Object.prototype.hasOwnProperty.call(properties, 'operator')) throw new Error('Condition: constructor "operator" property required')
+      if (!Object.prototype.hasOwnProperty.call(properties, 'value')) throw new Error('Condition: constructor "value" property required')
 
       // a non-boolean condition does not have a priority by default. this allows
       // priority to be dictated by the fact definition
-      if (properties.hasOwnProperty('priority')) {
+      if (Object.prototype.hasOwnProperty.call(properties, 'priority')) {
         properties.priority = parseInt(properties.priority, 10)
       }
     }
@@ -38,11 +38,11 @@ export default class Condition {
    * @returns {string,object} json string or json-friendly object
    */
   toJSON (stringify = true) {
-    let props = {}
+    const props = {}
     if (this.priority) {
       props.priority = this.priority
     }
-    let oper = Condition.booleanOperator(this)
+    const oper = Condition.booleanOperator(this)
     if (oper) {
       props[oper] = this[oper].map((c) => c.toJSON(stringify))
     } else {
@@ -72,8 +72,8 @@ export default class Condition {
    * Interprets .value as either a primitive, or if a fact, retrieves the fact value
    */
   _getValue (almanac) {
-    let value = this.value
-    if (isObjectLike(value) && value.hasOwnProperty('fact')) { // value: { fact: 'xyz' }
+    const value = this.value
+    if (isObjectLike(value) && Object.prototype.hasOwnProperty.call(value, 'fact')) { // value: { fact: 'xyz' }
       return almanac.factValue(value.fact, value.params, value.path)
     }
     return Promise.resolve(value)
@@ -93,14 +93,14 @@ export default class Condition {
     if (!operatorMap) return Promise.reject(new Error('operatorMap required'))
     if (this.isBooleanOperator()) return Promise.reject(new Error('Cannot evaluate() a boolean condition'))
 
-    let op = operatorMap.get(this.operator)
+    const op = operatorMap.get(this.operator)
     if (!op) return Promise.reject(new Error(`Unknown operator: ${this.operator}`))
 
     return this._getValue(almanac) // todo - parallelize
       .then(rightHandSideValue => {
         return almanac.factValue(this.fact, this.params, this.path)
           .then(leftHandSideValue => {
-            let result = op.evaluate(leftHandSideValue, rightHandSideValue)
+            const result = op.evaluate(leftHandSideValue, rightHandSideValue)
             debug(`condition::evaluate <${leftHandSideValue} ${this.operator} ${rightHandSideValue}?> (${result})`)
             return { result, leftHandSideValue, rightHandSideValue, operator: this.operator }
           })
@@ -113,9 +113,9 @@ export default class Condition {
    * @return {string 'all' or 'any'}
    */
   static booleanOperator (condition) {
-    if (condition.hasOwnProperty('any')) {
+    if (Object.prototype.hasOwnProperty.call(condition, 'any')) {
       return 'any'
-    } else if (condition.hasOwnProperty('all')) {
+    } else if (Object.prototype.hasOwnProperty.call(condition, 'all')) {
       return 'all'
     }
   }

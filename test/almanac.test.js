@@ -35,7 +35,7 @@ describe('Almanac', () => {
     })
 
     it('supports runtime fact instances', () => {
-      let fact = new Fact('fact1', 3)
+      const fact = new Fact('fact1', 3)
       almanac = new Almanac(new Map(), { fact1: fact })
       return expect(almanac.factValue('fact1')).to.eventually.equal(fact.value)
     })
@@ -43,11 +43,11 @@ describe('Almanac', () => {
 
   describe('arguments', () => {
     beforeEach(() => {
-      let fact = new Fact('foo', async (params, facts) => {
+      const fact = new Fact('foo', async (params, facts) => {
         if (params.userId) return params.userId
         return 'unknown'
       })
-      let factMap = new Map()
+      const factMap = new Map()
       factMap.set(fact.id, fact)
       almanac = new Almanac(factMap)
     })
@@ -75,7 +75,7 @@ describe('Almanac', () => {
 
   describe('_addConstantFact', () => {
     it('adds fact instances to the factMap', () => {
-      let fact = new Fact('factId', 'factValue')
+      const fact = new Fact('factId', 'factValue')
       almanac = new Almanac()
       almanac._addConstantFact(fact)
       expect(almanac.factMap.get(fact.id).value).to.equal(fact.value)
@@ -84,8 +84,8 @@ describe('Almanac', () => {
 
   describe('_getFact', _ => {
     it('retrieves the fact object', () => {
-      let facts = new Map()
-      let fact = new Fact('id', 1)
+      const facts = new Map()
+      const fact = new Fact('id', 1)
       facts.set(fact.id, fact)
       almanac = new Almanac(facts)
       expect(almanac._getFact('id')).to.equal(fact)
@@ -94,7 +94,7 @@ describe('Almanac', () => {
 
   describe('_setFactValue()', () => {
     function expectFactResultsCache (expected) {
-      let promise = almanac.factResultsCache.values().next().value
+      const promise = almanac.factResultsCache.values().next().value
       expect(promise).to.be.instanceof(Promise)
       promise.then(value => expect(value).to.equal(expected))
       return promise
@@ -102,7 +102,7 @@ describe('Almanac', () => {
 
     function setup (f = new Fact('id', 1)) {
       fact = f
-      let facts = new Map()
+      const facts = new Map()
       facts.set(fact.id, fact)
       almanac = new Almanac(facts)
     }
@@ -117,37 +117,54 @@ describe('Almanac', () => {
 
     it('honors facts with caching disabled', (done) => {
       setup(new Fact('id', 1, { cache: false }))
-      let promise = almanac._setFactValue(fact, {}, FACT_VALUE)
+      const promise = almanac._setFactValue(fact, {}, FACT_VALUE)
       expect(almanac.factResultsCache.values().next().value).to.be.undefined()
       promise.then(value => expect(value).to.equal(FACT_VALUE)).then(_ => done()).catch(done)
     })
   })
 
   describe('factValue()', () => {
-    function setup (factOptions) {
-      let fact = new Fact('foo', async (params, facts) => {
-        factSpy()
-        return 'unknown'
-      }, factOptions)
-      let factMap = new Map()
+    it('allows "path" to be specified to traverse the fact data with json-path', async () => {
+      const fact = new Fact('foo', {
+        users: [{
+          name: 'George'
+        }, {
+          name: 'Thomas'
+        }]
+      })
+      const factMap = new Map()
       factMap.set(fact.id, fact)
       almanac = new Almanac(factMap)
-    }
-
-    it('evaluates the fact every time when fact caching is off', () => {
-      setup({ cache: false })
-      almanac.factValue('foo')
-      almanac.factValue('foo')
-      almanac.factValue('foo')
-      expect(factSpy).to.have.been.calledThrice()
+      const result = await almanac.factValue('foo', null, '$..name')
+      expect(result).to.deep.equal(['George', 'Thomas'])
     })
 
-    it('evaluates the fact once when fact caching is on', () => {
-      setup({ cache: true })
-      almanac.factValue('foo')
-      almanac.factValue('foo')
-      almanac.factValue('foo')
-      expect(factSpy).to.have.been.calledOnce()
+    describe('caching', () => {
+      function setup (factOptions) {
+        const fact = new Fact('foo', async (params, facts) => {
+          factSpy()
+          return 'unknown'
+        }, factOptions)
+        const factMap = new Map()
+        factMap.set(fact.id, fact)
+        almanac = new Almanac(factMap)
+      }
+
+      it('evaluates the fact every time when fact caching is off', () => {
+        setup({ cache: false })
+        almanac.factValue('foo')
+        almanac.factValue('foo')
+        almanac.factValue('foo')
+        expect(factSpy).to.have.been.calledThrice()
+      })
+
+      it('evaluates the fact once when fact caching is on', () => {
+        setup({ cache: true })
+        almanac.factValue('foo')
+        almanac.factValue('foo')
+        almanac.factValue('foo')
+        expect(factSpy).to.have.been.calledOnce()
+      })
     })
   })
 })

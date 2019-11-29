@@ -12,7 +12,7 @@ describe('Engine: fact priority', () => {
   afterEach(() => {
     sandbox.restore()
   })
-  let event = { type: 'adult-human-admins' }
+  const event = { type: 'adult-human-admins' }
 
   let eventSpy
   let failureSpy
@@ -28,7 +28,7 @@ describe('Engine: fact priority', () => {
     failureSpy = sandbox.stub()
 
     engine = engineFactory()
-    let rule = factories.rule({ conditions, event })
+    const rule = factories.rule({ conditions, event })
     engine.addRule(rule)
     engine.addFact('age', ageStub, { priority: 100 })
     engine.addFact('segment', segmentStub, { priority: 50 })
@@ -38,7 +38,7 @@ describe('Engine: fact priority', () => {
   }
 
   describe('all conditions', () => {
-    let allCondition = {
+    const allCondition = {
       all: [{
         fact: 'age',
         operator: 'greaterThanInclusive',
@@ -78,7 +78,7 @@ describe('Engine: fact priority', () => {
     })
 
     describe('sub-conditions', () => {
-      let allSubCondition = {
+      const allSubCondition = {
         all: [{
           fact: 'age',
           operator: 'greaterThanInclusive',
@@ -113,7 +113,7 @@ describe('Engine: fact priority', () => {
   })
 
   describe('any conditions', () => {
-    let anyCondition = {
+    const anyCondition = {
       any: [{
         fact: 'age',
         operator: 'greaterThanInclusive',
@@ -152,7 +152,7 @@ describe('Engine: fact priority', () => {
     })
 
     describe('sub-conditions', () => {
-      let anySubCondition = {
+      const anySubCondition = {
         all: [{
           fact: 'age',
           operator: 'greaterThanInclusive',

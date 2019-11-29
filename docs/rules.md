@@ -171,9 +171,9 @@ See the [dynamic-facts](../examples/03-dynamic-facts) example
 
 ### Condition helpers: `path`
 
-In the `params` example above, the dynamic fact handler loads an object, then returns a specific object property.  For more complex data structures, writing a separate fact handler for each object property can sometimes become unwieldy.
+In the `params` example above, the dynamic fact handler loads an object, then returns a specific object property. For more complex data structures, writing a separate fact handler for each object property quickly becomes verbose and unwieldy.
 
-To alleviate this overhead, a `path` property is provided for traversing objects and arrays returned by facts.  The example above becomes simpler, and only one fact handler must be written by the developer to handle any number of properties.
+To address this, a `path` property may be provided to traverse fact data using [json-path](https://goessner.net/articles/JsonPath/) syntax. The example above becomes simpler, and only one fact handler must be written:
 
 ```js
 
@@ -189,7 +189,7 @@ let rule = new Rule({
     all: [
       {
         fact: 'product-price',
-        path: '.price',
+        path: '$.price',
         params: {
           productId: 'widget'
         },
@@ -201,31 +201,7 @@ let rule = new Rule({
 })
 ```
 
-To access nested properties, use dot/bracket-notation:
-```js
-  /*
-  {
-    profile: {
-      addresses: [{ city: 'Denver' }]
-    }
-  }
-  */
-
-  path: '.profile.addresses[0].city'  // "Denver"
-```
-
-To access properties with a '.', pass an array of properties
-```js
- /*
-  {
-    property: {
-      'dot.property': 'hello-world'
-    }
-  }
-  */
-  path: ['property', 'dot.property']  // "hello-world"
-```
-Full documentation for `path` can be found in the [selectn](https://github.com/wilmoore/selectn.js) library
+json-path support is provided by [jsonpath-plus](https://github.com/s3u/JSONPath)
 
 For an example, see [fact-dependency](../examples/04-fact-dependency.js)
 
@@ -243,7 +219,7 @@ let rule = new Rule({
         fact: 'product-price',
         params: {
           productId: 'widget',
-          path: '.price'
+          path: '$.price'
         },
         operator: 'greaterThan',
         // "value" contains a fact

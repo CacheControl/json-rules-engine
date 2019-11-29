@@ -4,7 +4,7 @@ import sinon from 'sinon'
 import engineFactory from '../src/index'
 
 async function dictionary (params, engine) {
-  let words = ['coffee', 'Aardvark', 'moose', 'ladder', 'antelope']
+  const words = ['coffee', 'Aardvark', 'moose', 'ladder', 'antelope']
   return words[params.wordIndex]
 }
 
@@ -16,10 +16,10 @@ describe('Engine: operator', () => {
   afterEach(() => {
     sandbox.restore()
   })
-  let event = {
+  const event = {
     type: 'operatorTrigger'
   }
-  let baseConditions = {
+  const baseConditions = {
     any: [{
       fact: 'dictionary',
       operator: 'startsWithLetter',
@@ -32,8 +32,8 @@ describe('Engine: operator', () => {
   let eventSpy
   function setup (conditions = baseConditions) {
     eventSpy = sandbox.spy()
-    let engine = engineFactory()
-    let rule = factories.rule({ conditions, event })
+    const engine = engineFactory()
+    const rule = factories.rule({ conditions, event })
     engine.addRule(rule)
     engine.addOperator('startsWithLetter', (factValue, jsonValue) => {
       if (!factValue.length) return false
@@ -46,25 +46,25 @@ describe('Engine: operator', () => {
 
   describe('evaluation', () => {
     it('emits when the condition is met', async () => {
-      let conditions = Object.assign({}, baseConditions)
+      const conditions = Object.assign({}, baseConditions)
       conditions.any[0].params.wordIndex = 1
-      let engine = setup()
+      const engine = setup()
       await engine.run()
       expect(eventSpy).to.have.been.calledWith(event)
     })
 
     it('does not emit when the condition fails', async () => {
-      let conditions = Object.assign({}, baseConditions)
+      const conditions = Object.assign({}, baseConditions)
       conditions.any[0].params.wordIndex = 0
-      let engine = setup()
+      const engine = setup()
       await engine.run()
       expect(eventSpy).to.not.have.been.calledWith(event)
     })
 
     it('throws when it encounters an unregistered operator', async () => {
-      let conditions = Object.assign({}, baseConditions)
+      const conditions = Object.assign({}, baseConditions)
       conditions.any[0].operator = 'unknown-operator'
-      let engine = setup()
+      const engine = setup()
       return expect(engine.run()).to.eventually.be.rejectedWith('Unknown operator: unknown-operator')
     })
   })

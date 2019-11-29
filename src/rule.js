@@ -35,10 +35,10 @@ class Rule extends EventEmitter {
       this.setName(options.name)
     }
 
-    let priority = (options && options.priority) || 1
+    const priority = (options && options.priority) || 1
     this.setPriority(priority)
 
-    let event = (options && options.event) || { type: 'unknown' }
+    const event = (options && options.event) || { type: 'unknown' }
     this.setEvent(event)
   }
 
@@ -70,7 +70,7 @@ class Rule extends EventEmitter {
    * @param {object} conditions - conditions, root element must be a boolean operator
    */
   setConditions (conditions) {
-    if (!conditions.hasOwnProperty('all') && !conditions.hasOwnProperty('any')) {
+    if (!Object.prototype.hasOwnProperty.call(conditions, 'all') && !Object.prototype.hasOwnProperty.call(conditions, 'any')) {
       throw new Error('"conditions" root must contain a single instance of "all" or "any"')
     }
     this.conditions = new Condition(conditions)
@@ -85,7 +85,7 @@ class Rule extends EventEmitter {
    */
   setEvent (event) {
     if (!event) throw new Error('Rule: setEvent() requires event object')
-    if (!event.hasOwnProperty('type')) throw new Error('Rule: setEvent() requires event object with "type" property')
+    if (!Object.prototype.hasOwnProperty.call(event, 'type')) throw new Error('Rule: setEvent() requires event object with "type" property')
     this.event = {
       type: event.type
     }
@@ -104,7 +104,7 @@ class Rule extends EventEmitter {
   }
 
   toJSON (stringify = true) {
-    let props = {
+    const props = {
       conditions: this.conditions.toJSON(false),
       priority: this.priority,
       event: this.event,
@@ -125,12 +125,12 @@ class Rule extends EventEmitter {
    *    all conditions with that priority.
    */
   prioritizeConditions (conditions) {
-    let factSets = conditions.reduce((sets, condition) => {
+    const factSets = conditions.reduce((sets, condition) => {
       // if a priority has been set on this specific condition, honor that first
       // otherwise, use the fact's priority
       let priority = condition.priority
       if (!priority) {
-        let fact = this.engine.getFact(condition.fact)
+        const fact = this.engine.getFact(condition.fact)
         priority = (fact && fact.priority) || 1
       }
       if (!sets[priority]) sets[priority] = []
@@ -148,16 +148,16 @@ class Rule extends EventEmitter {
    * @return {Promise(RuleResult)} rule evaluation result
    */
   evaluate (almanac) {
-    let ruleResult = new RuleResult(this.conditions, this.event, this.priority, this.name)
+    const ruleResult = new RuleResult(this.conditions, this.event, this.priority, this.name)
 
     /**
      * Evaluates the rule conditions
      * @param  {Condition} condition - condition to evaluate
      * @return {Promise(true|false)} - resolves with the result of the condition evaluation
      */
-    let evaluateCondition = (condition) => {
+    const evaluateCondition = (condition) => {
       if (condition.isBooleanOperator()) {
-        let subConditions = condition[condition.operator]
+        const subConditions = condition[condition.operator]
         let comparisonPromise
         if (condition.operator === 'all') {
           comparisonPromise = all(subConditions)
@@ -166,14 +166,14 @@ class Rule extends EventEmitter {
         }
         // for booleans, rule passing is determined by the all/any result
         return comparisonPromise.then(comparisonValue => {
-          let passes = comparisonValue === true
+          const passes = comparisonValue === true
           condition.result = passes
           return passes
         })
       } else {
         return condition.evaluate(almanac, this.engine.operators)
           .then(evaluationResult => {
-            let passes = evaluationResult.result
+            const passes = evaluationResult.result
             condition.factResult = evaluationResult.leftHandSideValue
             condition.result = passes
             return passes
@@ -187,12 +187,12 @@ class Rule extends EventEmitter {
      * @param  {string(every|some)} array method to call for determining result
      * @return {Promise(boolean)} whether conditions evaluated truthy or falsey based on condition evaluation + method
      */
-    let evaluateConditions = (conditions, method) => {
-      if (!(Array.isArray(conditions))) conditions = [ conditions ]
+    const evaluateConditions = (conditions, method) => {
+      if (!(Array.isArray(conditions))) conditions = [conditions]
 
       return Promise.all(conditions.map((condition) => evaluateCondition(condition)))
         .then(conditionResults => {
-          debug(`rule::evaluateConditions results`, conditionResults)
+          debug('rule::evaluateConditions results', conditionResults)
           return method.call(conditionResults, (result) => result === true)
         })
     }
@@ -207,7 +207,7 @@ class Rule extends EventEmitter {
      * @param  {string('all'|'any')} operator
      * @return {Promise(boolean)} rule evaluation result
      */
-    let prioritizeAndRun = (conditions, operator) => {
+    const prioritizeAndRun = (conditions, operator) => {
       if (conditions.length === 0) {
         return Promise.resolve(true)
       }
@@ -215,23 +215,23 @@ class Rule extends EventEmitter {
       if (operator === 'all') {
         method = Array.prototype.every
       }
-      let orderedSets = this.prioritizeConditions(conditions)
+      const orderedSets = this.prioritizeConditions(conditions)
       let cursor = Promise.resolve()
       // use for() loop over Array.forEach to support IE8 without polyfill
       for (let i = 0; i < orderedSets.length; i++) {
-        let set = orderedSets[i]
+        const set = orderedSets[i]
         let stop = false
         cursor = cursor.then((setResult) => {
           // after the first set succeeds, don't fire off the remaining promises
           if ((operator === 'any' && setResult === true) || stop) {
-            debug(`prioritizeAndRun::detected truthy result; skipping remaining conditions`)
+            debug('prioritizeAndRun::detected truthy result; skipping remaining conditions')
             stop = true
             return true
           }
 
           // after the first set fails, don't fire off the remaining promises
           if ((operator === 'all' && setResult === false) || stop) {
-            debug(`prioritizeAndRun::detected falsey result; skipping remaining conditions`)
+            debug('prioritizeAndRun::detected falsey result; skipping remaining conditions')
             stop = true
             return false
           }
@@ -247,7 +247,7 @@ class Rule extends EventEmitter {
      * @param  {Condition[]} conditions to be evaluated
      * @return {Promise(boolean)} condition evaluation result
      */
-    let any = (conditions) => {
+    const any = (conditions) => {
       return prioritizeAndRun(conditions, 'any')
     }
 
@@ -256,7 +256,7 @@ class Rule extends EventEmitter {
      * @param  {Condition[]} conditions to be evaluated
      * @return {Promise(boolean)} condition evaluation result
      */
-    let all = (conditions) => {
+    const all = (conditions) => {
       return prioritizeAndRun(conditions, 'all')
     }
 
@@ -264,7 +264,7 @@ class Rule extends EventEmitter {
      * Emits based on rule evaluation result, and decorates ruleResult with 'result' property
      * @param {Boolean} result
      */
-    let processResult = (result) => {
+    const processResult = (result) => {
       ruleResult.setResult(result)
 
       if (result) this.emit('success', ruleResult.event, almanac, ruleResult)

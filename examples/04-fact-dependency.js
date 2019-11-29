@@ -13,31 +13,31 @@
  */
 
 require('colors')
-let Engine = require('../dist').Engine
-let accountClient = require('./support/account-api-client')
+const Engine = require('../dist').Engine
+const accountClient = require('./support/account-api-client')
 
 /**
  * Setup a new engine
  */
-let engine = new Engine()
+const engine = new Engine()
 
 /**
  * Rule for identifying microsoft employees that have been terminated.
  * - Demonstrates re-using a same fact with different parameters
  * - Demonstrates calling a base fact, which serves to load data once and reuse later
  */
-let microsoftRule = {
+const microsoftRule = {
   conditions: {
     all: [{
       fact: 'account-information',
       operator: 'equal',
       value: 'microsoft',
-      path: '.company'
+      path: '$.company'
     }, {
       fact: 'account-information',
       operator: 'equal',
       value: 'terminated',
-      path: '.status'
+      path: '$.status'
     }]
   },
   event: { type: 'microsoft-terminated-employees' }
@@ -49,14 +49,14 @@ engine.addRule(microsoftRule)
  * - Demonstrates calling a base fact, also shared by the account-information-field fact
  * - Demonstrates performing computations on data retrieved by base fact
  */
-let tenureRule = {
+const tenureRule = {
   conditions: {
     all: [{
       fact: 'employee-tenure',
       operator: 'greaterThanInclusive',
       value: 5,
       params: {
-        'unit': 'years'
+        unit: 'years'
       }
     }]
   },
@@ -94,8 +94,8 @@ engine.addFact('account-information', (params, almanac) => {
 engine.addFact('employee-tenure', (params, almanac) => {
   return almanac.factValue('account-information')
     .then(accountInformation => {
-      let created = new Date(accountInformation.createdAt)
-      let now = new Date()
+      const created = new Date(accountInformation.createdAt)
+      const now = new Date()
       switch (params.unit) {
         case 'years':
           return now.getFullYear() - created.getFullYear()

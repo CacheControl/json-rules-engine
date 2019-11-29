@@ -14,17 +14,17 @@ describe('Engine: "any" conditions', () => {
   })
 
   describe('supports a single "any" condition', () => {
-    let event = {
+    const event = {
       type: 'ageTrigger',
       params: {
         demographic: 'under50'
       }
     }
-    let conditions = {
+    const conditions = {
       any: [{
-        'fact': 'age',
-        'operator': 'lessThan',
-        'value': 50
+        fact: 'age',
+        operator: 'lessThan',
+        value: 50
       }]
     }
     let eventSpy
@@ -32,7 +32,7 @@ describe('Engine: "any" conditions', () => {
     beforeEach(() => {
       eventSpy = sandbox.spy()
       ageSpy = sandbox.stub()
-      let rule = factories.rule({ conditions, event })
+      const rule = factories.rule({ conditions, event })
       engine = engineFactory()
       engine.addRule(rule)
       engine.addFact('age', ageSpy)
@@ -53,18 +53,18 @@ describe('Engine: "any" conditions', () => {
   })
 
   describe('supports "any" with multiple conditions', () => {
-    let conditions = {
+    const conditions = {
       any: [{
-        'fact': 'age',
-        'operator': 'lessThan',
-        'value': 50
+        fact: 'age',
+        operator: 'lessThan',
+        value: 50
       }, {
-        'fact': 'segment',
-        'operator': 'equal',
-        'value': 'european'
+        fact: 'segment',
+        operator: 'equal',
+        value: 'european'
       }]
     }
-    let event = {
+    const event = {
       type: 'ageTrigger',
       params: {
         demographic: 'under50'
@@ -77,7 +77,7 @@ describe('Engine: "any" conditions', () => {
       eventSpy = sandbox.spy()
       ageSpy = sandbox.stub()
       segmentSpy = sandbox.stub()
-      let rule = factories.rule({ conditions, event })
+      const rule = factories.rule({ conditions, event })
       engine = engineFactory()
       engine.addRule(rule)
       engine.addFact('segment', segmentSpy)

@@ -14,7 +14,7 @@ The almanac for the current engine run is available as arguments passed to the f
 
 ### almanac.factValue(Fact fact, Object params, String path) -> Promise
 
-Computes the value of the provided fact + params.  If "path" is provided, it will be used as a property accessor on the fact's return object.
+Computes the value of the provided fact + params.  If "path" is provided, it will be used as a [json-path](https://goessner.net/articles/JsonPath/) accessor on the fact's return object.
 
 ```js
 almanac

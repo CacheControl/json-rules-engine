@@ -12,14 +12,14 @@
  */
 
 require('colors')
-let Engine = require('../dist').Engine
+const Engine = require('../dist').Engine
 // example client for making asynchronous requests to an api, database, etc
-let apiClient = require('./support/account-api-client')
+const apiClient = require('./support/account-api-client')
 
 /**
  * Setup a new engine
  */
-let engine = new Engine()
+const engine = new Engine()
 
 /**
  * Rule for identifying microsoft employees taking pto on christmas
@@ -27,23 +27,23 @@ let engine = new Engine()
  * the account-information fact returns:
  *  { company: 'XYZ', status: 'ABC', ptoDaysTaken: ['YYYY-MM-DD', 'YYYY-MM-DD'] }
  */
-let microsoftRule = {
+const microsoftRule = {
   conditions: {
     all: [{
       fact: 'account-information',
       operator: 'equal',
       value: 'microsoft',
-      path: '.company' // access the 'company' property of "account-information"
+      path: '$.company' // access the 'company' property of "account-information"
     }, {
       fact: 'account-information',
       operator: 'in',
       value: ['active', 'paid-leave'], // 'status'' can be active or paid-leave
-      path: '.status' // access the 'status' property of "account-information"
+      path: '$.status' // access the 'status' property of "account-information"
     }, {
       fact: 'account-information',
       operator: 'contains',
       value: '2016-12-25',
-      path: '.ptoDaysTaken' // access the 'ptoDaysTaken' property of "account-information"
+      path: '$.ptoDaysTaken' // access the 'ptoDaysTaken' property of "account-information"
     }]
   },
   event: {
@@ -68,7 +68,7 @@ engine.addFact('account-information', function (params, almanac) {
 })
 
 // define fact(s) known at runtime
-let facts = { accountId: 'lincoln' }
+const facts = { accountId: 'lincoln' }
 engine
   .run(facts)
   .then(results => {

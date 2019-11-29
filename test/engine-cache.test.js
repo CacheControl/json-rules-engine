@@ -13,9 +13,9 @@ describe('Engine: cache', () => {
     sandbox.restore()
   })
 
-  let event = { type: 'setDrinkingFlag' }
-  let collegeSeniorEvent = { type: 'isCollegeSenior' }
-  let conditions = {
+  const event = { type: 'setDrinkingFlag' }
+  const collegeSeniorEvent = { type: 'isCollegeSenior' }
+  const conditions = {
     any: [{
       fact: 'age',
       operator: 'greaterThanInclusive',
@@ -25,7 +25,7 @@ describe('Engine: cache', () => {
 
   let factSpy
   let eventSpy
-  let ageFact = () => {
+  const ageFact = () => {
     factSpy()
     return 22
   }
@@ -33,11 +33,11 @@ describe('Engine: cache', () => {
     factSpy = sandbox.spy()
     eventSpy = sandbox.spy()
     engine = engineFactory()
-    let determineDrinkingAge = factories.rule({ conditions, event, priority: 100 })
+    const determineDrinkingAge = factories.rule({ conditions, event, priority: 100 })
     engine.addRule(determineDrinkingAge)
-    let determineCollegeSenior = factories.rule({ conditions, event: collegeSeniorEvent, priority: 1 })
+    const determineCollegeSenior = factories.rule({ conditions, event: collegeSeniorEvent, priority: 1 })
     engine.addRule(determineCollegeSenior)
-    let over20 = factories.rule({ conditions, event: collegeSeniorEvent, priority: 50 })
+    const over20 = factories.rule({ conditions, event: collegeSeniorEvent, priority: 50 })
     engine.addRule(over20)
     engine.addFact('age', ageFact, factOptions)
     engine.on('success', eventSpy)
