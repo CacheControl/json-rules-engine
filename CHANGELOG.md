@@ -1,6 +1,6 @@
-#### 5.0.0 / 2019-10-27
+#### 5.0.0 / 2019-11-29
   * BREAKING CHANGES
-    * Rule conditions' `path` property is now interpretted using [json-path](https://goessner.net/articles/JsonPath/)
+    * Rule conditions' `path` property is now interpreted using [json-path](https://goessner.net/articles/JsonPath/)
       * To continue using the old syntax (provided via [selectn](https://github.com/wilmoore/selectn.js)), `npm install selectn` as a direct dependency, and `json-rules-engine` will continue to interpret legacy paths this way.
       * Any path starting with `$` will be assumed to use `json-path` syntax
 
