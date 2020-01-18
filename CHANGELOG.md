@@ -1,3 +1,6 @@
+#### 5.0.1 / 2020-01-18
+* BUGFIX: `DEBUG` envs works with cookies disables
+
 #### 5.0.0 / 2019-11-29
   * BREAKING CHANGES
     * Rule conditions' `path` property is now interpreted using [json-path](https://goessner.net/articles/JsonPath/)
