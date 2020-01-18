@@ -70,6 +70,7 @@ export default class Almanac {
    * @param {Mixed} value - constant value of the fact
    */
   addRuntimeFact (factId, value) {
+    debug(`almanac::addRuntimeFact id:${factId}`)
     const fact = new Fact(factId, value)
     return this._addConstantFact(fact)
   }

@@ -4,7 +4,7 @@ export default function debug (message) {
         (typeof window !== 'undefined' && window.localStorage && window.localStorage.debug && window.localStorage.debug.match(/json-rules-engine/))) {
       console.log(message)
     }
-  } catch(ex) {
+  } catch (ex) {
     // Do nothing
   }
 }

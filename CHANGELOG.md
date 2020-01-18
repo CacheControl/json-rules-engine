@@ -1,3 +1,6 @@
+#### 5.0.2 / 2020-01-18
+* BUGFIX: Add missing `DEBUG` log for almanac.addRuntimeFact()
+
 #### 5.0.1 / 2020-01-18
 * BUGFIX: `DEBUG` envs works with cookies disables
 
