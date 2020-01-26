@@ -71,7 +71,7 @@
     "clone": "^2.1.2",
     "events": "^3.0.0",
     "hash-it": "^4.0.4",
-    "jsonpath-plus": "^1.1.0",
+    "jsonpath-plus": "^3.0.0",
     "lodash.isobjectlike": "^4.0.0"
   }
 }

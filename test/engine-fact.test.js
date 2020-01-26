@@ -27,6 +27,9 @@ async function eligibilityData (params, engine) {
     occupantHistory: [
       { name: 'Joe', year: 2011 },
       { name: 'Jane', year: 2013 }
+    ],
+    currentOccupants: [
+      { name: 'Larry', year: 2020 }
     ]
   }
   if (params.eligibilityId === 1) {
@@ -168,14 +171,26 @@ describe('Engine: fact evaluation', () => {
       expect(successSpy).to.not.have.been.called()
     })
 
-    it('can extract an array, allowing it to be used in concert with array operators', async () => {
-      const complexCondition = conditions()
-      complexCondition.any[0].path = '$.address.occupantHistory[*].year'
-      complexCondition.any[0].value = 2011
-      complexCondition.any[0].operator = 'contains'
-      setup(complexCondition)
-      await engine.run()
-      expect(successSpy).to.have.been.calledWith(event)
+    describe('arrays', () => {
+      it('can extract an array, allowing it to be used in concert with array operators', async () => {
+        const complexCondition = conditions()
+        complexCondition.any[0].path = '$.address.occupantHistory[*].year'
+        complexCondition.any[0].value = 2011
+        complexCondition.any[0].operator = 'contains'
+        setup(complexCondition)
+        await engine.run()
+        expect(successSpy).to.have.been.calledWith(event)
+      })
+
+      it('can extract an array with a single element', async () => {
+        const complexCondition = conditions()
+        complexCondition.any[0].path = '$.address.currentOccupants[*].year'
+        complexCondition.any[0].value = 2020
+        complexCondition.any[0].operator = 'contains'
+        setup(complexCondition)
+        await engine.run()
+        expect(successSpy).to.have.been.calledWith(event)
+      })
     })
 
     context('complex paths', () => {
