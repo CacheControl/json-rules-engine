@@ -29,7 +29,7 @@ async function eligibilityData (params, engine) {
       { name: 'Jane', year: 2013 }
     ],
     currentOccupants: [
-      { name: 'Larry', year: 2020 },
+      { name: 'Larry', year: 2020 }
     ]
   }
   if (params.eligibilityId === 1) {
@@ -171,7 +171,7 @@ describe('Engine: fact evaluation', () => {
       expect(successSpy).to.not.have.been.called()
     })
 
-    describe.only('arrays', () => {
+    describe('arrays', () => {
       it('can extract an array, allowing it to be used in concert with array operators', async () => {
         const complexCondition = conditions()
         complexCondition.any[0].path = '$.address.occupantHistory[*].year'
@@ -191,7 +191,7 @@ describe('Engine: fact evaluation', () => {
         await engine.run()
         expect(successSpy).to.have.been.calledWith(event)
       })
-    });
+    })
 
     context('complex paths', () => {
       it('correctly interprets "path" when dynamic facts return objects', async () => {

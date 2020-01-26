@@ -1,3 +1,6 @@
+#### 5.0.3 / 2020-01-26
+  * Upgrade jsonpath-plus dependency, to fix inconsistent scalar results (#175)
+
 #### 5.0.2 / 2020-01-18
 * BUGFIX: Add missing `DEBUG` log for almanac.addRuntimeFact()
 
