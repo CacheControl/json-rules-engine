@@ -19,7 +19,7 @@ A rules engine expressed in JSON
 * Fast by default, faster with configuration; priority levels and cache settings for fine tuning performance
 * Secure; no use of eval()
 * Isomorphic; runs in node and browser
-* Lightweight & extendable; 24kb gzipped w/few dependencies
+* Lightweight & extendable; 12kb gzipped w/few dependencies
 
 ## Installation
 
