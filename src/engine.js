@@ -122,7 +122,7 @@ class Engine extends EventEmitter {
   }
 
   /**
-   * Add a fact definition to the engine.  Facts are called by rules as they are evaluated.
+   * Remove a fact definition to the engine.  Facts are called by rules as they are evaluated.
    * @param {object|Fact} id - fact identifier or instance of Fact
    */
   removeFact (factOrId) {
