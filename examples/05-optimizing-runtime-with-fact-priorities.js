@@ -4,10 +4,10 @@
  * This is an advanced example that demonstrates using fact priorities to optimize the rules engine.
  *
  * Usage:
- *   node ./examples/05-optimize-runtime-with-fact-priority.js
+ *   node ./examples/05-optimizing-runtime-with-fact-priorities.js
  *
  * For detailed output:
- *   DEBUG=json-rules-engine node ./examples/05-optimize-runtime-with-fact-priority.js
+ *   DEBUG=json-rules-engine node ./examples/05-optimizing-runtime-with-fact-priorities.js
  */
 
 require('colors')
