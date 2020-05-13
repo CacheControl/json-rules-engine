@@ -54,7 +54,7 @@ const facts = { displayMessage: true }
 engine
   .run(facts)
   .then(results => { // engine returns an object with a list of events with truthy conditions
-    results.events.map(event => console.log(event.params.data.green))
+    results.events.map(event => console.log(event.params.data))
   })
   .catch(console.log)
 
