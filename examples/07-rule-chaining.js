@@ -1,5 +1,4 @@
 'use strict'
-
 /*
  * This is an advanced example demonstrating rules that passed based off the
  * results of other rules by adding runtime facts.  It also demonstrates
@@ -13,7 +12,7 @@
  */
 
 require('colors')
-const Engine = require('../dist').Engine
+const Engine = require('json-rules-engine').Engine
 
 /**
  * Setup a new engine

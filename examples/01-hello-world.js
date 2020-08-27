@@ -1,5 +1,4 @@
 'use strict'
-
 /*
  * This is the hello-world example from the README.
  *
@@ -11,8 +10,8 @@
  */
 
 require('colors')
-const Engine = require('../dist').Engine
-const Rule = require('../dist').Rule
+const Engine = require('json-rules-engine').Engine
+const Rule = require('json-rules-engine').Rule
 
 /**
  * Setup a new engine
