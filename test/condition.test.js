@@ -1,4 +1,5 @@
 'use strict'
+import sinon from 'sinon'
 
 import Condition from '../src/condition'
 import defaultOperators from '../src/engine-default-operators'
@@ -279,6 +280,36 @@ describe('Condition', () => {
       const conditions = condition()
       delete conditions.all[0].value
       expect(() => new Condition(conditions)).to.throw(/Condition: constructor "value" property required/)
+    })
+  })
+
+  describe('callback facts', () => {
+    const conditionBase = factories.condition({
+      fact: 'age',
+      value: 50,
+      onSuccess: sinon.spy(),
+      onFailure: sinon.spy()
+    })
+    let condition
+    let almanac
+    function setup (options, factValue) {
+      if (typeof factValue === 'undefined') factValue = 1
+      const properties = Object.assign({}, conditionBase, options)
+      condition = new Condition(properties)
+      const fact = new Fact(conditionBase.fact, factValue)
+      almanac = new Almanac(new Map([[fact.id, fact]]))
+    }
+
+    it('should call onSuccess', async () => {
+      setup({ operator: 'greaterThanInclusive' }, 51)
+      await condition.evaluate(almanac, operators)
+      expect(condition.onSuccess).to.have.been.called()
+    })
+
+    it('should call onFailure', async () => {
+      setup({ operator: 'greaterThanInclusive' }, 49)
+      await condition.evaluate(almanac, operators)
+      expect(condition.onFailure).to.have.been.called()
     })
   })
 
