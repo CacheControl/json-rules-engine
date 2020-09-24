@@ -105,17 +105,17 @@ export default class Condition {
             return { result, leftHandSideValue, rightHandSideValue, operator: this.operator }
           })
           .then(response => {
-            const event = {
+            const result = {
               fact: this.fact,
               operator: this.operator,
               value: response.rightHandSideValue,
               receivedValue: response.leftHandSideValue
             }
             if (response.result && this.onSuccess) {
-              this.onSuccess(event, almanac)
+              this.onSuccess(result, almanac)
             }
             if (!response.result && this.onFailure) {
-              this.onFailure(event, almanac)
+              this.onFailure(result, almanac)
             }
             return response
           })
