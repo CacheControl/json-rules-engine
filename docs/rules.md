@@ -234,7 +234,7 @@ let rule = new Rule({
 See the [fact-comparison](../examples/08-fact-comparison.js) example
 
 ## Facts callbacks
-Sometimes it is necessary to get the result of fulfilling a certain fact. This can be achieved by passing the callbacks of onSuccess or onFailure into fact.Sometimes it is necessary to get the result of fulfilling a certain fact. This can be achieved by passing the callbacks of onSuccess or onFailure into fact.
+Sometimes it is necessary to get the result of fulfilling a certain fact. This can be achieved by passing the callbacks of onSuccess or onFailure into fact.
 
 ```js
 let rule = new Rule({
