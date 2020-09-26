@@ -1,3 +1,6 @@
+#### 5.0.4 / 2020-09-26
+  * Upgrade dependencies to latest
+
 #### 5.0.3 / 2020-01-26
   * Upgrade jsonpath-plus dependency, to fix inconsistent scalar results (#175)
 
