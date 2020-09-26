@@ -1,7 +1,8 @@
 ![json-rules-engine](http://i.imgur.com/MAzq7l2.png)
 
 [![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
-[![Build Status](https://travis-ci.org/CacheControl/json-rules-engine.svg?branch=master)](https://travis-ci.org/CacheControl/json-rules-engine)
+[![Build Status](https://github.com/cachecontrol/json-rules-engine/workflows/Node.js%20CI/badge.svg?branch=master)](https://github.com/cachecontrol/json-rules-engine/workflows/Node.js%20CI/badge.svg?branch=master)
+
 [![npm version](https://badge.fury.io/js/json-rules-engine.svg)](https://badge.fury.io/js/json-rules-engine)
 [![install size](https://packagephobia.now.sh/badge?p=json-rules-engine)](https://packagephobia.now.sh/result?p=json-rules-engine)
 [![npm downloads](https://img.shields.io/npm/dm/json-rules-engine.svg)](https://www.npmjs.com/package/json-rules-engine)
