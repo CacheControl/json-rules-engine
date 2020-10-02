@@ -4,6 +4,7 @@ export interface EngineOptions {
 
 export interface EngineResult {
   events: Event[];
+  ruleResult: RuleResult[] 
   almanac: Almanac;
 }
 
@@ -142,6 +143,7 @@ interface ConditionProperties {
   path?: string;
   priority?: number;
   params?: Record<string, any>;
+  factResult?: string;
 }
 
 type NestedCondition = ConditionProperties | TopLevelCondition;

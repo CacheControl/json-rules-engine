@@ -87,7 +87,11 @@ describe('Engine: event', () => {
     it('"success" passes the event, almanac, and results', async () => {
       const failureSpy = sandbox.spy()
       const successSpy = sandbox.spy()
-      engine.on('success', function (e, almanac, ruleResult) {
+      engine.on('success', async function (e, almanac, ruleResult) {
+        // function sleep(ms) {
+        // return new Promise(resolve => setTimeout(resolve, ms));
+        // }
+        // await sleep(2000);
         expect(e).to.eql(event)
         expect(almanac).to.be.an.instanceof(Almanac)
         expect(ruleResult.result).to.be.true()

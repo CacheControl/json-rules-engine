@@ -10,4 +10,14 @@ const SuccessEventFact = function () {
   }
 }
 
-export { SuccessEventFact }
+const SuccessResultFact = function () {
+  const successTriggers = []
+  return (params = {}) => {
+    if (params.ruleResult) {
+      successTriggers.push(params.ruleResult)
+    }
+    return successTriggers
+  }
+}
+
+export { SuccessEventFact, SuccessResultFact }
