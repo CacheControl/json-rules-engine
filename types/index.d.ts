@@ -4,7 +4,7 @@ export interface EngineOptions {
 
 export interface EngineResult {
   events: Event[];
-  ruleResult: RuleResult[] 
+  ruleResults: RuleResult[] 
   almanac: Almanac;
 }
 
