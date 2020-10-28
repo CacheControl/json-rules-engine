@@ -2,10 +2,12 @@
 
 import Fact from './fact'
 import { UndefinedFactError } from './errors'
-import debug from './debug'
+import Debug from './debug'
 
 import { JSONPath } from 'jsonpath-plus'
 import isObjectLike from 'lodash.isobjectlike'
+
+const debug = Debug('json-rules-engine:almanac')
 
 /**
  * Fact results lookup
@@ -27,7 +29,7 @@ export default class Almanac {
       }
 
       this._addConstantFact(fact)
-      debug(`almanac::constructor initialized runtime fact:${fact.id} with ${fact.value}<${typeof fact.value}>`)
+      debug('constructor initialized runtime fact:%s with %o <%t>', fact.id, fact.value, fact.value)
     }
   }
 
@@ -70,7 +72,7 @@ export default class Almanac {
    * @param {Mixed} value - constant value of the fact
    */
   addRuntimeFact (factId, value) {
-    debug(`almanac::addRuntimeFact id:${factId}`)
+    debug('addRuntimeFact id:%s', factId)
     const fact = new Fact(factId, value)
     return this._addConstantFact(fact)
   }
@@ -100,24 +102,24 @@ export default class Almanac {
       const cacheVal = cacheKey && this.factResultsCache.get(cacheKey)
       if (cacheVal) {
         factValuePromise = Promise.resolve(cacheVal)
-        debug(`almanac::factValue cache hit for fact:${factId}`)
+        debug('factValue cache hit for fact:%s', factId)
       } else {
-        debug(`almanac::factValue cache miss for fact:${factId}; calculating`)
+        debug('factValue cache miss for fact:%s; calculating', factId)
         factValuePromise = this._setFactValue(fact, params, fact.calculate(params, this))
       }
     }
     if (path) { // selectn supports arrays and strings as a 'path'
       // strings starting with '$' denotes json path. otherwise fall back to deprecated 'selectn' syntax
       if (typeof path === 'string' && path.startsWith('$')) {
-        debug(`condition::evaluate extracting object property ${path}`)
+        debug('condition::evaluate extracting object property %s', path)
         return factValuePromise
           .then(factValue => {
             if (isObjectLike(factValue)) {
               const pathValue = JSONPath({ path, json: factValue, wrap: false })
-              debug(`condition::evaluate extracting object property ${path}, received: ${pathValue}`)
+              debug('condition::evaluate extracting object property %s, received: %o', path, pathValue)
               return pathValue
             } else {
-              debug(`condition::evaluate could not compute object path(${path}) of non-object: ${factValue} <${typeof factValue}>; continuing with ${factValue}`)
+              debug('condition::evaluate could not compute object path(%s) of non-object: %s <%t>; continuing with %s', path, factValue, factValue, factValue)
               return factValue
             }
           })
@@ -136,10 +138,10 @@ export default class Almanac {
           .then(factValue => {
             if (isObjectLike(factValue)) {
               const pathValue = selectn(path)(factValue)
-              debug(`condition::evaluate extracting object property ${path}, received: ${pathValue}`)
+              debug('condition::evaluate extracting object property %s, received: %o', path, factValue)
               return pathValue
             } else {
-              debug(`condition::evaluate could not compute object path(${path}) of non-object: ${factValue} <${typeof factValue}>; continuing with ${factValue}`)
+              debug('condition::evaluate could not compute object path(%s) of non-object: %s <%t>; continuing with %s', path, factValue, factValue, factValue)
               return factValue
             }
           })

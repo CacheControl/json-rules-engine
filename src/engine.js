@@ -7,8 +7,9 @@ import Almanac from './almanac'
 import { EventEmitter } from 'events'
 import { SuccessEventFact } from './engine-facts'
 import defaultOperators from './engine-default-operators'
-import debug from './debug'
+import Debug from './debug'
 
+const debug = Debug('json-rules-engine:engine')
 export const READY = 'READY'
 export const RUNNING = 'RUNNING'
 export const FINISHED = 'FINISHED'
@@ -81,7 +82,7 @@ class Engine extends EventEmitter {
     } else {
       operator = new Operator(operatorOrName, cb)
     }
-    debug(`engine::addOperator name:${operator.name}`)
+    debug('addOperator name:%s', operator.name)
     this.operators.set(operator.name, operator)
   }
 
@@ -116,7 +117,7 @@ class Engine extends EventEmitter {
     } else {
       fact = new Fact(id, valueOrMethod, options)
     }
-    debug(`engine::addFact id:${factId}`)
+    debug('addFact id:%s', factId)
     this.facts.set(factId, fact)
     return this
   }
@@ -185,11 +186,11 @@ class Engine extends EventEmitter {
   evaluateRules (ruleArray, almanac) {
     return Promise.all(ruleArray.map((rule) => {
       if (this.status !== RUNNING) {
-        debug(`engine::run status:${this.status}; skipping remaining rules`)
+        debug('run status:%s; skipping remaining rules', this.status)
         return
       }
       return rule.evaluate(almanac).then((ruleResult) => {
-        debug(`engine::run ruleResult:${ruleResult.result}`)
+        debug('run ruleResult: %o', ruleResult)
         if (ruleResult.result) {
           this.emit('success', rule.event, almanac, ruleResult)
           this.emit(rule.event.type, rule.event.params, almanac, ruleResult)
@@ -204,12 +205,11 @@ class Engine extends EventEmitter {
   /**
    * Runs the rules engine
    * @param  {Object} runtimeFacts - fact values known at runtime
-   * @param  {Object} runOptions - run options
    * @return {Promise} resolves when the engine has completed running
    */
   run (runtimeFacts = {}) {
-    debug('engine::run started')
-    debug('engine::run runtimeFacts:', runtimeFacts)
+    debug('run started')
+    debug('run runtimeFacts: %o', runtimeFacts)
     runtimeFacts['success-events'] = new Fact('success-events', SuccessEventFact(), { cache: false })
     this.status = RUNNING
     const almanac = new Almanac(this.facts, runtimeFacts, { allowUndefinedFacts: this.allowUndefinedFacts })
@@ -226,7 +226,7 @@ class Engine extends EventEmitter {
       })
       cursor.then(() => {
         this.status = FINISHED
-        debug('engine::run completed')
+        debug('run completed')
         return almanac.factValue('success-events')
       }).then(events => {
         resolve({

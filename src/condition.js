@@ -1,7 +1,10 @@
 'use strict'
 
-import debug from './debug'
+import Debug from './debug'
+
 import isObjectLike from 'lodash.isobjectlike'
+
+const debug = Debug('json-rules-engine:condition')
 
 export default class Condition {
   constructor (properties) {
@@ -101,7 +104,7 @@ export default class Condition {
         return almanac.factValue(this.fact, this.params, this.path)
           .then(leftHandSideValue => {
             const result = op.evaluate(leftHandSideValue, rightHandSideValue)
-            debug(`condition::evaluate <${leftHandSideValue} ${this.operator} ${rightHandSideValue}?> (${result})`)
+            debug('evaluate <%s %s %s?> (%s)', leftHandSideValue, this.operator, rightHandSideValue, result)
             return { result, leftHandSideValue, rightHandSideValue, operator: this.operator }
           })
       })

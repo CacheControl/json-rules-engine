@@ -3,7 +3,9 @@
 import Condition from './condition'
 import RuleResult from './rule-result'
 import { EventEmitter } from 'events'
-import debug from './debug'
+import Debug from './debug'
+
+const debug = Debug('json-rules-engine:rule')
 
 class Rule extends EventEmitter {
   /**
@@ -192,7 +194,7 @@ class Rule extends EventEmitter {
 
       return Promise.all(conditions.map((condition) => evaluateCondition(condition)))
         .then(conditionResults => {
-          debug('rule::evaluateConditions results', conditionResults)
+          debug('evaluateConditions results: %o', conditionResults)
           return method.call(conditionResults, (result) => result === true)
         })
     }

@@ -80,6 +80,7 @@
   },
   "dependencies": {
     "clone": "^2.1.2",
+    "debug": "^4.2.0",
     "events": "^3.2.0",
     "hash-it": "^4.0.5",
     "jsonpath-plus": "^4.0.0",
