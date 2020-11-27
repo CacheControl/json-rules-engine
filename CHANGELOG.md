@@ -1,3 +1,6 @@
+#### 5.1.0 / 2020-11-27
+  * Allow facts to have values of `undefined`
+
 #### 5.0.4 / 2020-09-26
   * Upgrade dependencies to latest
 
