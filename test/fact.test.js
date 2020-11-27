@@ -29,10 +29,6 @@ describe('Fact', () => {
       it('throws if no id provided', () => {
         expect(subject).to.throw(/factId required/)
       })
-
-      it('throws if no definition provided', () => {
-        expect(subject.bind(null, 'factId')).to.throw(/facts must have a value or method/)
-      })
     })
   })
 
