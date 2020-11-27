@@ -2,8 +2,11 @@
 
 import sinon from 'sinon'
 import engineFactory, { Fact, Rule, Operator } from '../src/index'
+import defaultOperators from '../src/engine-default-operators'
 
 describe('Engine', () => {
+  const operatorCount = defaultOperators.length
+
   let engine
   let sandbox
   before(() => {
@@ -31,7 +34,7 @@ describe('Engine', () => {
     it('initializes with the default state', () => {
       expect(engine.status).to.equal('READY')
       expect(engine.rules.length).to.equal(0)
-      expect(engine.operators.size).to.equal(10)
+      expect(engine.operators.size).to.equal(operatorCount)
     })
 
     it('can be initialized with rules', () => {
@@ -119,37 +122,37 @@ describe('Engine', () => {
 
   describe('addOperator()', () => {
     it('adds the operator', () => {
-      expect(engine.operators.size).to.equal(10)
+      expect(engine.operators.size).to.equal(operatorCount)
       engine.addOperator('startsWithLetter', (factValue, jsonValue) => {
         return factValue[0] === jsonValue
       })
-      expect(engine.operators.size).to.equal(11)
+      expect(engine.operators.size).to.equal(operatorCount + 1)
       expect(engine.operators.get('startsWithLetter')).to.exist()
       expect(engine.operators.get('startsWithLetter')).to.be.an.instanceof(Operator)
     })
 
     it('accepts an operator instance', () => {
-      expect(engine.operators.size).to.equal(10)
+      expect(engine.operators.size).to.equal(operatorCount)
       const op = new Operator('my-operator', _ => true)
       engine.addOperator(op)
-      expect(engine.operators.size).to.equal(11)
+      expect(engine.operators.size).to.equal(operatorCount + 1)
       expect(engine.operators.get('my-operator')).to.equal(op)
     })
   })
 
   describe('removeOperator()', () => {
     it('removes the operator', () => {
-      expect(engine.operators.size).to.equal(10)
+      expect(engine.operators.size).to.equal(operatorCount)
       engine.addOperator('startsWithLetter', (factValue, jsonValue) => {
         return factValue[0] === jsonValue
       })
-      expect(engine.operators.size).to.equal(11)
+      expect(engine.operators.size).to.equal(operatorCount + 1)
       engine.removeOperator('startsWithLetter')
-      expect(engine.operators.size).to.equal(10)
+      expect(engine.operators.size).to.equal(operatorCount)
     })
 
     it('can only remove added operators', () => {
-      expect(engine.operators.size).to.equal(10)
+      expect(engine.operators.size).to.equal(operatorCount)
       const isRemoved = engine.removeOperator('nonExisting')
       expect(isRemoved).to.equal(false)
     })
