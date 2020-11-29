@@ -4,7 +4,7 @@ import Fact from './fact'
 import Rule from './rule'
 import Operator from './operator'
 import Almanac from './almanac'
-import { EventEmitter } from 'events'
+import EventEmitter from 'eventemitter2'
 import { SuccessEventFact } from './engine-facts'
 import defaultOperators from './engine-default-operators'
 import debug from './debug'
@@ -191,11 +191,13 @@ class Engine extends EventEmitter {
       return rule.evaluate(almanac).then((ruleResult) => {
         debug(`engine::run ruleResult:${ruleResult.result}`)
         if (ruleResult.result) {
-          this.emit('success', rule.event, almanac, ruleResult)
-          this.emit(rule.event.type, rule.event.params, almanac, ruleResult)
           almanac.factValue('success-events', { event: rule.event })
+          return Promise.all([
+            this.emitAsync('success', rule.event, almanac, ruleResult),
+            this.emitAsync(rule.event.type, rule.event.params, almanac, ruleResult)
+          ])
         } else {
-          this.emit('failure', rule.event, almanac, ruleResult)
+          return this.emitAsync('failure', rule.event, almanac, ruleResult)
         }
       })
     }))
