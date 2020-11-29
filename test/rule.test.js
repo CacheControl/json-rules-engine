@@ -188,17 +188,48 @@ describe('Rule', () => {
   })
 
   describe('evaluate()', () => {
-    it('evalutes truthy when there are no conditions', async () => {
-      const eventSpy = sinon.spy()
+    function setup () {
       const engine = new Engine()
       const rule = new Rule()
       rule.setConditions({
         all: []
       })
       engine.addRule(rule)
-      engine.on('success', eventSpy)
+
+      return { engine, rule }
+    }
+    it('evalutes truthy when there are no conditions', async () => {
+      const engineSuccessSpy = sinon.spy()
+      const { engine } = setup()
+
+      engine.on('success', engineSuccessSpy)
+
       await engine.run()
-      expect(eventSpy).to.have.been.calledOnce()
+
+      expect(engineSuccessSpy).to.have.been.calledOnce()
+    })
+
+    it('waits for all on("success") event promises to be resolved', async () => {
+      const engineSuccessSpy = sinon.spy()
+      const ruleSuccessSpy = sinon.spy()
+      const engineRunSpy = sinon.spy()
+      const { engine, rule } = setup()
+      rule.on('success', () => {
+        return new Promise(function (resolve) {
+          setTimeout(function () {
+            ruleSuccessSpy()
+            resolve()
+          }, 5)
+        })
+      })
+      engine.on('success', engineSuccessSpy)
+
+      await engine.run().then(() => engineRunSpy())
+
+      expect(ruleSuccessSpy).to.have.been.calledOnce()
+      expect(engineSuccessSpy).to.have.been.calledOnce()
+      expect(ruleSuccessSpy).to.have.been.calledBefore(engineRunSpy)
+      expect(ruleSuccessSpy).to.have.been.calledBefore(engineSuccessSpy)
     })
   })
 

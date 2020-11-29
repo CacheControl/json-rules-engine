@@ -2,8 +2,8 @@
 
 import Condition from './condition'
 import RuleResult from './rule-result'
-import { EventEmitter } from 'events'
 import debug from './debug'
+import EventEmitter from 'eventemitter2'
 
 class Rule extends EventEmitter {
   /**
@@ -262,14 +262,12 @@ class Rule extends EventEmitter {
 
     /**
      * Emits based on rule evaluation result, and decorates ruleResult with 'result' property
-     * @param {Boolean} result
+     * @param {RuleResult} ruleResult
      */
     const processResult = (result) => {
       ruleResult.setResult(result)
-
-      if (result) this.emit('success', ruleResult.event, almanac, ruleResult)
-      else this.emit('failure', ruleResult.event, almanac, ruleResult)
-      return ruleResult
+      const event = result ? 'success' : 'failure'
+      return this.emitAsync(event, ruleResult.event, almanac, ruleResult).then(() => ruleResult)
     }
 
     if (ruleResult.conditions.any) {
