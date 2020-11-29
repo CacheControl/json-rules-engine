@@ -1,5 +1,4 @@
 'use strict'
-
 /*
  * This example demonstrates using custom operators.
  *
@@ -17,7 +16,8 @@
  */
 
 require('colors')
-const Engine = require('../dist').Engine
+const Engine = require('json-rules-engine').Engine
+
 
 /**
  * Setup a new engine

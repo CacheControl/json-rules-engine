@@ -1,5 +1,4 @@
 'use strict'
-
 /*
  * This is a basic example demonstrating a condition that compares two facts
  *
@@ -11,7 +10,7 @@
  */
 
 require('colors')
-const Engine = require('../dist').Engine
+const Engine = require('json-rules-engine').Engine
 
 /**
  * Setup a new engine
