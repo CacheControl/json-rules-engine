@@ -37,8 +37,16 @@ const drinkRule = {
   },
   event: { type: 'drinks-screwdrivers' },
   priority: 10, // IMPORTANT!  Set a higher priority for the drinkRule, so it runs first
-  onSuccess: function (event, almanac) {
+  onSuccess: async function (event, almanac) {
     almanac.addRuntimeFact('screwdriverAficionado', true)
+
+    // asychronous operations can be performed within callbacks
+    // execution will not proceed until returned promises are resolved
+    const zipCode = await almanac.factValue('zipCode')
+    if (zipCode > 80014 && zipCode < 80642) {
+      const hometown = 'Denver'
+      almanac.addRuntimeFact('hometown', hometown) // overrides default 'hometown' fact value
+    }
   },
   onFailure: function (event, almanac) {
     almanac.addRuntimeFact('screwdriverAficionado', false)
@@ -61,6 +69,10 @@ const inviteRule = {
       fact: 'isSociable',
       operator: 'equal',
       value: true
+    }, {
+      fact: 'hometown',
+      operator: 'equal',
+      value: 'Denver'
     }]
   },
   event: { type: 'invite-to-screwdriver-social' },
@@ -81,7 +93,7 @@ engine
   })
 
 // define fact(s) known at runtime
-facts = { accountId: 'washington', drinksOrangeJuice: true, enjoysVodka: true, isSociable: true }
+facts = { accountId: 'washington', drinksOrangeJuice: true, enjoysVodka: true, isSociable: true, zipCode: 80211, hometown: 'unknown' }
 engine
   .run(facts) // first run, using washington's facts
   .then((results) => {
@@ -90,10 +102,10 @@ engine
     return results.almanac.factValue('screwdriverAficionado')
   })
   .then(isScrewdriverAficionado => {
-    console.log(`${facts.accountId} ${isScrewdriverAficionado ? 'IS'.green : 'IS NOT'.red} a screwdriver aficionado`)
+    console.log(`${facts.accountId} ${isScrewdriverAficionado ? 'IS'.green : 'IS NOT'.red} a screwdriver aficionado in Denver`)
   })
   .then(() => {
-    facts = { accountId: 'jefferson', drinksOrangeJuice: true, enjoysVodka: false, isSociable: true }
+    facts = { accountId: 'jefferson', drinksOrangeJuice: true, enjoysVodka: false, isSociable: true, zipCode: 80248, hometown: 'unknown' }
     return engine.run(facts) // second run, using jefferson's facts; facts & evaluation are independent of the first run
   })
   .then((results) => {
@@ -102,7 +114,7 @@ engine
     return results.almanac.factValue('screwdriverAficionado')
   })
   .then(isScrewdriverAficionado => {
-    console.log(`${facts.accountId} ${isScrewdriverAficionado ? 'IS'.green : 'IS NOT'.red} a screwdriver aficionado`)
+    console.log(`${facts.accountId} ${isScrewdriverAficionado ? 'IS'.green : 'IS NOT'.red} a screwdriver aficionado in Denver`)
   })
   .catch(console.log)
 
@@ -111,8 +123,8 @@ engine
  *
  * washington DID meet conditions for the drinks-screwdrivers rule.
  * washington DID meet conditions for the invite-to-screwdriver-social rule.
- * washington IS a screwdriver aficionado
+ * washington IS a screwdriver aficionado in Denver
  * jefferson did NOT meet conditions for the drinks-screwdrivers rule.
  * jefferson did NOT meet conditions for the invite-to-screwdriver-social rule.
- * jefferson IS NOT a screwdriver aficionado
+ * jefferson IS NOT a screwdriver aficionado in Denver
  */
