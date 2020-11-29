@@ -40,13 +40,14 @@ class Engine extends EventEmitter {
    */
   addRule (properties) {
     if (!properties) throw new Error('Engine: addRule() requires options')
-    if (!Object.prototype.hasOwnProperty.call(properties, 'conditions')) throw new Error('Engine: addRule() argument requires "conditions" property')
-    if (!Object.prototype.hasOwnProperty.call(properties, 'event')) throw new Error('Engine: addRule() argument requires "event" property')
 
     let rule
     if (properties instanceof Rule) {
       rule = properties
     } else {
+      if (!Object.prototype.hasOwnProperty.call(properties, 'event')) throw new Error('Engine: addRule() argument requires "event" property')
+      if (!Object.prototype.hasOwnProperty.call(properties, 'conditions')) throw new Error('Engine: addRule() argument requires "conditions" property')
+
       rule = new Rule(properties)
     }
     rule.setEngine(this)
@@ -191,13 +192,13 @@ class Engine extends EventEmitter {
       return rule.evaluate(almanac).then((ruleResult) => {
         debug(`engine::run ruleResult:${ruleResult.result}`)
         if (ruleResult.result) {
-          almanac.factValue('success-events', { event: rule.event })
+          almanac.factValue('success-events', { event: ruleResult.event })
           return Promise.all([
-            this.emitAsync('success', rule.event, almanac, ruleResult),
-            this.emitAsync(rule.event.type, rule.event.params, almanac, ruleResult)
+            this.emitAsync('success', ruleResult.event, almanac, ruleResult),
+            this.emitAsync(ruleResult.event.type, ruleResult.event.params, almanac, ruleResult)
           ])
         } else {
-          return this.emitAsync('failure', rule.event, almanac, ruleResult)
+          return this.emitAsync('failure', ruleResult.event, almanac, ruleResult)
         }
       })
     }))

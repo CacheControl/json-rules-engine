@@ -86,10 +86,10 @@ class Rule extends EventEmitter {
   setEvent (event) {
     if (!event) throw new Error('Rule: setEvent() requires event object')
     if (!Object.prototype.hasOwnProperty.call(event, 'type')) throw new Error('Rule: setEvent() requires event object with "type" property')
-    this.event = {
+    this.ruleEvent = {
       type: event.type
     }
-    if (event.params) this.event.params = event.params
+    if (event.params) this.ruleEvent.params = event.params
     return this
   }
 
@@ -107,7 +107,7 @@ class Rule extends EventEmitter {
     const props = {
       conditions: this.conditions.toJSON(false),
       priority: this.priority,
-      event: this.event,
+      event: this.ruleEvent,
       name: this.name
     }
     if (stringify) {
@@ -148,7 +148,7 @@ class Rule extends EventEmitter {
    * @return {Promise(RuleResult)} rule evaluation result
    */
   evaluate (almanac) {
-    const ruleResult = new RuleResult(this.conditions, this.event, this.priority, this.name)
+    const ruleResult = new RuleResult(this.conditions, this.ruleEvent, this.priority, this.name)
 
     /**
      * Evaluates the rule conditions
