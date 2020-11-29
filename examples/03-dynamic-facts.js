@@ -11,7 +11,7 @@
  */
 
 require('colors')
-const Engine = require('json-rules-engine').Engine
+const { Engine } = require('json-rules-engine')
 // example client for making asynchronous requests to an api, database, etc
 const apiClient = require('./support/account-api-client')
 

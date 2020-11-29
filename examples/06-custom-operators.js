@@ -16,7 +16,7 @@
  */
 
 require('colors')
-const Engine = require('json-rules-engine').Engine
+const { Engine } = require('json-rules-engine')
 
 
 /**
