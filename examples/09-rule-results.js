@@ -9,7 +9,7 @@
  *   DEBUG=json-rules-engine node ./examples/09-rule-results.js
  */
 require('colors')
-const Engine = require('json-rules-engine').Engine
+const { Engine } = require('json-rules-engine')
 
 /**
  * Setup a new engine

@@ -32,7 +32,7 @@ $ npm install json-rules-engine
 This example demonstrates an engine for detecting whether a basketball player has fouled out (a player who commits five personal fouls over the course of a 40-minute game, or six in a 48-minute game, fouls out).
 
 ```js
-const Engine = require('json-rules-engine').Engine
+const { Engine } = require('json-rules-engine')
 
 
 /**
@@ -109,7 +109,7 @@ Fact information is loaded via API call during runtime, and the results are cach
 It also demonstates use of the condition _path_ feature to reference properties of objects returned by facts.
 
 ```js
-const Engine = require('json-rules-engine').Engine
+const { Engine } = require('json-rules-engine')
 
 // example client for making asynchronous requests to an api, database, etc
 import apiClient from './account-api-client'
