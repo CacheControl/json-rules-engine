@@ -18,7 +18,6 @@
 require('colors')
 const { Engine } = require('json-rules-engine')
 
-
 /**
  * Setup a new engine
  */
