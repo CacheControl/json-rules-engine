@@ -94,6 +94,38 @@ class Rule extends EventEmitter {
   }
 
   /**
+   * returns the event object
+   * @returns {Object} event
+   */
+  getEvent () {
+    return this.ruleEvent
+  }
+
+  /**
+   * returns the priority
+   * @returns {Number} priority
+   */
+  getPriority () {
+    return this.priority
+  }
+
+  /**
+   * returns the event object
+   * @returns {Object} event
+   */
+  getConditions () {
+    return this.conditions
+  }
+
+  /**
+   * returns the engine object
+   * @returns {Object} engine
+   */
+  getEngine () {
+    return this.engine
+  }
+
+  /**
    * Sets the engine to run the rules under
    * @param {object} engine
    * @returns {Rule}

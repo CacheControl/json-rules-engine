@@ -60,13 +60,25 @@ let rule = new Rule(options)
 
 Helper for setting rule conditions. Alternative to passing the `conditions` option to the rule constructor.
 
+### getConditions() -> Object
+
+Retrieves rule condition set by constructor or `setCondition()`
+
 ### setEvent(Object event)
 
 Helper for setting rule event.  Alternative to passing the `event` option to the rule constructor.
 
+### getEvent() -> Object
+
+Retrieves rule event set by constructor or `setEvent()`
+
 ### setPriority(Integer priority = 1)
 
 Helper for setting rule priority. Alternative to passing the `priority` option to the rule constructor.
+
+### getPriority() -> Integer
+
+Retrieves rule priority set by constructor or `setPriority()`
 
 ### toJSON(Boolean stringify = true)
 

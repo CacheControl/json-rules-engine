@@ -119,6 +119,30 @@ describe('Rule', () => {
     })
   })
 
+  describe('accessors', () => {
+    it('retrieves event', () => {
+      const event = { type: 'e', params: { a: 'b' } }
+      rule.setEvent(event)
+      expect(rule.getEvent()).to.deep.equal(event)
+    })
+
+    it('retrieves priority', () => {
+      const priority = 100
+      rule.setPriority(priority)
+      expect(rule.getPriority()).to.equal(priority)
+    })
+
+    it('retrieves conditions', () => {
+      const condition = { all: [] }
+      rule.setConditions(condition)
+      expect(rule.getConditions()).to.deep.equal({
+        all: [],
+        operator: 'all',
+        priority: 1
+      })
+    })
+  })
+
   describe('setName', () => {
     it('defaults to undefined', () => {
       expect(rule.name).to.equal(undefined)
