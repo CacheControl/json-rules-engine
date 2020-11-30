@@ -1,3 +1,8 @@
+#### 6.0. / 2020-12-XX
+  * BREAKING CHANGES
+    * Private `rule.event` property renamed. Use `rule.getEvent()` to avoid breaking changes in the future.
+    * Engine and Rule events `on('success')`, `on('failure')`, and Rule callbacks `onSuccess` and `onFailure` now honor returned promises; any event handler that returns a promise will be waited upon to resolve before engine execution continues.
+
 #### 5.0.4 / 2020-09-26
   * Upgrade dependencies to latest
 
