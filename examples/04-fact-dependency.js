@@ -1,5 +1,4 @@
 'use strict'
-
 /*
  * This is an advanced example that demonstrates facts with dependencies
  * on other facts.  In addition, it demonstrates facts that load data asynchronously
@@ -13,7 +12,7 @@
  */
 
 require('colors')
-const Engine = require('../dist').Engine
+const { Engine } = require('json-rules-engine')
 const accountClient = require('./support/account-api-client')
 
 /**

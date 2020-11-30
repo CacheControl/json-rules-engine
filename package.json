@@ -25,7 +25,8 @@
   "standard": {
     "parser": "babel-eslint",
     "ignore": [
-      "/dist"
+      "/dist",
+      "/examples/node_modules"
     ],
     "globals": [
       "context",

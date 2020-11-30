@@ -1,5 +1,4 @@
 'use strict'
-
 /*
  * This is a basic example demonstrating how to leverage the metadata supplied by rule results
  *
@@ -10,7 +9,7 @@
  *   DEBUG=json-rules-engine node ./examples/09-rule-results.js
  */
 require('colors')
-const Engine = require('../dist').Engine
+const { Engine } = require('json-rules-engine')
 
 /**
  * Setup a new engine

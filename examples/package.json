@@ -1,0 +1,15 @@
+{
+  "name": "json-rules-engine-examples",
+  "version": "1.0.0",
+  "description": "examples for json-rule-engine",
+  "main": "",
+  "private": true,
+  "scripts": {
+    "all": "for i in *.js; do node $i; done;"
+  },
+  "author": "Cache Hamm <cache.hamm@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "json-rules-engine": "6.0.0-alpha-3"
+  }
+}

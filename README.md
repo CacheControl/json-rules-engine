@@ -1,5 +1,4 @@
 ![json-rules-engine](http://i.imgur.com/MAzq7l2.png)
-
 [![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
 [![Build Status](https://github.com/cachecontrol/json-rules-engine/workflows/Node.js%20CI/badge.svg?branch=master)](https://github.com/cachecontrol/json-rules-engine/workflows/Node.js%20CI/badge.svg?branch=master)
 
@@ -33,7 +32,8 @@ $ npm install json-rules-engine
 This example demonstrates an engine for detecting whether a basketball player has fouled out (a player who commits five personal fouls over the course of a 40-minute game, or six in a 48-minute game, fouls out).
 
 ```js
-import { Engine } from 'json-rules-engine'
+const { Engine } = require('json-rules-engine')
+
 
 /**
  * Setup a new engine
@@ -109,7 +109,7 @@ Fact information is loaded via API call during runtime, and the results are cach
 It also demonstates use of the condition _path_ feature to reference properties of objects returned by facts.
 
 ```js
-import { Engine } from 'json-rules-engine'
+const { Engine } = require('json-rules-engine')
 
 // example client for making asynchronous requests to an api, database, etc
 import apiClient from './account-api-client'

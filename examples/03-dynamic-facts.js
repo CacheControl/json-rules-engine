@@ -1,5 +1,4 @@
 'use strict'
-
 /*
  * This example demonstrates computing fact values at runtime, and leveraging the 'path' feature
  * to select object properties returned by facts
@@ -12,7 +11,7 @@
  */
 
 require('colors')
-const Engine = require('../dist').Engine
+const { Engine } = require('json-rules-engine')
 // example client for making asynchronous requests to an api, database, etc
 const apiClient = require('./support/account-api-client')
 
