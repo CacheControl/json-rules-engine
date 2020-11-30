@@ -50,9 +50,9 @@ let rule = new Rule(options)
 
 **options.priority** : `[Number, default 1]` Dictates when rule should be run, relative to other rules.  Higher priority rules are run before lower priority rules.  Rules with the same priority are run in parallel.  Priority must be a positive, non-zero integer.
 
-**options.onSuccess** : `[Function(Object event, Almanac almanac)]` Registers callback with the rule's `on('success')` listener.  The rule's `event` property and the current [Almanac](./almanac.md) are passed as arguments.
+**options.onSuccess** : `[Function(Object event, Almanac almanac)]` Registers callback with the rule's `on('success')` listener.  The rule's `event` property and the current [Almanac](./almanac.md) are passed as arguments. Any promise returned by the callback will be waited on to resolve before execution continues.
 
-**options.onFailure** : `[Function(Object event, Almanac almanac)]` Registers callback with the rule's `on('failure')` listener.  The rule's `event` property and the current [Almanac](./almanac.md) are passed as arguments.
+**options.onFailure** : `[Function(Object event, Almanac almanac)]` Registers callback with the rule's `on('failure')` listener.  The rule's `event` property and the current [Almanac](./almanac.md) are passed as arguments. Any promise returned by the callback will be waited on to resolve before execution continues.
 
 **options.name** : `[Any]` A way of naming your rules, allowing them to be easily identifiable in [Rule Results](#rule-results).  This is usually of type `String`, but could also be `Object`, `Array`, or `Number`. Note that the name need not be unique, and that it has no impact on execution of the rule.
 
