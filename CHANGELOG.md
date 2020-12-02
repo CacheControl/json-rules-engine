@@ -1,3 +1,9 @@
+#### 5.3.0 / 2020-12-02
+  * Allow facts to have a value of `undefined`
+
+#### 5.2.0 / 2020-11-31
+  * No changes; published to correct an accidental publish of untagged alpha
+
 #### 5.0.4 / 2020-09-26
   * Upgrade dependencies to latest
 
