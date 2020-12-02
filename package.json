@@ -11,7 +11,8 @@
     "lint:fix": "standard --fix --env mocha",
     "prepublishOnly": "npm run build",
     "build": "babel --stage 1 -d dist/ src/",
-    "watch": "babel --watch --stage 1 -d dist/ src"
+    "watch": "babel --watch --stage 1 -d dist/ src",
+    "examples": "./test/support/example_runner.sh"
   },
   "repository": {
     "type": "git",
