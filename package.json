@@ -1,6 +1,6 @@
 {
   "name": "json-rules-engine",
-  "version": "5.1.0-rc1",
+  "version": "5.2.0",
   "description": "Rules Engine expressed in simple json",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -25,7 +25,8 @@
   "standard": {
     "parser": "babel-eslint",
     "ignore": [
-      "/dist"
+      "/dist",
+      "/examples/node_modules"
     ],
     "globals": [
       "context",

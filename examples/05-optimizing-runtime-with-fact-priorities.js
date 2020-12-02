@@ -1,5 +1,4 @@
 'use strict'
-
 /*
  * This is an advanced example that demonstrates using fact priorities to optimize the rules engine.
  *
@@ -11,7 +10,7 @@
  */
 
 require('colors')
-const Engine = require('../dist').Engine
+const { Engine } = require('json-rules-engine')
 const accountClient = require('./support/account-api-client')
 
 /**

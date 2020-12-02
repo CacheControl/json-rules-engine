@@ -1,5 +1,4 @@
 'use strict'
-
 /*
  * This example demonstates nested boolean logic - e.g. (x OR y) AND (a OR b).
  *
@@ -11,8 +10,7 @@
  */
 
 require('colors')
-const Engine = require('../dist').Engine
-
+const { Engine } = require('json-rules-engine')
 /**
  * Setup a new engine
  */
