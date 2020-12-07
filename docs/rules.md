@@ -219,7 +219,7 @@ For an example, see [fact-dependency](../examples/04-fact-dependency.js)
 
 ### Comparing facts
 
-Sometimes it is necessary to compare facts against others facts.  This can be accomplished by nesting the second fact within the `value` property.  This second fact has access to the same `params` and `path` helpers as the primary fact.
+Sometimes it is necessary to compare facts against other facts.  This can be accomplished by nesting the second fact within the `value` property.  This second fact has access to the same `params` and `path` helpers as the primary fact.
 
 ```js
 // identifies whether the current widget price is above a maximum

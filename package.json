@@ -48,6 +48,7 @@
     ],
     "file": "./test/support/bootstrap.js",
     "checkLeaks": true,
+    "recursive": true,
     "globals": [
       "expect"
     ]

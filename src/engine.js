@@ -212,7 +212,6 @@ class Engine extends EventEmitter {
    */
   run (runtimeFacts = {}) {
     debug('engine::run started')
-    debug('engine::run runtimeFacts:', runtimeFacts)
     runtimeFacts['success-events'] = new Fact('success-events', SuccessEventFact(), { cache: false })
     this.status = RUNNING
     const almanac = new Almanac(this.facts, runtimeFacts, { allowUndefinedFacts: this.allowUndefinedFacts })

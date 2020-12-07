@@ -101,7 +101,7 @@ export default class Condition {
         return almanac.factValue(this.fact, this.params, this.path)
           .then(leftHandSideValue => {
             const result = op.evaluate(leftHandSideValue, rightHandSideValue)
-            debug(`condition::evaluate <${leftHandSideValue} ${this.operator} ${rightHandSideValue}?> (${result})`)
+            debug(`condition::evaluate <${JSON.stringify(leftHandSideValue)} ${this.operator} ${JSON.stringify(rightHandSideValue)}?> (${result})`)
             return { result, leftHandSideValue, rightHandSideValue, operator: this.operator }
           })
       })
