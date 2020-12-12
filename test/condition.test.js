@@ -66,7 +66,6 @@ describe('Condition', () => {
     let condition
     let almanac
     function setup (options, factValue) {
-      if (typeof factValue === 'undefined') factValue = 1
       const properties = Object.assign({}, conditionBase, options)
       condition = new Condition(properties)
       const fact = new Fact(conditionBase.fact, factValue)
@@ -74,7 +73,7 @@ describe('Condition', () => {
     }
 
     context('validations', () => {
-      beforeEach(() => setup())
+      beforeEach(() => setup({}, 1))
       it('throws when missing an almanac', () => {
         return expect(condition.evaluate(undefined, operators)).to.be.rejectedWith('almanac required')
       })
@@ -92,6 +91,18 @@ describe('Condition', () => {
       expect((await condition.evaluate(almanac, operators, 50)).result).to.equal(true)
       setup({ operator: 'equal' }, 5)
       expect((await condition.evaluate(almanac, operators, 5)).result).to.equal(false)
+    })
+
+    it('evaluates "equal" to check for undefined', async () => {
+      condition = new Condition({ fact: 'age', operator: 'equal', value: undefined })
+      let fact = new Fact('age', undefined)
+      almanac = new Almanac(new Map([[fact.id, fact]]))
+
+      expect((await condition.evaluate(almanac, operators)).result).to.equal(true)
+
+      fact = new Fact('age', 1)
+      almanac = new Almanac(new Map([[fact.id, fact]]))
+      expect((await condition.evaluate(almanac, operators)).result).to.equal(false)
     })
 
     it('evaluates "notEqual"', async () => {
