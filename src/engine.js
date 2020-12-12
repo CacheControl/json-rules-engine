@@ -4,7 +4,7 @@ import Fact from './fact'
 import Rule from './rule'
 import Operator from './operator'
 import Almanac from './almanac'
-import { EventEmitter } from 'events'
+import EventEmitter from 'eventemitter2'
 import { SuccessEventFact } from './engine-facts'
 import defaultOperators from './engine-default-operators'
 import debug from './debug'
@@ -40,13 +40,14 @@ class Engine extends EventEmitter {
    */
   addRule (properties) {
     if (!properties) throw new Error('Engine: addRule() requires options')
-    if (!Object.prototype.hasOwnProperty.call(properties, 'conditions')) throw new Error('Engine: addRule() argument requires "conditions" property')
-    if (!Object.prototype.hasOwnProperty.call(properties, 'event')) throw new Error('Engine: addRule() argument requires "event" property')
 
     let rule
     if (properties instanceof Rule) {
       rule = properties
     } else {
+      if (!Object.prototype.hasOwnProperty.call(properties, 'event')) throw new Error('Engine: addRule() argument requires "event" property')
+      if (!Object.prototype.hasOwnProperty.call(properties, 'conditions')) throw new Error('Engine: addRule() argument requires "conditions" property')
+
       rule = new Rule(properties)
     }
     rule.setEngine(this)
@@ -191,11 +192,12 @@ class Engine extends EventEmitter {
       return rule.evaluate(almanac).then((ruleResult) => {
         debug(`engine::run ruleResult:${ruleResult.result}`)
         if (ruleResult.result) {
-          this.emit('success', rule.event, almanac, ruleResult)
-          this.emit(rule.event.type, rule.event.params, almanac, ruleResult)
-          almanac.factValue('success-events', { event: rule.event })
+          return Promise.all([
+            almanac.factValue('success-events', { event: ruleResult.event }),
+            this.emitAsync('success', ruleResult.event, almanac, ruleResult)
+          ]).then(() => this.emitAsync(ruleResult.event.type, ruleResult.event.params, almanac, ruleResult))
         } else {
-          this.emit('failure', rule.event, almanac, ruleResult)
+          return this.emitAsync('failure', ruleResult.event, almanac, ruleResult)
         }
       })
     }))
@@ -209,7 +211,6 @@ class Engine extends EventEmitter {
    */
   run (runtimeFacts = {}) {
     debug('engine::run started')
-    debug('engine::run runtimeFacts:', runtimeFacts)
     runtimeFacts['success-events'] = new Fact('success-events', SuccessEventFact(), { cache: false })
     this.status = RUNNING
     const almanac = new Almanac(this.facts, runtimeFacts, { allowUndefinedFacts: this.allowUndefinedFacts })

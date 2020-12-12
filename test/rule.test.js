@@ -29,7 +29,7 @@ describe('Rule', () => {
       const rule = new Rule(opts)
       expect(rule.priority).to.eql(opts.priority)
       expect(rule.conditions).to.eql(opts.conditions)
-      expect(rule.event).to.eql(opts.event)
+      expect(rule.ruleEvent).to.eql(opts.event)
       expect(rule.name).to.eql(opts.name)
     })
 
@@ -51,7 +51,7 @@ describe('Rule', () => {
       const rule = new Rule(json)
       expect(rule.priority).to.eql(opts.priority)
       expect(rule.conditions).to.eql(opts.conditions)
-      expect(rule.event).to.eql(opts.event)
+      expect(rule.ruleEvent).to.eql(opts.event)
       expect(rule.name).to.eql(opts.name)
     })
   })
@@ -116,6 +116,30 @@ describe('Rule', () => {
 
     it('errors if priority is less than 0', () => {
       expect(rule.setPriority.bind(null, 0)).to.throw(/greater than zero/)
+    })
+  })
+
+  describe('accessors', () => {
+    it('retrieves event', () => {
+      const event = { type: 'e', params: { a: 'b' } }
+      rule.setEvent(event)
+      expect(rule.getEvent()).to.deep.equal(event)
+    })
+
+    it('retrieves priority', () => {
+      const priority = 100
+      rule.setPriority(priority)
+      expect(rule.getPriority()).to.equal(priority)
+    })
+
+    it('retrieves conditions', () => {
+      const condition = { all: [] }
+      rule.setConditions(condition)
+      expect(rule.getConditions()).to.deep.equal({
+        all: [],
+        operator: 'all',
+        priority: 1
+      })
     })
   })
 
@@ -188,17 +212,48 @@ describe('Rule', () => {
   })
 
   describe('evaluate()', () => {
-    it('evalutes truthy when there are no conditions', async () => {
-      const eventSpy = sinon.spy()
+    function setup () {
       const engine = new Engine()
       const rule = new Rule()
       rule.setConditions({
         all: []
       })
       engine.addRule(rule)
-      engine.on('success', eventSpy)
+
+      return { engine, rule }
+    }
+    it('evalutes truthy when there are no conditions', async () => {
+      const engineSuccessSpy = sinon.spy()
+      const { engine } = setup()
+
+      engine.on('success', engineSuccessSpy)
+
       await engine.run()
-      expect(eventSpy).to.have.been.calledOnce()
+
+      expect(engineSuccessSpy).to.have.been.calledOnce()
+    })
+
+    it('waits for all on("success") event promises to be resolved', async () => {
+      const engineSuccessSpy = sinon.spy()
+      const ruleSuccessSpy = sinon.spy()
+      const engineRunSpy = sinon.spy()
+      const { engine, rule } = setup()
+      rule.on('success', () => {
+        return new Promise(function (resolve) {
+          setTimeout(function () {
+            ruleSuccessSpy()
+            resolve()
+          }, 5)
+        })
+      })
+      engine.on('success', engineSuccessSpy)
+
+      await engine.run().then(() => engineRunSpy())
+
+      expect(ruleSuccessSpy).to.have.been.calledOnce()
+      expect(engineSuccessSpy).to.have.been.calledOnce()
+      expect(ruleSuccessSpy).to.have.been.calledBefore(engineRunSpy)
+      expect(ruleSuccessSpy).to.have.been.calledBefore(engineSuccessSpy)
     })
   })
 
@@ -256,7 +311,7 @@ describe('Rule', () => {
       const hydratedRule = new Rule(jsonString)
       expect(hydratedRule.conditions).to.eql(rule.conditions)
       expect(hydratedRule.priority).to.eql(rule.priority)
-      expect(hydratedRule.event).to.eql(rule.event)
+      expect(hydratedRule.ruleEvent).to.eql(rule.ruleEvent)
       expect(hydratedRule.name).to.eql(rule.name)
     })
 
@@ -267,7 +322,7 @@ describe('Rule', () => {
       const hydratedRule = new Rule(json)
       expect(hydratedRule.conditions).to.eql(rule.conditions)
       expect(hydratedRule.priority).to.eql(rule.priority)
-      expect(hydratedRule.event).to.eql(rule.event)
+      expect(hydratedRule.ruleEvent).to.eql(rule.ruleEvent)
       expect(hydratedRule.name).to.eql(rule.name)
     })
   })

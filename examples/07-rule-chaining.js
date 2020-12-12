@@ -13,6 +13,7 @@
 
 require('colors')
 const { Engine } = require('json-rules-engine')
+const { getAccountInformation } = require('./support/account-api-client')
 
 /**
  * Setup a new engine
@@ -36,8 +37,14 @@ const drinkRule = {
   },
   event: { type: 'drinks-screwdrivers' },
   priority: 10, // IMPORTANT!  Set a higher priority for the drinkRule, so it runs first
-  onSuccess: function (event, almanac) {
+  onSuccess: async function (event, almanac) {
     almanac.addRuntimeFact('screwdriverAficionado', true)
+
+    // asychronous operations can be performed within callbacks
+    // engine execution will not proceed until the returned promises is resolved
+    const accountId = await almanac.factValue('accountId')
+    const accountInfo = await getAccountInformation(accountId)
+    almanac.addRuntimeFact('accountInfo', accountInfo)
   },
   onFailure: function (event, almanac) {
     almanac.addRuntimeFact('screwdriverAficionado', false)
@@ -60,6 +67,11 @@ const inviteRule = {
       fact: 'isSociable',
       operator: 'equal',
       value: true
+    }, {
+      fact: 'accountInfo',
+      path: '$.company',
+      operator: 'equal',
+      value: 'microsoft'
     }]
   },
   event: { type: 'invite-to-screwdriver-social' },
@@ -70,46 +82,43 @@ engine.addRule(inviteRule)
 /**
  * Register listeners with the engine for rule success and failure
  */
-let facts
 engine
-  .on('success', (event, almanac) => {
-    console.log(facts.accountId + ' DID '.green + 'meet conditions for the ' + event.type.underline + ' rule.')
+  .on('success', async (event, almanac) => {
+    const accountInfo = await almanac.factValue('accountInfo')
+    const accountId = await almanac.factValue('accountId')
+    console.log(`${accountId}(${accountInfo.company}) ` + 'DID'.green + ` meet conditions for the ${event.type.underline} rule.`)
   })
-  .on('failure', event => {
-    console.log(facts.accountId + ' did ' + 'NOT'.red + ' meet conditions for the ' + event.type.underline + ' rule.')
+  .on('failure', async (event, almanac) => {
+    const accountId = await almanac.factValue('accountId')
+    console.log(`${accountId} did ` + 'NOT'.red + ` meet conditions for the ${event.type.underline} rule.`)
   })
 
-// define fact(s) known at runtime
-facts = { accountId: 'washington', drinksOrangeJuice: true, enjoysVodka: true, isSociable: true }
-engine
-  .run(facts) // first run, using washington's facts
-  .then((results) => {
-    // access whether washington is a screwdriverAficionado,
-    // which was determined at runtime via the rules `drinkRules`
-    return results.almanac.factValue('screwdriverAficionado')
-  })
-  .then(isScrewdriverAficionado => {
-    console.log(`${facts.accountId} ${isScrewdriverAficionado ? 'IS'.green : 'IS NOT'.red} a screwdriver aficionado`)
-  })
-  .then(() => {
-    facts = { accountId: 'jefferson', drinksOrangeJuice: true, enjoysVodka: false, isSociable: true }
-    return engine.run(facts) // second run, using jefferson's facts; facts & evaluation are independent of the first run
-  })
-  .then((results) => {
-    // access whether jefferson is a screwdriverAficionado,
-    // which was determined at runtime via the rules `drinkRules`
-    return results.almanac.factValue('screwdriverAficionado')
-  })
-  .then(isScrewdriverAficionado => {
-    console.log(`${facts.accountId} ${isScrewdriverAficionado ? 'IS'.green : 'IS NOT'.red} a screwdriver aficionado`)
-  })
-  .catch(console.log)
+async function run () {
+  // define fact(s) known at runtime
+  let facts = { accountId: 'washington', drinksOrangeJuice: true, enjoysVodka: true, isSociable: true, accountInfo: {} }
+
+  // first run, using washington's facts
+  let results = await engine.run(facts)
+
+  // isScrewdriverAficionado was a fact set by engine.run()
+  let isScrewdriverAficionado = results.almanac.factValue('screwdriverAficionado')
+  console.log(`${facts.accountId} ${isScrewdriverAficionado ? 'IS'.green : 'IS NOT'.red} a screwdriver aficionado`)
+
+  facts = { accountId: 'jefferson', drinksOrangeJuice: true, enjoysVodka: false, isSociable: true, accountInfo: {} }
+  results = await engine.run(facts) // second run, using jefferson's facts; facts & evaluation are independent of the first run
+
+  isScrewdriverAficionado = await results.almanac.factValue('screwdriverAficionado')
+  console.log(`${facts.accountId} ${isScrewdriverAficionado ? 'IS'.green : 'IS NOT'.red} a screwdriver aficionado`)
+}
+
+run().catch(console.log)
 
 /*
  * OUTPUT:
  *
- * washington DID meet conditions for the drinks-screwdrivers rule.
- * washington DID meet conditions for the invite-to-screwdriver-social rule.
+ * loading account information for "washington"
+ * washington(microsoft) DID meet conditions for the drinks-screwdrivers rule.
+ * washington(microsoft) DID meet conditions for the invite-to-screwdriver-social rule.
  * washington IS a screwdriver aficionado
  * jefferson did NOT meet conditions for the drinks-screwdrivers rule.
  * jefferson did NOT meet conditions for the invite-to-screwdriver-social rule.

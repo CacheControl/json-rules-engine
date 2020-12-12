@@ -3,11 +3,12 @@
 import engineFactory from '../src/index'
 import sinon from 'sinon'
 
-describe('Engine: cache', () => {
+describe('Engine: rule priorities', () => {
   let engine
 
-  const event = { type: 'setDrinkingFlag' }
-  const collegeSeniorEvent = { type: 'isCollegeSenior' }
+  const highPriorityEvent = { type: 'highPriorityEvent' }
+  const midPriorityEvent = { type: 'midPriorityEvent' }
+  const lowestPriorityEvent = { type: 'lowestPriorityEvent' }
   const conditions = {
     any: [{
       fact: 'age',
@@ -28,12 +29,16 @@ describe('Engine: cache', () => {
     const factSpy = sandbox.stub().returns(22)
     const eventSpy = sandbox.spy()
     engine = engineFactory()
-    const over20 = factories.rule({ conditions, event: collegeSeniorEvent, priority: 50 })
-    engine.addRule(over20)
-    const determineDrinkingAge = factories.rule({ conditions, event, priority: 100 })
-    engine.addRule(determineDrinkingAge)
-    const determineCollegeSenior = factories.rule({ conditions, event: collegeSeniorEvent, priority: 1 })
-    engine.addRule(determineCollegeSenior)
+
+    const highPriorityRule = factories.rule({ conditions, event: midPriorityEvent, priority: 50 })
+    engine.addRule(highPriorityRule)
+
+    const midPriorityRule = factories.rule({ conditions, event: highPriorityEvent, priority: 100 })
+    engine.addRule(midPriorityRule)
+
+    const lowPriorityRule = factories.rule({ conditions, event: lowestPriorityEvent, priority: 1 })
+    engine.addRule(lowPriorityRule)
+
     engine.addFact('age', factSpy)
     engine.on('success', eventSpy)
   }
@@ -53,5 +58,39 @@ describe('Engine: cache', () => {
     expect(engine.prioritizedRules.length).to.equal(3)
     engine.addRule(factories.rule())
     expect(engine.prioritizedRules).to.be.null()
+  })
+
+  it('resolves all events returning promises before executing the next rule', async () => {
+    setup()
+
+    const highPrioritySpy = sandbox.spy()
+    const midPrioritySpy = sandbox.spy()
+    const lowPrioritySpy = sandbox.spy()
+
+    engine.on(highPriorityEvent.type, () => {
+      return new Promise(function (resolve) {
+        setTimeout(function () {
+          highPrioritySpy()
+          resolve()
+        }, 10) // wait longest
+      })
+    })
+    engine.on(midPriorityEvent.type, () => {
+      return new Promise(function (resolve) {
+        setTimeout(function () {
+          midPrioritySpy()
+          resolve()
+        }, 5) // wait half as much
+      })
+    })
+
+    engine.on(lowestPriorityEvent.type, () => {
+      lowPrioritySpy() // emit immediately. this event should still be triggered last
+    })
+
+    await engine.run()
+
+    expect(highPrioritySpy).to.be.calledBefore(midPrioritySpy)
+    expect(midPrioritySpy).to.be.calledBefore(lowPrioritySpy)
   })
 })

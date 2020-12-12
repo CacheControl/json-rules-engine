@@ -1,6 +1,6 @@
 {
   "name": "json-rules-engine",
-  "version": "5.3.0",
+  "version": "6.0.0-alpha-3",
   "description": "Rules Engine expressed in simple json",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -49,6 +49,7 @@
     ],
     "file": "./test/support/bootstrap.js",
     "checkLeaks": true,
+    "recursive": true,
     "globals": [
       "expect"
     ]
@@ -82,7 +83,7 @@
   },
   "dependencies": {
     "clone": "^2.1.2",
-    "events": "^3.2.0",
+    "eventemitter2": "^6.4.3",
     "hash-it": "^4.0.5",
     "jsonpath-plus": "^4.0.0",
     "lodash.isobjectlike": "^4.0.0"

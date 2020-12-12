@@ -2,8 +2,8 @@
 
 import Condition from './condition'
 import RuleResult from './rule-result'
-import { EventEmitter } from 'events'
 import debug from './debug'
+import EventEmitter from 'eventemitter2'
 
 class Rule extends EventEmitter {
   /**
@@ -86,11 +86,43 @@ class Rule extends EventEmitter {
   setEvent (event) {
     if (!event) throw new Error('Rule: setEvent() requires event object')
     if (!Object.prototype.hasOwnProperty.call(event, 'type')) throw new Error('Rule: setEvent() requires event object with "type" property')
-    this.event = {
+    this.ruleEvent = {
       type: event.type
     }
-    if (event.params) this.event.params = event.params
+    if (event.params) this.ruleEvent.params = event.params
     return this
+  }
+
+  /**
+   * returns the event object
+   * @returns {Object} event
+   */
+  getEvent () {
+    return this.ruleEvent
+  }
+
+  /**
+   * returns the priority
+   * @returns {Number} priority
+   */
+  getPriority () {
+    return this.priority
+  }
+
+  /**
+   * returns the event object
+   * @returns {Object} event
+   */
+  getConditions () {
+    return this.conditions
+  }
+
+  /**
+   * returns the engine object
+   * @returns {Object} engine
+   */
+  getEngine () {
+    return this.engine
   }
 
   /**
@@ -107,7 +139,7 @@ class Rule extends EventEmitter {
     const props = {
       conditions: this.conditions.toJSON(false),
       priority: this.priority,
-      event: this.event,
+      event: this.ruleEvent,
       name: this.name
     }
     if (stringify) {
@@ -148,7 +180,7 @@ class Rule extends EventEmitter {
    * @return {Promise(RuleResult)} rule evaluation result
    */
   evaluate (almanac) {
-    const ruleResult = new RuleResult(this.conditions, this.event, this.priority, this.name)
+    const ruleResult = new RuleResult(this.conditions, this.ruleEvent, this.priority, this.name)
 
     /**
      * Evaluates the rule conditions
@@ -262,14 +294,12 @@ class Rule extends EventEmitter {
 
     /**
      * Emits based on rule evaluation result, and decorates ruleResult with 'result' property
-     * @param {Boolean} result
+     * @param {RuleResult} ruleResult
      */
     const processResult = (result) => {
       ruleResult.setResult(result)
-
-      if (result) this.emit('success', ruleResult.event, almanac, ruleResult)
-      else this.emit('failure', ruleResult.event, almanac, ruleResult)
-      return ruleResult
+      const event = result ? 'success' : 'failure'
+      return this.emitAsync(event, ruleResult.event, almanac, ruleResult).then(() => ruleResult)
     }
 
     if (ruleResult.conditions.any) {

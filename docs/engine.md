@@ -176,7 +176,7 @@ There are two generic event emissions that trigger automatically:
 
 #### ```engine.on('success', Function(Object event, Almanac almanac, RuleResult ruleResult))```
 
-Fires when a rule passes. The callback will receive the event object, the current [Almanac](./almanac.md), and the [Rule Result](./rules.md#rule-results).
+Fires when a rule passes. The callback will receive the event object, the current [Almanac](./almanac.md), and the [Rule Result](./rules.md#rule-results). Any promise returned by the callback will be waited on to resolve before execution continues.
 
 ```js
 engine.on('success', function(event, almanac, ruleResult) {
@@ -186,7 +186,7 @@ engine.on('success', function(event, almanac, ruleResult) {
 
 #### ```engine.on('failure', Function(Object event, Almanac almanac, RuleResult ruleResult))```
 
-Companion to 'success', except fires when a rule fails.  The callback will receive the event object, the current [Almanac](./almanac.md), and the [Rule Result](./rules.md#rule-results).
+Companion to 'success', except fires when a rule fails.  The callback will receive the event object, the current [Almanac](./almanac.md), and the [Rule Result](./rules.md#rule-results). Any promise returned by the callback will be waited on to resolve before execution continues.
 
 ```js
 engine.on('failure', function(event, almanac, ruleResult) {

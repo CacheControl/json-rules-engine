@@ -50,9 +50,9 @@ let rule = new Rule(options)
 
 **options.priority** : `[Number, default 1]` Dictates when rule should be run, relative to other rules.  Higher priority rules are run before lower priority rules.  Rules with the same priority are run in parallel.  Priority must be a positive, non-zero integer.
 
-**options.onSuccess** : `[Function(Object event, Almanac almanac)]` Registers callback with the rule's `on('success')` listener.  The rule's `event` property and the current [Almanac](./almanac.md) are passed as arguments.
+**options.onSuccess** : `[Function(Object event, Almanac almanac)]` Registers callback with the rule's `on('success')` listener.  The rule's `event` property and the current [Almanac](./almanac.md) are passed as arguments. Any promise returned by the callback will be waited on to resolve before execution continues.
 
-**options.onFailure** : `[Function(Object event, Almanac almanac)]` Registers callback with the rule's `on('failure')` listener.  The rule's `event` property and the current [Almanac](./almanac.md) are passed as arguments.
+**options.onFailure** : `[Function(Object event, Almanac almanac)]` Registers callback with the rule's `on('failure')` listener.  The rule's `event` property and the current [Almanac](./almanac.md) are passed as arguments. Any promise returned by the callback will be waited on to resolve before execution continues.
 
 **options.name** : `[Any]` A way of naming your rules, allowing them to be easily identifiable in [Rule Results](#rule-results).  This is usually of type `String`, but could also be `Object`, `Array`, or `Number`. Note that the name need not be unique, and that it has no impact on execution of the rule.
 
@@ -60,13 +60,25 @@ let rule = new Rule(options)
 
 Helper for setting rule conditions. Alternative to passing the `conditions` option to the rule constructor.
 
+### getConditions() -> Object
+
+Retrieves rule condition set by constructor or `setCondition()`
+
 ### setEvent(Object event)
 
 Helper for setting rule event.  Alternative to passing the `event` option to the rule constructor.
 
+### getEvent() -> Object
+
+Retrieves rule event set by constructor or `setEvent()`
+
 ### setPriority(Integer priority = 1)
 
 Helper for setting rule priority. Alternative to passing the `priority` option to the rule constructor.
+
+### getPriority() -> Integer
+
+Retrieves rule priority set by constructor or `setPriority()`
 
 ### toJSON(Boolean stringify = true)
 
@@ -207,7 +219,7 @@ For an example, see [fact-dependency](../examples/04-fact-dependency.js)
 
 ### Comparing facts
 
-Sometimes it is necessary to compare facts against others facts.  This can be accomplished by nesting the second fact within the `value` property.  This second fact has access to the same `params` and `path` helpers as the primary fact.
+Sometimes it is necessary to compare facts against other facts.  This can be accomplished by nesting the second fact within the `value` property.  This second fact has access to the same `params` and `path` helpers as the primary fact.
 
 ```js
 // identifies whether the current widget price is above a maximum

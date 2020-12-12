@@ -94,7 +94,6 @@ describe('Engine: run', () => {
   describe('facts updated during run', () => {
     beforeEach(() => {
       engine.on('success', (event, almanac, ruleResult) => {
-        console.log(ruleResult)
         // Assign unique runtime facts per event
         almanac.addRuntimeFact(`runtime-fact-${event.type}`, ruleResult.conditions.any[0].value)
       })
@@ -102,7 +101,6 @@ describe('Engine: run', () => {
 
     it('returns an almanac with runtime facts added', () => {
       return engine.run({ age: 90 }).then(results => {
-        console.log(results)
         return Promise.all([
           results.almanac.factValue('runtime-fact-generic1'),
           results.almanac.factValue('runtime-fact-generic2')

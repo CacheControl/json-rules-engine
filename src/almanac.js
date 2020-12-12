@@ -114,7 +114,7 @@ export default class Almanac {
           .then(factValue => {
             if (isObjectLike(factValue)) {
               const pathValue = JSONPath({ path, json: factValue, wrap: false })
-              debug(`condition::evaluate extracting object property ${path}, received: ${pathValue}`)
+              debug(`condition::evaluate extracting object property ${path}, received: ${JSON.stringify(pathValue)}`)
               return pathValue
             } else {
               debug(`condition::evaluate could not compute object path(${path}) of non-object: ${factValue} <${typeof factValue}>; continuing with ${factValue}`)
