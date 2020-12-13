@@ -1,5 +1,14 @@
 # Almanac
 
+* [Overview](#overview)
+* [Methods](#methods)
+    * [almanac.factValue(Fact fact, Object params, String path) -&gt; Promise](#almanacfactvaluefact-fact-object-params-string-path---promise)
+    * [almanac.addRuntimeFact(String factId, Mixed value)](#almanacaddruntimefactstring-factid-mixed-value)
+* [Common Use Cases](#common-use-cases)
+    * [Fact dependencies](#fact-dependencies)
+    * [Retrieve fact values when handling events](#retrieve-fact-values-when-handling-events)
+    * [Rule Chaining](#rule-chaining)
+
 ## Overview
 
 An almanac collects facts through an engine run cycle.  As the engine computes fact values,

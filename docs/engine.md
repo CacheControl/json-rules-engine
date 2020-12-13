@@ -2,6 +2,20 @@
 
 The Engine stores and executes rules, emits events, and maintains state.
 
+* [Methods](#methods)
+  * [constructor([Array rules], Object [options])](#constructorarray-rules-object-options)
+    * [Options](#options)
+  * [engine.addFact(String id, Function [definitionFunc], Object [options])](#engineaddfactstring-id-function-definitionfunc-object-options)
+  * [engine.removeFact(String id)](#engineremovefactstring-id)
+  * [engine.addRule(Rule instance|Object options)](#engineaddrulerule-instanceobject-options)
+  * [engine.removeRule(Rule instance)](#engineremoverulerule-instance)
+  * [engine.addOperator(String operatorName, Function evaluateFunc(factValue, jsonValue))](#engineaddoperatorstring-operatorname-function-evaluatefuncfactvalue-jsonvalue)
+  * [engine.removeOperator(String operatorName)](#engineremoveoperatorstring-operatorname)
+  * [engine.run([Object facts], [Object options]) -&gt; Promise ({ events: Events, almanac: Almanac})](#enginerunobject-facts-object-options---promise--events-events-almanac-almanac)
+  * [engine.stop() -&gt; Engine](#enginestop---engine)
+    * [engine.on('success', Function(Object event, Almanac almanac, RuleResult ruleResult))](#engineonsuccess-functionobject-event-almanac-almanac-ruleresult-ruleresult)
+    * [engine.on('failure', Function(Object event, Almanac almanac, RuleResult ruleResult))](#engineonfailure-functionobject-event-almanac-almanac-ruleresult-ruleresult)
+
 ## Methods
 
 ### constructor([Array rules], Object [options])
@@ -16,7 +30,8 @@ let engine = new Engine([Array rules])
 
 // initialize with options
 let options = {
-  allowUndefinedFacts: false
+  allowUndefinedFacts: false,
+  pathResolver: (object, path) => _.get(object, path)
 };
 let engine = new Engine([Array rules], options)
 ```
@@ -26,6 +41,8 @@ let engine = new Engine([Array rules], options)
 `allowUndefinedFacts` - By default, when a running engine encounters an undefined fact,
 an exception is thrown.  Turning this option on will cause the engine to treat
 undefined facts as `undefined`.  (default: false)
+
+`pathResolver` - Allows a custom object path resolution library to be used. (default: `json-path` syntax). See [custom path resolver](./rules.md#condition-helpers-custom-path-resolver) docs.
 
 ### engine.addFact(String id, Function [definitionFunc], Object [options])
 

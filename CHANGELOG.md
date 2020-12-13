@@ -2,8 +2,8 @@
   * BREAKING CHANGES
     * `path` support using `selectn` should use the `pathResolver` feature. Read more [here](). To continue using selectn, add the following to the engine constructor:
       ```js
-      const pathResolver = (value, path) => {
-        return selectn(path)(value)
+      const pathResolver = (object, path) => {
+        return selectn(path)(object)
       }
       const engine = new Engine(rules, { pathResolver })
       ```
