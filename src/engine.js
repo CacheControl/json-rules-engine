@@ -191,10 +191,9 @@ class Engine extends EventEmitter {
       return rule.evaluate(almanac).then((ruleResult) => {
         debug(`engine::run ruleResult:${ruleResult.result}`)
         if (ruleResult.result) {
-          return Promise.all([
-            almanac.addSuccessEvent(ruleResult.event),
-            this.emitAsync('success', ruleResult.event, almanac, ruleResult)
-          ]).then(() => this.emitAsync(ruleResult.event.type, ruleResult.event.params, almanac, ruleResult))
+          almanac.addSuccessEvent(ruleResult.event)
+          return this.emitAsync('success', ruleResult.event, almanac, ruleResult)
+            .then(() => this.emitAsync(ruleResult.event.type, ruleResult.event.params, almanac, ruleResult))
         } else {
           return this.emitAsync('failure', ruleResult.event, almanac, ruleResult)
         }
