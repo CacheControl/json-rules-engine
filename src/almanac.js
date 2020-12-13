@@ -7,6 +7,10 @@ import debug from './debug'
 import { JSONPath } from 'jsonpath-plus'
 import isObjectLike from 'lodash.isobjectlike'
 
+function defaultPathResolver (value, path) {
+  return JSONPath({ path, json: value, wrap: false })
+}
+
 /**
  * Fact results lookup
  * Triggers fact computations and saves the results
@@ -17,6 +21,7 @@ export default class Almanac {
     this.factMap = new Map(factMap)
     this.factResultsCache = new Map() // { cacheKey:  Promise<factValu> }
     this.allowUndefinedFacts = Boolean(options.allowUndefinedFacts)
+    this.pathResolver = options.pathResolver || defaultPathResolver
     this.successEvents = []
 
     for (const factId in runtimeFacts) {
@@ -122,44 +127,19 @@ export default class Almanac {
         factValuePromise = this._setFactValue(fact, params, fact.calculate(params, this))
       }
     }
-    if (path) { // selectn supports arrays and strings as a 'path'
-      // strings starting with '$' denotes json path. otherwise fall back to deprecated 'selectn' syntax
-      if (typeof path === 'string' && path.startsWith('$')) {
-        debug(`condition::evaluate extracting object property ${path}`)
-        return factValuePromise
-          .then(factValue => {
-            if (isObjectLike(factValue)) {
-              const pathValue = JSONPath({ path, json: factValue, wrap: false })
-              debug(`condition::evaluate extracting object property ${path}, received: ${JSON.stringify(pathValue)}`)
-              return pathValue
-            } else {
-              debug(`condition::evaluate could not compute object path(${path}) of non-object: ${factValue} <${typeof factValue}>; continuing with ${factValue}`)
-              return factValue
-            }
-          })
-      } else {
-        let selectn
-        try {
-          selectn = require('selectn')
-        } catch (err) {
-          console.error('Oops! Looks like you\'re trying to use the deprecated syntax for the ".path" property.')
-          console.error('Please convert your "path" properties to JsonPath syntax (ensure your path starts with "$")')
-          console.error('Alternatively, if you wish to continue using old syntax (provided by selectn), you may "npm install selectn" as a direct dependency.')
-          console.error('See https://github.com/CacheControl/json-rules-engine/blob/master/CHANGELOG.md#500--2019-10-27 for more information.')
-          throw new Error('json-rules-engine: Unmet peer dependency "selectn" required for use of deprecated ".path" syntax. please "npm install selectn" or convert to json-path syntax')
-        }
-        return factValuePromise
-          .then(factValue => {
-            if (isObjectLike(factValue)) {
-              const pathValue = selectn(path)(factValue)
-              debug(`condition::evaluate extracting object property ${path}, received: ${pathValue}`)
-              return pathValue
-            } else {
-              debug(`condition::evaluate could not compute object path(${path}) of non-object: ${factValue} <${typeof factValue}>; continuing with ${factValue}`)
-              return factValue
-            }
-          })
-      }
+    if (path) {
+      debug(`condition::evaluate extracting object property ${path}`)
+      return factValuePromise
+        .then(factValue => {
+          if (isObjectLike(factValue)) {
+            const pathValue = this.pathResolver(factValue, path)
+            debug(`condition::evaluate extracting object property ${path}, received: ${JSON.stringify(pathValue)}`)
+            return pathValue
+          } else {
+            debug(`condition::evaluate could not compute object path(${path}) of non-object: ${factValue} <${typeof factValue}>; continuing with ${factValue}`)
+            return factValue
+          }
+        })
     }
 
     return factValuePromise

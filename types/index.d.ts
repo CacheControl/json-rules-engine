@@ -1,5 +1,6 @@
 export interface EngineOptions {
   allowUndefinedFacts: boolean;
+  pathResolver: string;
 }
 
 export interface EngineResult {

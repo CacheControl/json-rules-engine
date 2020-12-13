@@ -1,6 +1,7 @@
 'use strict'
 
 import sinon from 'sinon'
+import { get } from 'lodash'
 import engineFactory from '../src/index'
 
 const CHILD = 14
@@ -224,9 +225,6 @@ describe('Engine: fact evaluation', () => {
             value: 1
           }]
         }
-        const event = {
-          type: 'runtimeEvent'
-        }
 
         engine = engineFactory([])
         const rule = factories.rule({ conditions, event })
@@ -267,6 +265,33 @@ describe('Engine: fact evaluation', () => {
       engine.addFact('eligibilityData', eligibilityData)
       await engine.run()
       expect(successSpy).to.have.been.calledWith(event)
+    })
+
+    describe('pathResolver', () => {
+      it('allows a custom path resolver to be registered which interprets the path property', async () => {
+        const fact = { x: { y: [99] }, a: 2 }
+        const conditions = {
+          all: [{
+            fact: 'x',
+            path: 'y[0]',
+            operator: 'equal',
+            value: 99
+          }]
+        }
+        const pathResolver = (value, path) => {
+          return get(value, path)
+        }
+
+        engine = engineFactory([], { pathResolver })
+        const rule = factories.rule({ conditions, event })
+        await engine.run()
+        engine.addRule(rule)
+        engine.on('success', successSpy)
+        engine.on('failure', failureSpy)
+        await engine.run(fact)
+        expect(successSpy).to.have.been.calledWith(event)
+        expect(failureSpy).to.not.have.been.calledWith(event)
+      })
     })
   })
 
