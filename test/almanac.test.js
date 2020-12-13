@@ -41,6 +41,17 @@ describe('Almanac', () => {
     })
   })
 
+  describe('addSuccessEvent() / getSuccessEvents()', () => {
+    it('manages success events', () => {
+      const event = {}
+      almanac = new Almanac()
+      expect(almanac.getSuccessEvents()).to.be.empty()
+      almanac.addSuccessEvent(event)
+      expect(almanac.getSuccessEvents()).to.have.a.lengthOf(1)
+      expect(almanac.getSuccessEvents()[0]).to.equal(event)
+    })
+  })
+
   describe('arguments', () => {
     beforeEach(() => {
       const fact = new Fact('foo', async (params, facts) => {

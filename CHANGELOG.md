@@ -1,7 +1,8 @@
 #### 6.0. / 2020-12-XX
   * BREAKING CHANGES
     * Private `rule.event` property renamed. Use `rule.getEvent()` to avoid breaking changes in the future.
-    * Engine and Rule events `on('success')`, `on('failure')`, and Rule callbacks `onSuccess` and `onFailure` now honor returned promises; any event handler that returns a promise will be waited upon to resolve before engine execution continues.
+    * Engine and Rule events `on('success')`, `on('failure')`, and Rule callbacks `onSuccess` and `onFailure` now honor returned promises; any event handler that returns a promise will be waited upon to resolve before engine execution continues. (fixes #235)
+    * The 'success-events' fact used to store successful events has been converted to an internal data structure and will no longer appear in the almanac's facts. (fixes #187)
 
 #### 5.3.0 / 2020-12-02
   * Allow facts to have a value of `undefined`
