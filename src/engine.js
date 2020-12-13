@@ -5,7 +5,6 @@ import Rule from './rule'
 import Operator from './operator'
 import Almanac from './almanac'
 import EventEmitter from 'eventemitter2'
-import { SuccessEventFact } from './engine-facts'
 import defaultOperators from './engine-default-operators'
 import debug from './debug'
 
@@ -193,7 +192,7 @@ class Engine extends EventEmitter {
         debug(`engine::run ruleResult:${ruleResult.result}`)
         if (ruleResult.result) {
           return Promise.all([
-            almanac.factValue('success-events', { event: ruleResult.event }),
+            almanac.addSuccessEvent(ruleResult.event),
             this.emitAsync('success', ruleResult.event, almanac, ruleResult)
           ]).then(() => this.emitAsync(ruleResult.event.type, ruleResult.event.params, almanac, ruleResult))
         } else {
@@ -211,7 +210,6 @@ class Engine extends EventEmitter {
    */
   run (runtimeFacts = {}) {
     debug('engine::run started')
-    runtimeFacts['success-events'] = new Fact('success-events', SuccessEventFact(), { cache: false })
     this.status = RUNNING
     const almanac = new Almanac(this.facts, runtimeFacts, { allowUndefinedFacts: this.allowUndefinedFacts })
     const orderedSets = this.prioritizeRules()
@@ -228,7 +226,7 @@ class Engine extends EventEmitter {
       cursor.then(() => {
         this.status = FINISHED
         debug('engine::run completed')
-        return almanac.factValue('success-events')
+        return almanac.getSuccessEvents()
       }).then(events => {
         resolve({
           events,

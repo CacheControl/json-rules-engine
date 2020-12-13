@@ -17,6 +17,7 @@ export default class Almanac {
     this.factMap = new Map(factMap)
     this.factResultsCache = new Map() // { cacheKey:  Promise<factValu> }
     this.allowUndefinedFacts = Boolean(options.allowUndefinedFacts)
+    this.successEvents = []
 
     for (const factId in runtimeFacts) {
       let fact
@@ -29,6 +30,21 @@ export default class Almanac {
       this._addConstantFact(fact)
       debug(`almanac::constructor initialized runtime fact:${fact.id} with ${fact.value}<${typeof fact.value}>`)
     }
+  }
+
+  /**
+   * Adds a success event
+   * @param {Object} event
+   */
+  addSuccessEvent (event) {
+    this.successEvents.push(event)
+  }
+
+  /**
+   * retrieve successful events
+   */
+  getSuccessEvents () {
+    return this.successEvents
   }
 
   /**
