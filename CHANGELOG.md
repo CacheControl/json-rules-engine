@@ -1,6 +1,6 @@
 #### 6.0. / 2020-12-XX
   * BREAKING CHANGES
-    * `path` support using `selectn` should use the `pathResolver` feature. Read more [here](./docs/rules.md#condition-helpers-custom-path-resolver). To continue using `selectn`, add the following to the engine constructor:
+    * To continue using [selectn](https://github.com/wilmoore/selectn.js) syntax for condition `path`s, use the new `pathResolver` feature. Read more [here](./docs/rules.md#condition-helpers-custom-path-resolver). Add the following to the engine constructor:
       ```js
       const pathResolver = (object, path) => {
         return selectn(path)(object)
@@ -12,7 +12,7 @@
     * Private `rule.event` property renamed. Use `rule.getEvent()` to avoid breaking changes in the future.
     * The 'success-events' fact used to store successful events has been converted to an internal data structure and will no longer appear in the almanac's facts. (fixes #187)
   * NEW FEATURES
-    * Engine constructor now accepts a `pathResolver`   option for resolving condition `path` properties. Read more [here](./docs/rules.md#condition-helpers-custom-path-resolver). (fixes #210)
+    * Engine constructor now accepts a `pathResolver` option for resolving condition `path` properties. Read more [here](./docs/rules.md#condition-helpers-custom-path-resolver). (fixes #210)
 
 
 #### 5.3.0 / 2020-12-02
