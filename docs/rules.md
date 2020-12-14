@@ -260,6 +260,8 @@ engine.addRule(new Rule({
 )
 ```
 
+This feature may be useful in cases where the higher performance offered by simpler object traversal DSLs are preferable to the advanced expressions provided by `json-path`. It can also be useful for leveraging more complex DSLs ([jsonata](https://jsonata.org/), for example) that offer more advanced capabilities than `json-path`.
+
 ### Comparing facts
 
 Sometimes it is necessary to compare facts against other facts.  This can be accomplished by nesting the second fact within the `value` property.  This second fact has access to the same `params` and `path` helpers as the primary fact.
