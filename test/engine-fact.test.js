@@ -284,13 +284,14 @@ describe('Engine: fact evaluation', () => {
 
         engine = engineFactory([], { pathResolver })
         const rule = factories.rule({ conditions, event })
-        await engine.run()
         engine.addRule(rule)
         engine.on('success', successSpy)
         engine.on('failure', failureSpy)
+
         await engine.run(fact)
+
         expect(successSpy).to.have.been.calledWith(event)
-        expect(failureSpy).to.not.have.been.calledWith(event)
+        expect(failureSpy).to.not.have.been.called()
       })
     })
   })

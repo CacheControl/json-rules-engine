@@ -1,6 +1,6 @@
 export interface EngineOptions {
-  allowUndefinedFacts: boolean;
-  pathResolver: string;
+  allowUndefinedFacts?: boolean;
+  pathResolver?: PathResolver;
 }
 
 export interface EngineResult {
@@ -93,6 +93,11 @@ export interface Event {
   type: string;
   params?: Record<string, any>;
 }
+
+export type PathResolver = (
+  value: object,
+  path: string,
+) => any;
 
 export type EventHandler = (
   event: Event,
