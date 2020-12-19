@@ -87,18 +87,26 @@ describe('Engine: event', () => {
     it('"success" passes the event, almanac, and results', async () => {
       const failureSpy = sandbox.spy()
       const successSpy = sandbox.spy()
-      engine.on('success', function (e, almanac, ruleResult) {
-        expect(e).to.eql(event)
-        expect(almanac).to.be.an.instanceof(Almanac)
+      function assertResult (ruleResult) {
         expect(ruleResult.result).to.be.true()
         expect(ruleResult.conditions.any[0].result).to.be.true()
         expect(ruleResult.conditions.any[0].factResult).to.equal(21)
         expect(ruleResult.conditions.any[1].result).to.be.false()
         expect(ruleResult.conditions.any[1].factResult).to.equal(false)
+      }
+      engine.on('success', function (e, almanac, ruleResult) {
+        expect(e).to.eql(event)
+        expect(almanac).to.be.an.instanceof(Almanac)
+        assertResult(ruleResult)
         successSpy()
       })
       engine.on('failure', failureSpy)
-      await engine.run()
+
+      const { successResults, failureResults } = await engine.run()
+
+      expect(failureResults).to.have.lengthOf(0)
+      expect(successResults).to.have.lengthOf(1)
+      assertResult(successResults[0])
       expect(failureSpy.callCount).to.equal(0)
       expect(successSpy.callCount).to.equal(1)
     })
@@ -106,18 +114,27 @@ describe('Engine: event', () => {
     it('"event.type" passes the event parameters, almanac, and results', async () => {
       const failureSpy = sandbox.spy()
       const successSpy = sandbox.spy()
-      engine.on(event.type, function (params, almanac, ruleResult) {
-        expect(params).to.eql(event.params)
-        expect(almanac).to.be.an.instanceof(Almanac)
+      function assertResult (ruleResult) {
         expect(ruleResult.result).to.be.true()
         expect(ruleResult.conditions.any[0].result).to.be.true()
         expect(ruleResult.conditions.any[0].factResult).to.equal(21)
         expect(ruleResult.conditions.any[1].result).to.be.false()
         expect(ruleResult.conditions.any[1].factResult).to.equal(false)
+      }
+      engine.on(event.type, function (params, almanac, ruleResult) {
+        expect(params).to.eql(event.params)
+        expect(almanac).to.be.an.instanceof(Almanac)
+        assertResult(ruleResult)
         successSpy()
       })
       engine.on('failure', failureSpy)
-      await engine.run()
+
+      const { successResults, failureResults } = await engine.run()
+
+      expect(failureResults).to.have.lengthOf(0)
+      expect(successResults).to.have.lengthOf(1)
+      assertResult(successResults[0])
+
       expect(failureSpy.callCount).to.equal(0)
       expect(successSpy.callCount).to.equal(1)
     })
@@ -126,19 +143,29 @@ describe('Engine: event', () => {
       const AGE = 10
       const failureSpy = sandbox.spy()
       const successSpy = sandbox.spy()
-      engine.on('failure', function (e, almanac, ruleResult) {
-        expect(e).to.eql(event)
-        expect(almanac).to.be.an.instanceof(Almanac)
+      function assertResult (ruleResult) {
         expect(ruleResult.result).to.be.false()
         expect(ruleResult.conditions.any[0].result).to.be.false()
         expect(ruleResult.conditions.any[0].factResult).to.equal(AGE)
         expect(ruleResult.conditions.any[1].result).to.be.false()
         expect(ruleResult.conditions.any[1].factResult).to.equal(false)
+      }
+
+      engine.on('failure', function (e, almanac, ruleResult) {
+        expect(e).to.eql(event)
+        expect(almanac).to.be.an.instanceof(Almanac)
+        assertResult(ruleResult)
         failureSpy()
       })
       engine.on('success', successSpy)
       engine.addFact('age', AGE) // age fails
-      await engine.run()
+
+      const { successResults, failureResults } = await engine.run()
+
+      expect(failureResults).to.have.lengthOf(1)
+      expect(successResults).to.have.lengthOf(0)
+      assertResult(failureResults[0])
+
       expect(failureSpy.callCount).to.equal(1)
       expect(successSpy.callCount).to.equal(0)
     })
@@ -186,9 +213,8 @@ describe('Engine: event', () => {
     it('"success" passes the event, almanac, and results', async () => {
       const failureSpy = sandbox.spy()
       const successSpy = sandbox.spy()
-      engine.on('success', function (e, almanac, ruleResult) {
-        expect(e).to.eql(event)
-        expect(almanac).to.be.an.instanceof(Almanac)
+
+      function assertResult (ruleResult) {
         expect(ruleResult.result).to.be.true()
         expect(ruleResult.conditions.any[0].result).to.be.false()
         expect(ruleResult.conditions.any[0].factResult).to.equal(10)
@@ -199,10 +225,21 @@ describe('Engine: event', () => {
         expect(ruleResult.conditions.any[2].all[0].factResult).to.equal(80403)
         expect(ruleResult.conditions.any[2].all[1].result).to.be.true()
         expect(ruleResult.conditions.any[2].all[1].factResult).to.equal('male')
+      }
+
+      engine.on('success', function (e, almanac, ruleResult) {
+        expect(e).to.eql(event)
+        expect(almanac).to.be.an.instanceof(Almanac)
+        assertResult(ruleResult)
         successSpy()
       })
       engine.on('failure', failureSpy)
-      await engine.run()
+
+      const { successResults, failureResults } = await engine.run()
+
+      assertResult(successResults[0])
+      expect(failureResults).to.have.lengthOf(0)
+      expect(successResults).to.have.lengthOf(1)
       expect(failureSpy.callCount).to.equal(0)
       expect(successSpy.callCount).to.equal(1)
     })
@@ -212,9 +249,7 @@ describe('Engine: event', () => {
       const GENDER = 'female'
       const failureSpy = sandbox.spy()
       const successSpy = sandbox.spy()
-      engine.on('failure', function (e, almanac, ruleResult) {
-        expect(e).to.eql(event)
-        expect(almanac).to.be.an.instanceof(Almanac)
+      function assertResult (ruleResult) {
         expect(ruleResult.result).to.be.false()
         expect(ruleResult.conditions.any[0].result).to.be.false()
         expect(ruleResult.conditions.any[0].factResult).to.equal(10)
@@ -225,12 +260,23 @@ describe('Engine: event', () => {
         expect(ruleResult.conditions.any[2].all[0].factResult).to.equal(ZIP_CODE)
         expect(ruleResult.conditions.any[2].all[1].result).to.be.false()
         expect(ruleResult.conditions.any[2].all[1].factResult).to.equal(GENDER)
+      }
+      engine.on('failure', function (e, almanac, ruleResult) {
+        expect(e).to.eql(event)
+        expect(almanac).to.be.an.instanceof(Almanac)
+        assertResult(ruleResult)
         failureSpy()
       })
       engine.on('success', successSpy)
       engine.addFact('zipCode', ZIP_CODE) // zipCode fails
       engine.addFact('gender', GENDER) // gender fails
-      await engine.run()
+
+      const { successResults, failureResults } = await engine.run()
+
+      assertResult(failureResults[0])
+      expect(failureResults).to.have.lengthOf(1)
+      expect(successResults).to.have.lengthOf(0)
+
       expect(failureSpy.callCount).to.equal(1)
       expect(successSpy.callCount).to.equal(0)
     })
@@ -262,19 +308,29 @@ describe('Engine: event', () => {
       const failureSpy = sandbox.spy()
       const successSpy = sandbox.spy()
       const rule = engine.rules[0]
-      rule.on('success', function (e, almanac, ruleResult) {
-        expect(e).to.eql(event)
-        expect(almanac).to.be.an.instanceof(Almanac)
-        expect(failureSpy.callCount).to.equal(0)
+      function assertResult (ruleResult) {
         expect(ruleResult.result).to.be.true()
         expect(ruleResult.conditions.any[0].result).to.be.true()
         expect(ruleResult.conditions.any[0].factResult).to.equal(21)
         expect(ruleResult.conditions.any[1].result).to.be.false()
         expect(ruleResult.conditions.any[1].factResult).to.equal(false)
+      }
+
+      rule.on('success', function (e, almanac, ruleResult) {
+        expect(e).to.eql(event)
+        expect(almanac).to.be.an.instanceof(Almanac)
+        expect(failureSpy.callCount).to.equal(0)
+        assertResult(ruleResult)
         successSpy()
       })
       rule.on('failure', failureSpy)
-      await engine.run()
+
+      const { successResults, failureResults } = await engine.run()
+
+      assertResult(successResults[0])
+      expect(failureResults).to.have.lengthOf(0)
+      expect(successResults).to.have.lengthOf(1)
+
       expect(successSpy.callCount).to.equal(1)
       expect(failureSpy.callCount).to.equal(0)
     })
@@ -284,21 +340,28 @@ describe('Engine: event', () => {
       const successSpy = sandbox.spy()
       const failureSpy = sandbox.spy()
       const rule = engine.rules[0]
-      rule.on('failure', function (e, almanac, ruleResult) {
-        expect(e).to.eql(event)
-        expect(almanac).to.be.an.instanceof(Almanac)
-        expect(successSpy.callCount).to.equal(0)
+      function assertResult (ruleResult) {
         expect(ruleResult.result).to.be.false()
         expect(ruleResult.conditions.any[0].result).to.be.false()
         expect(ruleResult.conditions.any[0].factResult).to.equal(AGE)
         expect(ruleResult.conditions.any[1].result).to.be.false()
         expect(ruleResult.conditions.any[1].factResult).to.equal(false)
+      }
+      rule.on('failure', function (e, almanac, ruleResult) {
+        expect(e).to.eql(event)
+        expect(almanac).to.be.an.instanceof(Almanac)
+        expect(successSpy.callCount).to.equal(0)
+        assertResult(ruleResult)
         failureSpy()
       })
       rule.on('success', successSpy)
       // both conditions will fail
       engine.addFact('age', AGE)
-      await engine.run()
+      const { successResults, failureResults } = await engine.run()
+
+      assertResult(failureResults[0])
+      expect(failureResults).to.have.lengthOf(1)
+      expect(successResults).to.have.lengthOf(0)
       expect(failureSpy.callCount).to.equal(1)
       expect(successSpy.callCount).to.equal(0)
     })

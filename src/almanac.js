@@ -23,6 +23,7 @@ export default class Almanac {
     this.allowUndefinedFacts = Boolean(options.allowUndefinedFacts)
     this.pathResolver = options.pathResolver || defaultPathResolver
     this.successEvents = []
+    this.ruleResults = []
 
     for (const factId in runtimeFacts) {
       let fact
@@ -50,6 +51,21 @@ export default class Almanac {
    */
   getSuccessEvents () {
     return this.successEvents
+  }
+
+  /**
+   * Adds a rule result
+   * @param {Object} event
+   */
+  addRuleResult (ruleResult) {
+    this.ruleResults.push(ruleResult)
+  }
+
+  /**
+   * retrieve successful events
+   */
+  getRuleResults () {
+    return this.ruleResults
   }
 
   /**

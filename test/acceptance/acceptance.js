@@ -148,9 +148,85 @@ describe('Acceptance', () => {
 
     const engineResult = await engine.run({ baseIndex: 1 })
 
+    // results
+    expect(engineResult.successResults.length).to.equal(2)
+    expect(engineResult.successResults[0]).to.deep.equal({
+      conditions: {
+        all: [
+          {
+            fact: 'high-priority',
+            factResult: [
+              2
+            ],
+            operator: 'contains',
+            params: {
+              factParam: 1
+            },
+            path: '$.values',
+            result: true,
+            value: 2
+          },
+          {
+            fact: 'low-priority',
+            factResult: 2,
+            operator: 'in',
+            result: true,
+            value: [
+              2
+            ]
+          }
+        ],
+        operator: 'all',
+        priority: 1
+      },
+      event: {
+        params: {
+          eventParam: 1
+        },
+        type: 'event-1'
+      },
+      name: 'first',
+      priority: 10,
+      result: true
+    })
+    expect(engineResult.successResults[1]).to.deep.equal({
+      conditions: {
+        all: [
+          {
+            fact: 'high-priority',
+            factResult: [
+              2
+            ],
+            operator: 'containsDivisibleValuesOf',
+            params: {
+              factParam: 1
+            },
+            path: '$.values',
+            result: true,
+            value: {
+              fact: 'rule-created-fact',
+              path: '$.array'
+            }
+          }
+        ],
+        operator: 'all',
+        priority: 1
+      },
+      event: {
+        type: 'event-2'
+      },
+      name: 'second',
+      priority: 1,
+      result: true
+    })
+    expect(engineResult.failureResults).to.be.empty()
+
+    // events
     expect(engineResult.events.length).to.equal(2)
     expect(engineResult.events[0]).to.deep.equal(event1)
     expect(engineResult.events[1]).to.deep.equal(event2)
+
+    // callbacks
     expect(successSpy).to.have.been.calledTwice()
     expect(successSpy).to.have.been.calledWith(event1)
     expect(successSpy).to.have.been.calledWith(event2)
@@ -165,6 +241,10 @@ describe('Acceptance', () => {
     })
 
     const engineResult = await engine.run({ baseIndex: 1, 'rule-created-fact': '' })
+
+    expect(engineResult.successResults.length).to.equal(0)
+    expect(engineResult.failureResults.length).to.equal(2)
+    expect(engineResult.failureResults.every(rr => rr.result === false)).to.be.true()
 
     expect(engineResult.events.length).to.equal(0)
     expect(failureSpy).to.have.been.calledTwice()

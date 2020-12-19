@@ -191,6 +191,7 @@ class Engine extends EventEmitter {
       }
       return rule.evaluate(almanac).then((ruleResult) => {
         debug(`engine::run ruleResult:${ruleResult.result}`)
+        almanac.addRuleResult(ruleResult)
         if (ruleResult.result) {
           almanac.addSuccessEvent(ruleResult.event)
           return this.emitAsync('success', ruleResult.event, almanac, ruleResult)
@@ -232,9 +233,20 @@ class Engine extends EventEmitter {
         debug('engine::run completed')
         return almanac.getSuccessEvents()
       }).then(events => {
+        const ruleResults = almanac.getRuleResults()
+        const { successResults, failureResults } = ruleResults.reduce((hash, ruleResult) => {
+          const group = ruleResult.result ? 'successResults' : 'failureResults'
+          hash[group].push(ruleResult)
+          return hash
+        }, { successResults: [], failureResults: [] })
+
         resolve({
-          events,
-          almanac
+          successResults,
+          failureResults,
+          almanac,
+
+          // deprecated:
+          events
         })
       }).catch(reject)
     })
