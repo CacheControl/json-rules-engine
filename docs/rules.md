@@ -3,15 +3,30 @@
 
 Rules contain a set of _conditions_ and a single _event_.  When the engine is run, each rule condition is evaluated.  If the results are truthy, the rule's _event_ is triggered.
 
-[Methods](#methods)
-
-[Conditions](#conditions)
-
-[Events](#events)
-
-[Operators](#operators)
-
-[Rule Results](#rule-results)
+* [Methods](#methods)
+  * [constructor([Object options|String json])](#constructorobject-optionsstring-json)
+  * [setConditions(Array conditions)](#setconditionsarray-conditions)
+  * [getConditions() -&gt; Object](#getconditions---object)
+  * [setEvent(Object event)](#seteventobject-event)
+  * [getEvent() -&gt; Object](#getevent---object)
+  * [setPriority(Integer priority = 1)](#setpriorityinteger-priority--1)
+  * [getPriority() -&gt; Integer](#getpriority---integer)
+  * [toJSON(Boolean stringify = true)](#tojsonboolean-stringify--true)
+* [Conditions](#conditions)
+  * [Basic conditions](#basic-conditions)
+  * [Boolean expressions: all and any](#boolean-expressions-all-and-any)
+  * [Condition helpers: params](#condition-helpers-params)
+  * [Condition helpers: path](#condition-helpers-path)
+  * [Condition helpers: custom path resolver](#condition-helpers-custom-path-resolver)
+  * [Comparing facts](#comparing-facts)
+* [Events](#events)
+    * [rule.on('success', Function(Object event, Almanac almanac, RuleResult ruleResult))](#ruleonsuccess-functionobject-event-almanac-almanac-ruleresult-ruleresult)
+    * [rule.on('failure', Function(Object event, Almanac almanac, RuleResult ruleResult))](#ruleonfailure-functionobject-event-almanac-almanac-ruleresult-ruleresult)
+* [Operators](#operators)
+  * [String and Numeric operators:](#string-and-numeric-operators)
+  * [Numeric operators:](#numeric-operators)
+  * [Array operators:](#array-operators)
+* [Rule Results](#rule-results)
 
 ## Methods
 
@@ -216,6 +231,36 @@ let rule = new Rule({
 json-path support is provided by [jsonpath-plus](https://github.com/s3u/JSONPath)
 
 For an example, see [fact-dependency](../examples/04-fact-dependency.js)
+
+### Condition helpers: custom `path` resolver
+
+To use a custom path resolver instead of the `json-path` default, a `pathResolver` callback option may be passed to the engine. The callback will be invoked during execution when a `path` property is encountered.
+
+```js
+const { get } = require('lodash') // to use the lodash path resolver, for example
+
+function pathResolver (object, path) {
+  // when the rule below is evaluated:
+  //   "object" will be the 'fact1' value
+  //   "path" will be '.price[0]'
+  return get(object, path)
+}
+const engine = new Engine(rules, { pathResolver })
+engine.addRule(new Rule({
+  conditions: {
+    all: [
+      {
+        fact: 'fact1',
+        path: '.price[0]', // uses lodash path syntax
+        operator: 'equal',
+        value: 1
+      }
+    ]
+  })
+)
+```
+
+This feature may be useful in cases where the higher performance offered by simpler object traversal DSLs are preferable to the advanced expressions provided by `json-path`. It can also be useful for leveraging more complex DSLs ([jsonata](https://jsonata.org/), for example) that offer more advanced capabilities than `json-path`.
 
 ### Comparing facts
 

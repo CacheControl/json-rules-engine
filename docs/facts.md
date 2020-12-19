@@ -3,6 +3,9 @@
 Facts are methods or constants registered with the engine prior to runtime and referenced within rule conditions.  Each fact method should be a pure function that may return a either computed value, or promise that resolves to a computed value.
 As rule conditions are evaluated during runtime, they retrieve fact values dynamically and use the condition _operator_ to compare the fact result with the condition _value_.
 
+* [Methods](#methods)
+  * [constructor(String id, Constant|Function(Object params, Almanac almanac), [Object options]) -&gt; instance](#constructorstring-id-constantfunctionobject-params-almanac-almanac-object-options---instance)
+
 ## Methods
 
 ### constructor(String id, Constant|Function(Object params, Almanac almanac), [Object options]) -> instance

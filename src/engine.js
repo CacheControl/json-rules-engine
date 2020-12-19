@@ -21,6 +21,7 @@ class Engine extends EventEmitter {
     super()
     this.rules = []
     this.allowUndefinedFacts = options.allowUndefinedFacts || false
+    this.pathResolver = options.pathResolver
     this.operators = new Map()
     this.facts = new Map()
     this.status = READY
@@ -210,7 +211,11 @@ class Engine extends EventEmitter {
   run (runtimeFacts = {}) {
     debug('engine::run started')
     this.status = RUNNING
-    const almanac = new Almanac(this.facts, runtimeFacts, { allowUndefinedFacts: this.allowUndefinedFacts })
+    const almanacOptions = {
+      allowUndefinedFacts: this.allowUndefinedFacts,
+      pathResolver: this.pathResolver
+    }
+    const almanac = new Almanac(this.facts, runtimeFacts, almanacOptions)
     const orderedSets = this.prioritizeRules()
     let cursor = Promise.resolve()
     // for each rule set, evaluate in parallel,
