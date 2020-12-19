@@ -7,6 +7,7 @@ import rulesEngine, {
   Fact,
   Operator,
   OperatorEvaluator,
+  PathResolver,
   Rule,
   RuleProperties,
   RuleSerializable
@@ -43,6 +44,10 @@ const complexRuleProps: RuleProperties = {
     type: "message"
   }
 };
+
+// path resolver
+const pathResolver = function(value: object, path: string): any {}
+expectType<PathResolver>(pathResolver)
 
 // default export test
 expectType<Engine>(rulesEngine([ruleProps]));
