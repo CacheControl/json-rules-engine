@@ -110,13 +110,13 @@ When a rule evalutes truthy and its ```event``` is called, new facts may be defi
 
 ```js
 engine.on('success', (event, almanac) => {
-  // Handle the event using a fact value to process
-  // Retrieve user's account info and make an api call using the results
-  almanac
-    .factValue('account-information', event.params.accountId)
-    .then(info => {
-      return request.post({ url: `http://my-service/toggle?funded=${!info.funded}`)
-    })
+  // Retrieve user's account info based on the event params
+  const info = await almanac.factValue('account-information', event.params.accountId)
+
+  // make an api call using the results
+  await request.post({ url: `http://my-service/toggle?funded=${!info.funded}`)
+
+  // engine execution continues when promise returned to 'success' callback resolves
 })
 ```
 

@@ -163,7 +163,7 @@ engine.run({ userId: 1 });  // any time a rule condition requires 'userId', '1' 
 
 // run() returns a promise
 engine.run({ userId: 4 }).then((results) => {
-  console.log('all rules executed; the following events were triggered: ', results.events)
+  console.log('all rules executed; the following events were triggered: ', results.successResults.map(result => JSON.stringify(result.event)))
 });
 ```
 Helper methods (for this example)

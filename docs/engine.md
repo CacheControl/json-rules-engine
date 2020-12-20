@@ -11,7 +11,7 @@ The Engine stores and executes rules, emits events, and maintains state.
   * [engine.removeRule(Rule instance)](#engineremoverulerule-instance)
   * [engine.addOperator(String operatorName, Function evaluateFunc(factValue, jsonValue))](#engineaddoperatorstring-operatorname-function-evaluatefuncfactvalue-jsonvalue)
   * [engine.removeOperator(String operatorName)](#engineremoveoperatorstring-operatorname)
-  * [engine.run([Object facts], [Object options]) -&gt; Promise ({ events: Events, almanac: Almanac})](#enginerunobject-facts-object-options---promise--events-events-almanac-almanac)
+  * [engine.run([Object facts], [Object options]) -&gt; Promise ({ events: Events, almanac: Almanac, successResults: [], failureResults: []})](#enginerunobject-facts-object-options---promise--events-events-almanac-almanac-successresults--failureresults-)
   * [engine.stop() -&gt; Engine](#enginestop---engine)
     * [engine.on('success', Function(Object event, Almanac almanac, RuleResult ruleResult))](#engineonsuccess-functionobject-event-almanac-almanac-ruleresult-ruleresult)
     * [engine.on('failure', Function(Object event, Almanac almanac, RuleResult ruleResult))](#engineonfailure-functionobject-event-almanac-almanac-ruleresult-ruleresult)
@@ -156,24 +156,25 @@ engine.removeOperator('startsWithLetter');
 
 
 
-### engine.run([Object facts], [Object options]) -> Promise ({ events: Events, almanac: Almanac})
+### engine.run([Object facts], [Object options]) -> Promise ({ events: Events, almanac: Almanac, successResults: [], failureResults: []})
 
 Runs the rules engine.  Returns a promise which resolves when all rules have been run.
 
 ```js
 // run the engine
-engine.run()
+await engine.run()
 
 // with constant facts
-engine.run({ userId: 1 })
+await engine.run({ userId: 1 })
 
-// returns rule events that were triggered
-engine
-  .run({ userId: 1 })
-  .then(function(results) {
-    console.log(results.events)
-    // almanac available via results.almanac to interact with as defined in Almanac docs
-  })
+// results
+const runResult = await engine.run({ userId: 1 })
+
+/**
+ * runResult.almanac: Almanac instance for the run
+ * runResult.successEvents: rule results for successful rules
+ * runResult.failureEvents: rule results for failed rules
+ */
 ```
 Link to the [Almanac documentation](./almanac.md)
 
