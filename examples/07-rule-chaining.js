@@ -15,7 +15,6 @@ require('colors')
 const { Engine } = require('json-rules-engine')
 const { getAccountInformation } = require('./support/account-api-client')
 
-
 async function start () {
   /**
    * Setup a new engine

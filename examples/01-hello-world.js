@@ -12,7 +12,7 @@
 require('colors')
 const { Engine } = require('json-rules-engine')
 
-async function start() {
+async function start () {
   /**
    * Setup a new engine
    */
@@ -47,9 +47,9 @@ async function start() {
   const facts = { displayMessage: true }
 
   // engine.run() evaluates the rule using the facts provided
-  const { successResults } = await engine.run(facts)
+  const { results } = await engine.run(facts)
 
-  successResults.map(result => console.log(result.event.params.data.green))
+  results.map(result => console.log(result.event.params.data.green))
 }
 
 start()

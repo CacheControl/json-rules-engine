@@ -102,11 +102,11 @@ describe('Engine: event', () => {
       })
       engine.on('failure', failureSpy)
 
-      const { successResults, failureResults } = await engine.run()
+      const { results, failureResults } = await engine.run()
 
       expect(failureResults).to.have.lengthOf(0)
-      expect(successResults).to.have.lengthOf(1)
-      assertResult(successResults[0])
+      expect(results).to.have.lengthOf(1)
+      assertResult(results[0])
       expect(failureSpy.callCount).to.equal(0)
       expect(successSpy.callCount).to.equal(1)
     })
@@ -129,11 +129,11 @@ describe('Engine: event', () => {
       })
       engine.on('failure', failureSpy)
 
-      const { successResults, failureResults } = await engine.run()
+      const { results, failureResults } = await engine.run()
 
       expect(failureResults).to.have.lengthOf(0)
-      expect(successResults).to.have.lengthOf(1)
-      assertResult(successResults[0])
+      expect(results).to.have.lengthOf(1)
+      assertResult(results[0])
 
       expect(failureSpy.callCount).to.equal(0)
       expect(successSpy.callCount).to.equal(1)
@@ -160,10 +160,10 @@ describe('Engine: event', () => {
       engine.on('success', successSpy)
       engine.addFact('age', AGE) // age fails
 
-      const { successResults, failureResults } = await engine.run()
+      const { results, failureResults } = await engine.run()
 
       expect(failureResults).to.have.lengthOf(1)
-      expect(successResults).to.have.lengthOf(0)
+      expect(results).to.have.lengthOf(0)
       assertResult(failureResults[0])
 
       expect(failureSpy.callCount).to.equal(1)
@@ -235,11 +235,11 @@ describe('Engine: event', () => {
       })
       engine.on('failure', failureSpy)
 
-      const { successResults, failureResults } = await engine.run()
+      const { results, failureResults } = await engine.run()
 
-      assertResult(successResults[0])
+      assertResult(results[0])
       expect(failureResults).to.have.lengthOf(0)
-      expect(successResults).to.have.lengthOf(1)
+      expect(results).to.have.lengthOf(1)
       expect(failureSpy.callCount).to.equal(0)
       expect(successSpy.callCount).to.equal(1)
     })
@@ -271,11 +271,11 @@ describe('Engine: event', () => {
       engine.addFact('zipCode', ZIP_CODE) // zipCode fails
       engine.addFact('gender', GENDER) // gender fails
 
-      const { successResults, failureResults } = await engine.run()
+      const { results, failureResults } = await engine.run()
 
       assertResult(failureResults[0])
       expect(failureResults).to.have.lengthOf(1)
-      expect(successResults).to.have.lengthOf(0)
+      expect(results).to.have.lengthOf(0)
 
       expect(failureSpy.callCount).to.equal(1)
       expect(successSpy.callCount).to.equal(0)
@@ -325,11 +325,11 @@ describe('Engine: event', () => {
       })
       rule.on('failure', failureSpy)
 
-      const { successResults, failureResults } = await engine.run()
+      const { results, failureResults } = await engine.run()
 
-      assertResult(successResults[0])
+      assertResult(results[0])
       expect(failureResults).to.have.lengthOf(0)
-      expect(successResults).to.have.lengthOf(1)
+      expect(results).to.have.lengthOf(1)
 
       expect(successSpy.callCount).to.equal(1)
       expect(failureSpy.callCount).to.equal(0)
@@ -357,11 +357,11 @@ describe('Engine: event', () => {
       rule.on('success', successSpy)
       // both conditions will fail
       engine.addFact('age', AGE)
-      const { successResults, failureResults } = await engine.run()
+      const { results, failureResults } = await engine.run()
 
       assertResult(failureResults[0])
       expect(failureResults).to.have.lengthOf(1)
-      expect(successResults).to.have.lengthOf(0)
+      expect(results).to.have.lengthOf(0)
       expect(failureSpy.callCount).to.equal(1)
       expect(successSpy.callCount).to.equal(0)
     })

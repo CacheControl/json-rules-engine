@@ -12,7 +12,7 @@
 require('colors')
 const { Engine } = require('json-rules-engine')
 
-async function start() {
+async function start () {
   /**
    * Setup a new engine
    */
@@ -61,9 +61,9 @@ async function start() {
     gameDuration: 40
   }
 
-  const { successResults } = await engine.run(facts)
+  const { results } = await engine.run(facts)
 
-  successResults.map(result => console.log(result.event.params.message.red))
+  results.map(result => console.log(result.event.params.message.red))
 }
 start()
 /*

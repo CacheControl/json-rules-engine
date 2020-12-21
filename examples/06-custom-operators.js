@@ -18,7 +18,7 @@
 require('colors')
 const { Engine } = require('json-rules-engine')
 
-async function start() {
+async function start () {
   /**
    * Setup a new engine
    */
@@ -88,7 +88,7 @@ async function start() {
    * Each run() of the engine executes on an independent set of facts.  We'll run twice, once per word
    */
 
-   // first run, using 'bacon'
+  // first run, using 'bacon'
   facts = { word: 'bacon' }
   await engine.run(facts)
 

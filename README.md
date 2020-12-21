@@ -86,8 +86,8 @@ let facts = {
 // Run the engine to evaluate
 engine
   .run(facts)
-  .then(runResult => {
-    runResult.successResults.map(result => console.log(result.event.params.message))
+  .then(({ results }) => {
+    results.map(result => console.log(result.event.params.message))
   })
 
 /*
@@ -170,10 +170,9 @@ engine.addFact('account-information', function (params, almanac) {
 let facts = { accountId: 'lincoln' }
 engine
   .run(facts)
-  .then((runResult) => {
-    console.log(facts.accountId + ' is a ' + runResult.successResults.map(result => result.event.params.message))
+  .then(({ results }) => {
+    console.log(facts.accountId + ' is a ' + results.map(result => result.event.params.message))
   })
-  .catch(err => console.log(err.stack))
 
 /*
  * OUTPUT:

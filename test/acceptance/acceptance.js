@@ -149,8 +149,8 @@ describe('Acceptance', () => {
     const engineResult = await engine.run({ baseIndex: 1 })
 
     // results
-    expect(engineResult.successResults.length).to.equal(2)
-    expect(engineResult.successResults[0]).to.deep.equal({
+    expect(engineResult.results.length).to.equal(2)
+    expect(engineResult.results[0]).to.deep.equal({
       conditions: {
         all: [
           {
@@ -189,7 +189,7 @@ describe('Acceptance', () => {
       priority: 10,
       result: true
     })
-    expect(engineResult.successResults[1]).to.deep.equal({
+    expect(engineResult.results[1]).to.deep.equal({
       conditions: {
         all: [
           {
@@ -242,7 +242,7 @@ describe('Acceptance', () => {
 
     const engineResult = await engine.run({ baseIndex: 1, 'rule-created-fact': '' })
 
-    expect(engineResult.successResults.length).to.equal(0)
+    expect(engineResult.results.length).to.equal(0)
     expect(engineResult.failureResults.length).to.equal(2)
     expect(engineResult.failureResults.every(rr => rr.result === false)).to.be.true()
 

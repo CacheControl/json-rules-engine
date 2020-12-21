@@ -162,8 +162,8 @@ Running an engine executes the rules, and fires off event events for conditions 
 engine.run({ userId: 1 });  // any time a rule condition requires 'userId', '1' will be returned
 
 // run() returns a promise
-engine.run({ userId: 4 }).then((results) => {
-  console.log('all rules executed; the following events were triggered: ', results.successResults.map(result => JSON.stringify(result.event)))
+engine.run({ userId: 4 }).then(({ results }) => {
+  console.log('all rules executed; the following events were triggered: ', results.map(result => JSON.stringify(result.event)))
 });
 ```
 Helper methods (for this example)

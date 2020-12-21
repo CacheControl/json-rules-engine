@@ -15,7 +15,7 @@ require('colors')
 const { Engine } = require('json-rules-engine')
 const accountClient = require('./support/account-api-client')
 
-async function start() {
+async function start () {
   /**
    * Setup a new engine
    */
@@ -108,11 +108,11 @@ async function start() {
   })
 
   // first run, using washington's facts
-  console.log('-- FIRST RUN --');
+  console.log('-- FIRST RUN --')
   facts = { accountId: 'washington' }
   await engine.run(facts)
 
-  console.log('-- SECOND RUN --');
+  console.log('-- SECOND RUN --')
   // second run, using jefferson's facts; facts & evaluation are independent of the first run
   facts = { accountId: 'jefferson' }
   await engine.run(facts)
@@ -138,5 +138,3 @@ start()
  * jefferson did NOT meet conditions for the microsoft-terminated-employees rule.
  * jefferson DID meet conditions for the five-year-tenure rule.
  */
-
-

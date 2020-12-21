@@ -11,7 +11,7 @@
 require('colors')
 const { Engine } = require('json-rules-engine')
 
-async function start() {
+async function start () {
   /**
    * Setup a new engine
    */

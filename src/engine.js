@@ -234,14 +234,14 @@ class Engine extends EventEmitter {
         return almanac.getSuccessEvents()
       }).then(events => {
         const ruleResults = almanac.getRuleResults()
-        const { successResults, failureResults } = ruleResults.reduce((hash, ruleResult) => {
-          const group = ruleResult.result ? 'successResults' : 'failureResults'
+        const { results, failureResults } = ruleResults.reduce((hash, ruleResult) => {
+          const group = ruleResult.result ? 'results' : 'failureResults'
           hash[group].push(ruleResult)
           return hash
-        }, { successResults: [], failureResults: [] })
+        }, { results: [], failureResults: [] })
 
         resolve({
-          successResults,
+          results,
           failureResults,
           almanac,
 

@@ -16,7 +16,7 @@ const { Engine } = require('json-rules-engine')
 // example client for making asynchronous requests to an api, database, etc
 const apiClient = require('./support/account-api-client')
 
-async function start() {
+async function start () {
   /**
    * Setup a new engine
    */
@@ -70,9 +70,9 @@ async function start() {
 
   // define fact(s) known at runtime
   const facts = { accountId: 'lincoln' }
-  const { successResults } = await engine.run(facts)
+  const { results } = await engine.run(facts)
 
-  console.log(facts.accountId + ' is a ' + successResults.map(result => result.event.params.message))
+  console.log(facts.accountId + ' is a ' + results.map(result => result.event.params.message))
 }
 start()
 
