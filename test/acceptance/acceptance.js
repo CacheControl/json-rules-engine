@@ -146,11 +146,16 @@ describe('Acceptance', () => {
       lowPriorityValue: [2]
     })
 
-    const engineResult = await engine.run({ baseIndex: 1 })
+    const {
+      results,
+      failureResults,
+      events,
+      failureEvents
+    } = await engine.run({ baseIndex: 1 })
 
     // results
-    expect(engineResult.results.length).to.equal(2)
-    expect(engineResult.results[0]).to.deep.equal({
+    expect(results.length).to.equal(2)
+    expect(results[0]).to.deep.equal({
       conditions: {
         all: [
           {
@@ -189,7 +194,7 @@ describe('Acceptance', () => {
       priority: 10,
       result: true
     })
-    expect(engineResult.results[1]).to.deep.equal({
+    expect(results[1]).to.deep.equal({
       conditions: {
         all: [
           {
@@ -219,12 +224,13 @@ describe('Acceptance', () => {
       priority: 1,
       result: true
     })
-    expect(engineResult.failureResults).to.be.empty()
+    expect(failureResults).to.be.empty()
 
     // events
-    expect(engineResult.events.length).to.equal(2)
-    expect(engineResult.events[0]).to.deep.equal(event1)
-    expect(engineResult.events[1]).to.deep.equal(event2)
+    expect(failureEvents.length).to.equal(0)
+    expect(events.length).to.equal(2)
+    expect(events[0]).to.deep.equal(event1)
+    expect(events[1]).to.deep.equal(event2)
 
     // callbacks
     expect(successSpy).to.have.been.calledTwice()
@@ -240,13 +246,19 @@ describe('Acceptance', () => {
       lowPriorityValue: [3] // falsey
     })
 
-    const engineResult = await engine.run({ baseIndex: 1, 'rule-created-fact': '' })
+    const {
+      results,
+      failureResults,
+      events,
+      failureEvents
+    } = await engine.run({ baseIndex: 1, 'rule-created-fact': '' })
 
-    expect(engineResult.results.length).to.equal(0)
-    expect(engineResult.failureResults.length).to.equal(2)
-    expect(engineResult.failureResults.every(rr => rr.result === false)).to.be.true()
+    expect(results.length).to.equal(0)
+    expect(failureResults.length).to.equal(2)
+    expect(failureResults.every(rr => rr.result === false)).to.be.true()
 
-    expect(engineResult.events.length).to.equal(0)
+    expect(events.length).to.equal(0)
+    expect(failureEvents.length).to.equal(2)
     expect(failureSpy).to.have.been.calledTwice()
     expect(failureSpy).to.have.been.calledWith(event1)
     expect(failureSpy).to.have.been.calledWith(event2)

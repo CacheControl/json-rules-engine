@@ -22,7 +22,7 @@ export default class Almanac {
     this.factResultsCache = new Map() // { cacheKey:  Promise<factValu> }
     this.allowUndefinedFacts = Boolean(options.allowUndefinedFacts)
     this.pathResolver = options.pathResolver || defaultPathResolver
-    this.successEvents = []
+    this.events = { success: [], failure: [] }
     this.ruleResults = []
 
     for (const factId in runtimeFacts) {
@@ -42,15 +42,17 @@ export default class Almanac {
    * Adds a success event
    * @param {Object} event
    */
-  addSuccessEvent (event) {
-    this.successEvents.push(event)
+  addEvent (event, outcome) {
+    if (!outcome) throw new Error('outcome required: "success" | "failure"]')
+    this.events[outcome].push(event)
   }
 
   /**
    * retrieve successful events
    */
-  getSuccessEvents () {
-    return this.successEvents
+  getEvents (outcome = '') {
+    if (outcome) return this.events[outcome]
+    return this.events.success.concat(this.events.failure)
   }
 
   /**

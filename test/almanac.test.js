@@ -41,14 +41,25 @@ describe('Almanac', () => {
     })
   })
 
-  describe('addSuccessEvent() / getSuccessEvents()', () => {
-    it('manages success events', () => {
-      const event = {}
-      almanac = new Almanac()
-      expect(almanac.getSuccessEvents()).to.be.empty()
-      almanac.addSuccessEvent(event)
-      expect(almanac.getSuccessEvents()).to.have.a.lengthOf(1)
-      expect(almanac.getSuccessEvents()[0]).to.equal(event)
+  describe('addEvent() / getEvents()', () => {
+    const event = {};
+    ['success', 'failure'].forEach(outcome => {
+      it(`manages ${outcome} events`, () => {
+        almanac = new Almanac()
+        expect(almanac.getEvents(outcome)).to.be.empty()
+        almanac.addEvent(event, outcome)
+        expect(almanac.getEvents(outcome)).to.have.a.lengthOf(1)
+        expect(almanac.getEvents(outcome)[0]).to.equal(event)
+      })
+
+      it('getEvent() filters when outcome provided, or returns all events', () => {
+        almanac = new Almanac()
+        almanac.addEvent(event, 'success')
+        almanac.addEvent(event, 'failure')
+        expect(almanac.getEvents('success')).to.have.a.lengthOf(1)
+        expect(almanac.getEvents('failure')).to.have.a.lengthOf(1)
+        expect(almanac.getEvents()).to.have.a.lengthOf(2)
+      })
     })
   })
 

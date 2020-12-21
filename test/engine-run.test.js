@@ -1,6 +1,7 @@
 'use strict'
 
 import engineFactory from '../src/index'
+import Almanac from '../src/almanac'
 import sinon from 'sinon'
 
 describe('Engine: run', () => {
@@ -62,11 +63,12 @@ describe('Engine: run', () => {
   })
 
   describe('returns', () => {
-    it('activated events', () => {
-      return engine.run({ age: 30 }).then(results => {
-        expect(results.events.length).to.equal(1)
-        expect(results.events).to.deep.include(rule.event)
-      })
+    it('activated events', async () => {
+      const { events, failureEvents } = await engine.run({ age: 30 })
+      expect(events.length).to.equal(1)
+      expect(events).to.deep.include(rule.event)
+      expect(failureEvents.length).to.equal(1)
+      expect(failureEvents).to.deep.include(rule2.event)
     })
 
     it('multiple activated events', () => {
@@ -85,7 +87,7 @@ describe('Engine: run', () => {
 
     it('includes the almanac', () => {
       return engine.run({ age: 10 }).then(results => {
-        // expect(results.almanac).assert.instanceOf
+        expect(results.almanac).to.be.an.instanceOf(Almanac)
         return results.almanac.factValue('age')
       }).then(ageFact => expect(ageFact).to.equal(10))
     })
