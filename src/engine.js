@@ -191,7 +191,7 @@ class Engine extends EventEmitter {
       }
       return rule.evaluate(almanac).then((ruleResult) => {
         debug(`engine::run ruleResult:${ruleResult.result}`)
-        almanac.addRuleResult(ruleResult)
+        almanac.addResult(ruleResult)
         if (ruleResult.result) {
           almanac.addEvent(ruleResult.event, 'success')
           return this.emitAsync('success', ruleResult.event, almanac, ruleResult)
@@ -232,7 +232,7 @@ class Engine extends EventEmitter {
       cursor.then(() => {
         this.status = FINISHED
         debug('engine::run completed')
-        const ruleResults = almanac.getRuleResults()
+        const ruleResults = almanac.getResults()
         const { results, failureResults } = ruleResults.reduce((hash, ruleResult) => {
           const group = ruleResult.result ? 'results' : 'failureResults'
           hash[group].push(ruleResult)

@@ -59,14 +59,14 @@ export default class Almanac {
    * Adds a rule result
    * @param {Object} event
    */
-  addRuleResult (ruleResult) {
+  addResult (ruleResult) {
     this.ruleResults.push(ruleResult)
   }
 
   /**
    * retrieve successful events
    */
-  getRuleResults () {
+  getResults () {
     return this.ruleResults
   }
 

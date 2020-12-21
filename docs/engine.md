@@ -3,18 +3,18 @@
 The Engine stores and executes rules, emits events, and maintains state.
 
 * [Methods](#methods)
-  * [constructor([Array rules], Object [options])](#constructorarray-rules-object-options)
-    * [Options](#options)
-  * [engine.addFact(String id, Function [definitionFunc], Object [options])](#engineaddfactstring-id-function-definitionfunc-object-options)
-  * [engine.removeFact(String id)](#engineremovefactstring-id)
-  * [engine.addRule(Rule instance|Object options)](#engineaddrulerule-instanceobject-options)
-  * [engine.removeRule(Rule instance)](#engineremoverulerule-instance)
-  * [engine.addOperator(String operatorName, Function evaluateFunc(factValue, jsonValue))](#engineaddoperatorstring-operatorname-function-evaluatefuncfactvalue-jsonvalue)
-  * [engine.removeOperator(String operatorName)](#engineremoveoperatorstring-operatorname)
-  * [engine.run([Object facts], [Object options]) -&gt; Promise ({ events: Events, almanac: Almanac, results: [], failureResults: []})](#enginerunobject-facts-object-options---promise--events-events-almanac-almanac-successresults--failureresults-)
-  * [engine.stop() -&gt; Engine](#enginestop---engine)
-    * [engine.on('success', Function(Object event, Almanac almanac, RuleResult ruleResult))](#engineonsuccess-functionobject-event-almanac-almanac-ruleresult-ruleresult)
-    * [engine.on('failure', Function(Object event, Almanac almanac, RuleResult ruleResult))](#engineonfailure-functionobject-event-almanac-almanac-ruleresult-ruleresult)
+    * [constructor([Array rules], Object [options])](#constructorarray-rules-object-options)
+      * [Options](#options)
+    * [engine.addFact(String id, Function [definitionFunc], Object [options])](#engineaddfactstring-id-function-definitionfunc-object-options)
+    * [engine.removeFact(String id)](#engineremovefactstring-id)
+    * [engine.addRule(Rule instance|Object options)](#engineaddrulerule-instanceobject-options)
+    * [engine.removeRule(Rule instance)](#engineremoverulerule-instance)
+    * [engine.addOperator(String operatorName, Function evaluateFunc(factValue, jsonValue))](#engineaddoperatorstring-operatorname-function-evaluatefuncfactvalue-jsonvalue)
+    * [engine.removeOperator(String operatorName)](#engineremoveoperatorstring-operatorname)
+    * [engine.run([Object facts], [Object options]) -&gt; Promise ({ events: [], failureEvents: [], almanac: Almanac, results: [], failureResults: []})](#enginerunobject-facts-object-options---promise--events--failureevents--almanac-almanac-results--failureresults-)
+    * [engine.stop() -&gt; Engine](#enginestop---engine)
+      * [engine.on('success', Function(Object event, Almanac almanac, RuleResult ruleResult))](#engineonsuccess-functionobject-event-almanac-almanac-ruleresult-ruleresult)
+      * [engine.on('failure', Function(Object event, Almanac almanac, RuleResult ruleResult))](#engineonfailure-functionobject-event-almanac-almanac-ruleresult-ruleresult)
 
 ## Methods
 
@@ -153,7 +153,7 @@ engine.removeOperator('startsWithLetter');
 
 
 
-### engine.run([Object facts], [Object options]) -> Promise ({ events: Events, almanac: Almanac, results: [], failureResults: []})
+### engine.run([Object facts], [Object options]) -> Promise ({ events: [], failureEvents: [], almanac: Almanac, results: [], failureResults: []})
 
 Runs the rules engine.  Returns a promise which resolves when all rules have been run.
 
@@ -165,13 +165,20 @@ await engine.run()
 await engine.run({ userId: 1 })
 
 // results
-const { results, failureResults, events } = await engine.run({ userId: 1 })
+const {
+  results,
+  failureResults,
+  events,
+  failureEvents,
+  almanac
+} = await engine.run({ userId: 1 })
 
 /**
  * almanac: Almanac instance for the run
  * results: rule results for successful rules
  * failureResults: rule results for failed rules
- * events: successful events
+ * events: successful rule events
+ * failureEvents: failed rule events
  */
 ```
 Link to the [Almanac documentation](./almanac.md)

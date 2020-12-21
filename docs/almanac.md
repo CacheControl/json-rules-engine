@@ -4,6 +4,8 @@
 * [Methods](#methods)
     * [almanac.factValue(Fact fact, Object params, String path) -&gt; Promise](#almanacfactvaluefact-fact-object-params-string-path---promise)
     * [almanac.addRuntimeFact(String factId, Mixed value)](#almanacaddruntimefactstring-factid-mixed-value)
+    * [almanac.getEvents(String outcome) -&gt; Events[]](#almanacgeteventsstring-outcome---events)
+    * [almanac.getResults() -&gt; RuleResults[]](#almanacgetresults---ruleresults)
 * [Common Use Cases](#common-use-cases)
     * [Fact dependencies](#fact-dependencies)
     * [Retrieve fact values when handling events](#retrieve-fact-values-when-handling-events)
@@ -37,6 +39,26 @@ Sets a constant fact mid-run.  Often used in conjunction with rule and engine ev
 
 ```js
 almanac.addRuntimeFact('account-id', 1)
+```
+
+### almanac.getEvents(String outcome) -> Events[]
+
+Returns events by outcome ("success" or "failure") for the current engine run()
+
+```js
+almanac.getEvents() // all events for every rule evaluated thus far
+
+almanac.getEvents('success') // array of success events
+
+almanac.getEvents('failure') // array of failure events
+```
+
+### almanac.getResults() -> RuleResults[]
+
+Returns [rule results](./rules#rule-results) for the current engine run()
+
+```js
+almanac.getResults()
 ```
 
 ## Common Use Cases
