@@ -4,6 +4,8 @@
 * [Methods](#methods)
     * [almanac.factValue(Fact fact, Object params, String path) -&gt; Promise](#almanacfactvaluefact-fact-object-params-string-path---promise)
     * [almanac.addRuntimeFact(String factId, Mixed value)](#almanacaddruntimefactstring-factid-mixed-value)
+    * [almanac.getEvents(String outcome) -&gt; Events[]](#almanacgeteventsstring-outcome---events)
+    * [almanac.getResults() -&gt; RuleResults[]](#almanacgetresults---ruleresults)
 * [Common Use Cases](#common-use-cases)
     * [Fact dependencies](#fact-dependencies)
     * [Retrieve fact values when handling events](#retrieve-fact-values-when-handling-events)
@@ -37,6 +39,26 @@ Sets a constant fact mid-run.  Often used in conjunction with rule and engine ev
 
 ```js
 almanac.addRuntimeFact('account-id', 1)
+```
+
+### almanac.getEvents(String outcome) -> Events[]
+
+Returns events by outcome ("success" or "failure") for the current engine run()
+
+```js
+almanac.getEvents() // all events for every rule evaluated thus far
+
+almanac.getEvents('success') // array of success events
+
+almanac.getEvents('failure') // array of failure events
+```
+
+### almanac.getResults() -> RuleResults[]
+
+Returns [rule results](./rules#rule-results) for the current engine run()
+
+```js
+almanac.getResults()
 ```
 
 ## Common Use Cases
@@ -110,13 +132,13 @@ When a rule evalutes truthy and its ```event``` is called, new facts may be defi
 
 ```js
 engine.on('success', (event, almanac) => {
-  // Handle the event using a fact value to process
-  // Retrieve user's account info and make an api call using the results
-  almanac
-    .factValue('account-information', event.params.accountId)
-    .then(info => {
-      return request.post({ url: `http://my-service/toggle?funded=${!info.funded}`)
-    })
+  // Retrieve user's account info based on the event params
+  const info = await almanac.factValue('account-information', event.params.accountId)
+
+  // make an api call using the results
+  await request.post({ url: `http://my-service/toggle?funded=${!info.funded}`)
+
+  // engine execution continues when promise returned to 'success' callback resolves
 })
 ```
 

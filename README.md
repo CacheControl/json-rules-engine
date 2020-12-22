@@ -86,9 +86,8 @@ let facts = {
 // Run the engine to evaluate
 engine
   .run(facts)
-  .then(results => {
-    // 'results' is an object containing successful events, and an Almanac instance containing facts
-    results.events.map(event => console.log(event.params.message))
+  .then(({ events }) => {
+    events.map(event => console.log(event.params.message))
   })
 
 /*
@@ -171,10 +170,9 @@ engine.addFact('account-information', function (params, almanac) {
 let facts = { accountId: 'lincoln' }
 engine
   .run(facts)
-  .then((results) => {
-    console.log(facts.accountId + ' is a ' + results.events.map(event => event.params.message))
+  .then(({ events }) => {
+    console.log(facts.accountId + ' is a ' + events.map(event => event.params.message))
   })
-  .catch(err => console.log(err.stack))
 
 /*
  * OUTPUT:

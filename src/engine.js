@@ -191,11 +191,13 @@ class Engine extends EventEmitter {
       }
       return rule.evaluate(almanac).then((ruleResult) => {
         debug(`engine::run ruleResult:${ruleResult.result}`)
+        almanac.addResult(ruleResult)
         if (ruleResult.result) {
-          almanac.addSuccessEvent(ruleResult.event)
+          almanac.addEvent(ruleResult.event, 'success')
           return this.emitAsync('success', ruleResult.event, almanac, ruleResult)
             .then(() => this.emitAsync(ruleResult.event.type, ruleResult.event.params, almanac, ruleResult))
         } else {
+          almanac.addEvent(ruleResult.event, 'failure')
           return this.emitAsync('failure', ruleResult.event, almanac, ruleResult)
         }
       })
@@ -230,11 +232,19 @@ class Engine extends EventEmitter {
       cursor.then(() => {
         this.status = FINISHED
         debug('engine::run completed')
-        return almanac.getSuccessEvents()
-      }).then(events => {
+        const ruleResults = almanac.getResults()
+        const { results, failureResults } = ruleResults.reduce((hash, ruleResult) => {
+          const group = ruleResult.result ? 'results' : 'failureResults'
+          hash[group].push(ruleResult)
+          return hash
+        }, { results: [], failureResults: [] })
+
         resolve({
-          events,
-          almanac
+          almanac,
+          results,
+          failureResults,
+          events: almanac.getEvents('success'),
+          failureEvents: almanac.getEvents('failure')
         })
       }).catch(reject)
     })

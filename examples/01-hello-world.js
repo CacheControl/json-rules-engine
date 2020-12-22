@@ -10,52 +10,49 @@
  */
 
 require('colors')
-const { Engine, Rule } = require('json-rules-engine')
+const { Engine } = require('json-rules-engine')
 
-/**
- * Setup a new engine
- */
-const engine = new Engine()
+async function start () {
+  /**
+   * Setup a new engine
+   */
+  const engine = new Engine()
 
-/**
- * Create a rule
- */
-const rule = new Rule({
-  // define the 'conditions' for when "hello world" should display
-  conditions: {
-    all: [{
-      fact: 'displayMessage',
-      operator: 'equal',
-      value: true
-    }]
-  },
-  // define the 'event' that will fire when the condition evaluates truthy
-  event: {
-    type: 'message',
-    params: {
-      data: 'hello-world!'
+  /**
+   * Create a rule
+   */
+  engine.addRule({
+    // define the 'conditions' for when "hello world" should display
+    conditions: {
+      all: [{
+        fact: 'displayMessage',
+        operator: 'equal',
+        value: true
+      }]
+    },
+    // define the 'event' that will fire when the condition evaluates truthy
+    event: {
+      type: 'message',
+      params: {
+        data: 'hello-world!'
+      }
     }
-  }
-})
-
-// add rule to engine
-engine.addRule(rule)
-
-/**
- * Define a 'displayMessage' as a constant value
- * Fact values do NOT need to be known at engine runtime; see the
- * 03-dynamic-facts.js example for how to pull in data asynchronously during runtime
- */
-const facts = { displayMessage: true }
-
-// run the engine
-engine
-  .run(facts)
-  .then(results => { // engine returns an object with a list of events with truthy conditions
-    results.events.map(event => console.log(event.params.data.green))
   })
-  .catch(console.log)
 
+  /**
+   * Define a 'displayMessage' as a constant value
+   * Fact values do NOT need to be known at engine runtime; see the
+   * 03-dynamic-facts.js example for how to pull in data asynchronously during runtime
+   */
+  const facts = { displayMessage: true }
+
+  // engine.run() evaluates the rule using the facts provided
+  const { events } = await engine.run(facts)
+
+  events.map(event => console.log(event.params.data.green))
+}
+
+start()
 /*
  * OUTPUT:
  *

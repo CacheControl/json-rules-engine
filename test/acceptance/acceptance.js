@@ -146,11 +146,93 @@ describe('Acceptance', () => {
       lowPriorityValue: [2]
     })
 
-    const engineResult = await engine.run({ baseIndex: 1 })
+    const {
+      results,
+      failureResults,
+      events,
+      failureEvents
+    } = await engine.run({ baseIndex: 1 })
 
-    expect(engineResult.events.length).to.equal(2)
-    expect(engineResult.events[0]).to.deep.equal(event1)
-    expect(engineResult.events[1]).to.deep.equal(event2)
+    // results
+    expect(results.length).to.equal(2)
+    expect(results[0]).to.deep.equal({
+      conditions: {
+        all: [
+          {
+            fact: 'high-priority',
+            factResult: [
+              2
+            ],
+            operator: 'contains',
+            params: {
+              factParam: 1
+            },
+            path: '$.values',
+            result: true,
+            value: 2
+          },
+          {
+            fact: 'low-priority',
+            factResult: 2,
+            operator: 'in',
+            result: true,
+            value: [
+              2
+            ]
+          }
+        ],
+        operator: 'all',
+        priority: 1
+      },
+      event: {
+        params: {
+          eventParam: 1
+        },
+        type: 'event-1'
+      },
+      name: 'first',
+      priority: 10,
+      result: true
+    })
+    expect(results[1]).to.deep.equal({
+      conditions: {
+        all: [
+          {
+            fact: 'high-priority',
+            factResult: [
+              2
+            ],
+            operator: 'containsDivisibleValuesOf',
+            params: {
+              factParam: 1
+            },
+            path: '$.values',
+            result: true,
+            value: {
+              fact: 'rule-created-fact',
+              path: '$.array'
+            }
+          }
+        ],
+        operator: 'all',
+        priority: 1
+      },
+      event: {
+        type: 'event-2'
+      },
+      name: 'second',
+      priority: 1,
+      result: true
+    })
+    expect(failureResults).to.be.empty()
+
+    // events
+    expect(failureEvents.length).to.equal(0)
+    expect(events.length).to.equal(2)
+    expect(events[0]).to.deep.equal(event1)
+    expect(events[1]).to.deep.equal(event2)
+
+    // callbacks
     expect(successSpy).to.have.been.calledTwice()
     expect(successSpy).to.have.been.calledWith(event1)
     expect(successSpy).to.have.been.calledWith(event2)
@@ -164,9 +246,19 @@ describe('Acceptance', () => {
       lowPriorityValue: [3] // falsey
     })
 
-    const engineResult = await engine.run({ baseIndex: 1, 'rule-created-fact': '' })
+    const {
+      results,
+      failureResults,
+      events,
+      failureEvents
+    } = await engine.run({ baseIndex: 1, 'rule-created-fact': '' })
 
-    expect(engineResult.events.length).to.equal(0)
+    expect(results.length).to.equal(0)
+    expect(failureResults.length).to.equal(2)
+    expect(failureResults.every(rr => rr.result === false)).to.be.true()
+
+    expect(events.length).to.equal(0)
+    expect(failureEvents.length).to.equal(2)
     expect(failureSpy).to.have.been.calledTwice()
     expect(failureSpy).to.have.been.calledWith(event1)
     expect(failureSpy).to.have.been.calledWith(event2)

@@ -6,6 +6,8 @@ export interface EngineOptions {
 export interface EngineResult {
   events: Event[];
   almanac: Almanac;
+  results: RuleResult[];
+  failureResults: RuleResult[];
 }
 
 export default function engineFactory(
