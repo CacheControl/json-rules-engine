@@ -47,9 +47,9 @@ async function start () {
   const facts = { displayMessage: true }
 
   // engine.run() evaluates the rule using the facts provided
-  const { results } = await engine.run(facts)
+  const { events } = await engine.run(facts)
 
-  results.map(result => console.log(result.event.params.data.green))
+  events.map(event => console.log(event.params.data.green))
 }
 
 start()

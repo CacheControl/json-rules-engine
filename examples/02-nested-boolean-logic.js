@@ -61,9 +61,9 @@ async function start () {
     gameDuration: 40
   }
 
-  const { results } = await engine.run(facts)
+  const { events } = await engine.run(facts)
 
-  results.map(result => console.log(result.event.params.message.red))
+  events.map(event => console.log(event.params.message.red))
 }
 start()
 /*

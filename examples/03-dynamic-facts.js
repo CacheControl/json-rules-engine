@@ -70,9 +70,9 @@ async function start () {
 
   // define fact(s) known at runtime
   const facts = { accountId: 'lincoln' }
-  const { results } = await engine.run(facts)
+  const { events } = await engine.run(facts)
 
-  console.log(facts.accountId + ' is a ' + results.map(result => result.event.params.message))
+  console.log(facts.accountId + ' is a ' + events.map(event => event.params.message))
 }
 start()
 

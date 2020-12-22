@@ -164,22 +164,13 @@ await engine.run()
 // with constant facts
 await engine.run({ userId: 1 })
 
-// results
 const {
-  results,
-  failureResults,
-  events,
-  failureEvents,
-  almanac
+  results,         // rule results for successful rules
+  failureResults,  // rule results for failed rules
+  events,          // array of successful rule events
+  failureEvents,   // array of failed rule events
+  almanac          // Almanac instance representing the run
 } = await engine.run({ userId: 1 })
-
-/**
- * almanac: Almanac instance for the run
- * results: rule results for successful rules
- * failureResults: rule results for failed rules
- * events: successful rule events
- * failureEvents: failed rule events
- */
 ```
 Link to the [Almanac documentation](./almanac.md)
 
