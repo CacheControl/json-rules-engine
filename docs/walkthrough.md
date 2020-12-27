@@ -2,7 +2,7 @@
 
 * [Step 1: Create an Engine](#step-1-create-an-engine)
 * [Step 2: Add Rules](#step-2-add-rules)
-    * [Step 3: Define Facts](#step-3-define-facts)
+* [Step 3: Define Facts](#step-3-define-facts)
 * [Step 4: Handing Events](#step-4-handing-events)
 * [Step 5: Run the engine](#step-5-run-the-engine)
 
