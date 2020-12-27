@@ -9,8 +9,8 @@
 ## Step 1: Create an Engine
 
 ```js
-  let RuleEngine = require('json-rules-engine');
-  let engine = new RuleEngine.Engine();
+  let { Engine } = require('json-rules-engine');
+  let engine = new Engine();
 ```
 
 More on engines can be found [here](./engine.md)
@@ -59,8 +59,7 @@ let conditions = {
     }
   ]
 };
-let rule = new RuleEngine.Rule({ conditions, event});
-engine.addRule(rule);
+engine.addRule({ conditions, event });
 ```
 
 The example above demonstrates a rule for finding individuals between _18 and 25_ who live in either _Utah or Colorado_.
