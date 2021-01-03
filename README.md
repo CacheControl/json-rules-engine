@@ -8,6 +8,19 @@
 
 A rules engine expressed in JSON
 
+* [Synopsis](#synopsis)
+* [Features](#features)
+* [Installation](#installation)
+* [Docs](#docs)
+* [Examples](#examples)
+* [Basic Example](#basic-example)
+* [Advanced Example](#advanced-example)
+* [Debugging](#debugging)
+    * [Node](#node)
+    * [Browser](#browser)
+* [Related Projects](#related-projects)
+* [License](#license)
+
 ## Synopsis
 
 ```json-rules-engine``` is a powerful, lightweight rules engine.  Rules are composed of simple json structures, making them human readable and easy to persist.
@@ -19,13 +32,24 @@ A rules engine expressed in JSON
 * Fast by default, faster with configuration; priority levels and cache settings for fine tuning performance
 * Secure; no use of eval()
 * Isomorphic; runs in node and browser
-* Lightweight & extendable; 12kb gzipped w/few dependencies
+* Lightweight & extendable; 17kb gzipped w/few dependencies
 
 ## Installation
 
 ```bash
 $ npm install json-rules-engine
 ```
+
+## Docs
+
+- [engine](./docs/engine.md)
+- [rules](./docs/rules.md)
+- [almanac](./docs/almanac.md)
+- [facts](./docs/facts.md)
+
+## Examples
+
+See the [Examples](./examples), which demonstrate the major features and capabilities.
 
 ## Basic Example
 
@@ -130,17 +154,17 @@ let microsoftRule = {
       fact: 'account-information',
       operator: 'equal',
       value: 'microsoft',
-      path: '.company' // access the 'company' property of "account-information"
+      path: '$.company' // access the 'company' property of "account-information"
     }, {
       fact: 'account-information',
       operator: 'in',
       value: ['active', 'paid-leave'], // 'status' can be active or paid-leave
-      path: '.status' // access the 'status' property of "account-information"
+      path: '$.status' // access the 'status' property of "account-information"
     }, {
       fact: 'account-information',
       operator: 'contains', // the 'ptoDaysTaken' property (an array) must contain '2016-12-25'
       value: '2016-12-25',
-      path: '.ptoDaysTaken' // access the 'ptoDaysTaken' property of "account-information"
+      path: '$.ptoDaysTaken' // access the 'ptoDaysTaken' property of "account-information"
     }]
   },
   event: {
@@ -184,40 +208,28 @@ engine
 
 This is available in the [examples](./examples/03-dynamic-facts.js)
 
-## Docs
-
-The examples above provide a simple demonstrations of what `json-rules-engine` can do.  To learn more about the advanced features and techniques,
-see the [docs](./docs) and read through the [examples](./examples).  There is also a [walkthrough](./docs/walkthrough.md) available.
-
-## Persisting Rules
-
-Rules may be easily converted to JSON and persisted to a database, file system, or elsewhere.  To convert a rule to JSON, simply call the ```rule.toJSON()``` method.  Later, a rule may be restored by feeding the json into the Rule constructor.
-
-```js
-// save somewhere...
-let jsonString = rule.toJSON()
-
-// ...later:
-let rule = new Rule(jsonString)
-```
-
-_Why aren't "fact" methods persistable?_  This is by design, for several reasons.  Firstly, facts are by definition business logic bespoke to your application, and therefore lie outside the scope of this library.  Secondly, many times this request indicates a design smell; try thinking of other ways to compose the rules and facts to accomplish the same objective. Finally, persisting fact methods would involve serializing javascript code, and restoring it later via ``eval()``.  If you have a strong desire for this feature, the [node-rules](https://github.com/mithunsatheesh/node-rules) project supports this (though be aware the capability is enabled via ``eval()``.
-
 ## Debugging
 
 To see what the engine is doing under the hood, debug output can be turned on via:
 
-#### Node
+### Node
 
 ```bash
 DEBUG=json-rules-engine
 ```
 
-#### Browser
+### Browser
 ```js
 // set debug flag in local storage & refresh page to see console output
 localStorage.debug = 'json-rules-engine'
 ```
+
+## Related Projects
+
+https://github.com/vinzdeveloper/json-rule-editor - configuration ui for json-rules-engine:
+
+<img alt="rule editor 1" src="https://user-images.githubusercontent.com/61467683/82750272-dc0a0e80-9da6-11ea-98ec-3549bf530f4d.png">
+
 
 ## License
 [ISC](./LICENSE)
