@@ -27,6 +27,7 @@ Rules contain a set of _conditions_ and a single _event_.  When the engine is ru
     * [Numeric operators:](#numeric-operators)
     * [Array operators:](#array-operators)
 * [Rule Results](#rule-results)
+* [Persisting](#persisting)
 
 ## Methods
 
@@ -380,3 +381,17 @@ Rule results are structured similar to rules, with two additional pieces of meta
 ```
 
 A demonstration can be found in the [rule-results](../examples/09-rule-results.js) example.
+
+## Persisting
+
+Rules may be easily converted to JSON and persisted to a database, file system, or elsewhere.  To convert a rule to JSON, simply call the ```rule.toJSON()``` method.  Later, a rule may be restored by feeding the json into the Rule constructor.
+
+```js
+// save somewhere...
+let jsonString = rule.toJSON()
+
+// ...later:
+let rule = new Rule(jsonString)
+```
+
+_Why aren't "fact" methods persistable?_  This is by design, for several reasons.  Firstly, facts are by definition business logic bespoke to your application, and therefore lie outside the scope of this library.  Secondly, many times this request indicates a design smell; try thinking of other ways to compose the rules and facts to accomplish the same objective. Finally, persisting fact methods would involve serializing javascript code, and restoring it later via ``eval()``.
