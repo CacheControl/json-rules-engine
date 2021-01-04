@@ -228,7 +228,7 @@ localStorage.debug = 'json-rules-engine'
 
 https://github.com/vinzdeveloper/json-rule-editor - configuration ui for json-rules-engine:
 
-<img alt="rule editor 1" src="https://user-images.githubusercontent.com/61467683/82750272-dc0a0e80-9da6-11ea-98ec-3549bf530f4d.png">
+<img width="1680" alt="rule editor 2" src="https://user-images.githubusercontent.com/61467683/82750274-dd3b3b80-9da6-11ea-96eb-434a6a1a9bc1.png">
 
 
 ## License
