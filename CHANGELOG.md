@@ -1,4 +1,7 @@
-#### 6.0. / 2020-12-22
+#### 6.0.1 / 2021-03-09
+  * Updates Typescript types to include `failureEvents` in EngineResult.
+
+#### 6.0.0 / 2020-12-22
   * BREAKING CHANGES
     * To continue using [selectn](https://github.com/wilmoore/selectn.js) syntax for condition `path`s, use the new `pathResolver` feature. Read more [here](./docs/rules.md#condition-helpers-custom-path-resolver). Add the following to the engine constructor:
       ```js
