@@ -5,6 +5,7 @@ export interface EngineOptions {
 
 export interface EngineResult {
   events: Event[];
+  failureEvents: Event[];
   almanac: Almanac;
   results: RuleResult[];
   failureResults: RuleResult[];
