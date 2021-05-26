@@ -286,7 +286,7 @@ describe('Engine: event', () => {
     beforeEach(() => simpleSetup())
 
     it('the rule result is a _copy_ of the rule`s conditions, and unaffected by mutation', async () => {
-      const rule = engine.rules[0]
+      const rule = Object.values(engine.rules)[0]
       let firstPass
       rule.on('success', function (e, almanac, ruleResult) {
         firstPass = ruleResult
@@ -307,7 +307,7 @@ describe('Engine: event', () => {
     it('on-success, it passes the event type and params', async () => {
       const failureSpy = sandbox.spy()
       const successSpy = sandbox.spy()
-      const rule = engine.rules[0]
+      const rule = Object.values(engine.rules)[0]
       function assertResult (ruleResult) {
         expect(ruleResult.result).to.be.true()
         expect(ruleResult.conditions.any[0].result).to.be.true()
@@ -339,7 +339,7 @@ describe('Engine: event', () => {
       const AGE = 10
       const successSpy = sandbox.spy()
       const failureSpy = sandbox.spy()
-      const rule = engine.rules[0]
+      const rule = Object.values(engine.rules)[0]
       function assertResult (ruleResult) {
         expect(ruleResult.result).to.be.false()
         expect(ruleResult.conditions.any[0].result).to.be.false()
@@ -371,7 +371,7 @@ describe('Engine: event', () => {
     beforeEach(() => simpleSetup())
     it('serializes properties', async () => {
       const successSpy = sandbox.spy()
-      const rule = engine.rules[0]
+      const rule = Object.values(engine.rules)[0]
       rule.on('success', successSpy)
       await engine.run()
       const ruleResult = successSpy.getCall(0).args[2]

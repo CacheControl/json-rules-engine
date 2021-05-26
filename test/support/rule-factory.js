@@ -3,6 +3,7 @@
 module.exports = (options) => {
   options = options || {}
   return {
+    id: '_' + Math.random().toString(36).substr(2, 9),
     priority: options.priority || 1,
     conditions: options.conditions || {
       all: [{

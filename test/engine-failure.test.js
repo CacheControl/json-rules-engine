@@ -32,7 +32,7 @@ describe('Engine: failure', () => {
     const failureSpy = sandbox.spy()
     engine.on('failure', failureSpy)
     await engine.run()
-    expect(failureSpy).to.have.been.calledWith(engine.rules[0].ruleEvent)
+    expect(failureSpy).to.have.been.calledWith(Object.values(engine.rules)[0].ruleEvent)
   })
 
   it('does not emit when a rule passes', async () => {

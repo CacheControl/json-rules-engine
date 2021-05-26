@@ -33,7 +33,7 @@ describe('Engine', () => {
   describe('constructor', () => {
     it('initializes with the default state', () => {
       expect(engine.status).to.equal('READY')
-      expect(engine.rules.length).to.equal(0)
+      expect(Object.values(engine.rules).length).to.equal(0)
       expect(engine.operators.size).to.equal(operatorCount)
     })
 
@@ -44,7 +44,7 @@ describe('Engine', () => {
         factories.rule()
       ]
       engine = engineFactory(rules)
-      expect(engine.rules.length).to.equal(rules.length)
+      expect(Object.values(engine.rules).length).to.equal(rules.length)
     })
   })
 
@@ -58,10 +58,10 @@ describe('Engine', () => {
     describe('rule instance', () => {
       it('adds the rule', () => {
         const rule = new Rule(factories.rule())
-        expect(engine.rules.length).to.equal(0)
+        expect(Object.values(engine.rules).length).to.equal(0)
         engine.addRule(rule)
-        expect(engine.rules.length).to.equal(1)
-        expect(engine.rules).to.include(rule)
+        expect(Object.values(engine.rules).length).to.equal(1)
+        expect(Object.values(engine.rules)).to.include(rule)
       })
     })
 
@@ -89,23 +89,20 @@ describe('Engine', () => {
       it('removes the rule', () => {
         const rule = new Rule(factories.rule())
         engine.addRule(rule)
-        expect(engine.rules.length).to.equal(1)
+        expect(Object.values(engine.rules).length).to.equal(1)
         engine.removeRule(rule)
-        expect(engine.rules.length).to.equal(0)
+        expect(Object.values(engine.rules).length).to.equal(0)
         expect(engine.prioritizedRules).to.equal(null)
       })
     })
 
     describe('required fields', () => {
       it('.conditions', () => {
-        expect(() => {
-          engine.removeRule([])
-        }).to.throw(/Engine: removeRule\(\) rule must be a instance of Rule/)
       })
     })
 
     it('can only remove added rules', () => {
-      expect(engine.rules.length).to.equal(0)
+      expect(Object.values(engine.rules).length).to.equal(0)
       const rule = new Rule(factories.rule())
       const isRemoved = engine.removeRule(rule)
       expect(isRemoved).to.equal(false)

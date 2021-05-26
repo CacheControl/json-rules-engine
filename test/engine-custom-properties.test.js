@@ -29,7 +29,7 @@ describe('Engine: custom properties', () => {
         }
         const rule = factories.rule({ conditions, event })
         engine.addRule(rule)
-        expect(engine.rules[0].conditions).to.have.property('customId')
+        expect(Object.values(engine.rules)[0].conditions).to.have.property('customId')
       })
 
       it('preserves custom properties set on regular conditions', () => {
@@ -44,8 +44,8 @@ describe('Engine: custom properties', () => {
         }
         const rule = factories.rule({ conditions, event })
         engine.addRule(rule)
-        expect(engine.rules[0].conditions.all[0]).to.have.property('customId')
-        expect(engine.rules[0].conditions.all[0].customId).equal('uuid')
+        expect(Object.values(engine.rules)[0].conditions.all[0]).to.have.property('customId')
+        expect(Object.values(engine.rules)[0].conditions.all[0].customId).equal('uuid')
       })
     })
 
@@ -58,8 +58,8 @@ describe('Engine: custom properties', () => {
         .setEvent(ruleProperties.event)
       rule.customId = 'uuid'
       engine.addRule(rule)
-      expect(engine.rules[0]).to.have.property('customId')
-      expect(engine.rules[0].customId).equal('uuid')
+      expect(Object.values(engine.rules)[0]).to.have.property('customId')
+      expect(Object.values(engine.rules)[0].customId).equal('uuid')
     })
   })
 })

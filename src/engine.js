@@ -19,12 +19,13 @@ class Engine extends EventEmitter {
    */
   constructor (rules = [], options = {}) {
     super()
-    this.rules = []
+    this.rules = {}
     this.allowUndefinedFacts = options.allowUndefinedFacts || false
     this.pathResolver = options.pathResolver
     this.operators = new Map()
     this.facts = new Map()
     this.status = READY
+    this.ruleKeyField = options.ruleKeyField || 'id'
     rules.map(r => this.addRule(r))
     defaultOperators.map(o => this.addOperator(o))
   }
@@ -51,23 +52,47 @@ class Engine extends EventEmitter {
       rule = new Rule(properties)
     }
     rule.setEngine(this)
-
-    this.rules.push(rule)
+    let ruleKey = rule[this.ruleKeyField]
+    if (!ruleKey) {
+      ruleKey = '_' + Math.random().toString(36).substr(2, 9)
+      rule[this.ruleKeyField] = ruleKey
+    }
+    this.rules[ruleKey] = rule
     this.prioritizedRules = null
     return this
   }
 
   /**
-   * Remove a rule from the engine
-   * @param {object|Rule} rule - rule definition. Must be a instance of Rule
+   * update a rule inside the engine
+   ** @param {number || Rule} rule - rule definition. Must be a instance of Rule
    */
-  removeRule (rule) {
-    if ((rule instanceof Rule) === false) throw new Error('Engine: removeRule() rule must be a instance of Rule')
 
-    const index = this.rules.indexOf(rule)
-    if (index === -1) return false
-    this.prioritizedRules = null
-    return Boolean(this.rules.splice(index, 1).length)
+  updateRule (rule) {
+    const ruleKey = rule[this.ruleKeyField]
+    if (ruleKey in this.rules) {
+      this.removeRule(ruleKey)
+      this.addRule(rule)
+    }
+  }
+
+  /**
+   * Remove a rule from the engine
+   * @param {number || Rule} rule - rule definition. might be a instance of Rule
+   */
+
+  removeRule (rule) {
+    if (rule instanceof Rule) {
+      const rules = Object.values(this.rules)
+      const index = rules.indexOf(rule)
+      if (index === -1) return false
+      this.prioritizedRules = null
+      this.rules = rules.splice(index, 1).length
+      return true
+    } else {
+      // rule is ruleUniqueKey
+      this.prioritizedRules = null
+      delete this.rules[rule]
+    }
   }
 
   /**
@@ -145,7 +170,7 @@ class Engine extends EventEmitter {
    */
   prioritizeRules () {
     if (!this.prioritizedRules) {
-      const ruleSets = this.rules.reduce((sets, rule) => {
+      const ruleSets = Object.values(this.rules).reduce((sets, rule) => {
         const priority = rule.priority
         if (!sets[priority]) sets[priority] = []
         sets[priority].push(rule)
