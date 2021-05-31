@@ -44,6 +44,8 @@ undefined facts as `undefined`.  (default: false)
 
 `pathResolver` - Allows a custom object path resolution library to be used. (default: `json-path` syntax). See [custom path resolver](./rules.md#condition-helpers-custom-path-resolver) docs.
 
+`ruleKeyField` - By default this field is set to 'id', this field is the rule property that will be used when removing a rule by a key string or when updating rule
+
 ### engine.addFact(String id, Function [definitionFunc], Object [options])
 
 ```js
@@ -73,6 +75,7 @@ engine.removeFact('speed-of-light')
 ### engine.addRule(Rule instance|Object options)
 
 Adds a rule to the engine.  The engine will execute the rule upon the next ```run()```
+if the rule doesn't have value set at rule[engine.ruleKeyField], a random string will be set instead.
 
 ```js
 let Rule = require('json-rules-engine').Rule
@@ -102,6 +105,22 @@ engine.addRule(rule)
 
 //remove it
 engine.removeRule(rule)
+//or
+engine.removeRule(rule.id)
+```
+
+ ### engine.updateRule(Rule instance|Object options)
+
+ Updates a rule in the engine.
+
+```javascript
+// adds a rule
+let rule = new Rule()
+engine.addRule(rule)
+rule.conditions.all = []
+
+//update it
+engine.updateRule(rule)
 ```
 
 ### engine.addOperator(String operatorName, Function evaluateFunc(factValue, jsonValue))

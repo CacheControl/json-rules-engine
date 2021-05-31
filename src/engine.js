@@ -25,6 +25,7 @@ class Engine extends EventEmitter {
     this.operators = new Map()
     this.facts = new Map()
     this.status = READY
+    this.ruleKeyField = options.ruleKeyField || 'id'
     rules.map(r => this.addRule(r))
     defaultOperators.map(o => this.addOperator(o))
   }
@@ -47,27 +48,44 @@ class Engine extends EventEmitter {
     } else {
       if (!Object.prototype.hasOwnProperty.call(properties, 'event')) throw new Error('Engine: addRule() argument requires "event" property')
       if (!Object.prototype.hasOwnProperty.call(properties, 'conditions')) throw new Error('Engine: addRule() argument requires "conditions" property')
-
       rule = new Rule(properties)
     }
     rule.setEngine(this)
-
+    if (!rule[this.ruleKeyField]) rule[this.ruleKeyField] = '_' + Math.random().toString(36).substr(2, 9)
     this.rules.push(rule)
     this.prioritizedRules = null
     return this
   }
 
   /**
-   * Remove a rule from the engine
+   * update a rule in the engine
    * @param {object|Rule} rule - rule definition. Must be a instance of Rule
    */
-  removeRule (rule) {
-    if ((rule instanceof Rule) === false) throw new Error('Engine: removeRule() rule must be a instance of Rule')
+  updateRule (rule) {
+    const ruleIndex = this.rules.findIndex(ruleInEngine => ruleInEngine[this.ruleKeyField] === rule[this.ruleKeyField])
+    if (ruleIndex > -1) {
+      this.rules.splice(ruleIndex, 1)
+      this.addRule(rule)
+    } else {
+      throw new Error('Engine: updateRule() rule not found')
+    }
+  }
 
-    const index = this.rules.indexOf(rule)
-    if (index === -1) return false
-    this.prioritizedRules = null
-    return Boolean(this.rules.splice(index, 1).length)
+  /**
+   * Remove a rule from the engine
+   * @param {object|Rule||string} rule - rule definition. Must be a instance of Rule
+   */
+  removeRule (rule) {
+    if (!(rule instanceof Rule)) {
+      this.rules = this.rules.filter(ruleInEngine => ruleInEngine[this.ruleKeyField] !== rule)
+      this.prioritizedRules = null
+      return Boolean(this.rules.length)
+    } else {
+      const index = this.rules.indexOf(rule)
+      if (index === -1) return false
+      this.prioritizedRules = null
+      return Boolean(this.rules.splice(index, 1).length)
+    }
   }
 
   /**

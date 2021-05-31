@@ -84,6 +84,17 @@ describe('Engine', () => {
     })
   })
 
+  describe('updateRule()', () => {
+    it('updates rule', () => {
+      const rule = new Rule(factories.rule())
+      engine.addRule(rule)
+      expect(engine.rules[0].conditions.all.length).to.equal(2)
+      rule.conditions = { all: [] }
+      engine.updateRule(rule)
+      expect(engine.rules[0].conditions.all.length).to.equal(0)
+    })
+  })
+
   describe('removeRule()', () => {
     describe('rule instance', () => {
       it('removes the rule', () => {
@@ -93,14 +104,6 @@ describe('Engine', () => {
         engine.removeRule(rule)
         expect(engine.rules.length).to.equal(0)
         expect(engine.prioritizedRules).to.equal(null)
-      })
-    })
-
-    describe('required fields', () => {
-      it('.conditions', () => {
-        expect(() => {
-          engine.removeRule([])
-        }).to.throw(/Engine: removeRule\(\) rule must be a instance of Rule/)
       })
     })
 
@@ -116,6 +119,14 @@ describe('Engine', () => {
       engine.addRule(rule)
       engine.prioritizeRules()
       engine.removeRule(rule)
+      expect(engine.prioritizedRules).to.equal(null)
+    })
+    it('removes rule based on ruleKey', () => {
+      const rule = new Rule(factories.rule())
+      engine.addRule(rule)
+      expect(engine.rules.length).to.equal(1)
+      engine.removeRule(rule.id)
+      expect(engine.rules.length).to.equal(0)
       expect(engine.prioritizedRules).to.equal(null)
     })
   })
