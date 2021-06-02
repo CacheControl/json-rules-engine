@@ -25,7 +25,6 @@ class Engine extends EventEmitter {
     this.operators = new Map()
     this.facts = new Map()
     this.status = READY
-    this.ruleKeyField = options.ruleKeyField || 'id'
     rules.map(r => this.addRule(r))
     defaultOperators.map(o => this.addOperator(o))
   }
@@ -51,7 +50,7 @@ class Engine extends EventEmitter {
       rule = new Rule(properties)
     }
     rule.setEngine(this)
-    if (!rule[this.ruleKeyField]) rule[this.ruleKeyField] = '_' + Math.random().toString(36).substr(2, 9)
+    if (!rule.id) rule.id = '_' + Math.random().toString(36).substr(2, 9)
     this.rules.push(rule)
     this.prioritizedRules = null
     return this
@@ -62,10 +61,11 @@ class Engine extends EventEmitter {
    * @param {object|Rule} rule - rule definition. Must be a instance of Rule
    */
   updateRule (rule) {
-    const ruleIndex = this.rules.findIndex(ruleInEngine => ruleInEngine[this.ruleKeyField] === rule[this.ruleKeyField])
+    const ruleIndex = this.rules.findIndex(ruleInEngine => (ruleInEngine.id === rule.id) && rule.id)
     if (ruleIndex > -1) {
       this.rules.splice(ruleIndex, 1)
       this.addRule(rule)
+      this.prioritizedRules = null
     } else {
       throw new Error('Engine: updateRule() rule not found')
     }
@@ -73,14 +73,15 @@ class Engine extends EventEmitter {
 
   /**
    * Remove a rule from the engine
-   * @param {object|Rule||string} rule - rule definition. Must be a instance of Rule
+   * @param {object|Rule|string} rule - rule definition. Must be a instance of Rule
    */
   removeRule (rule) {
     if (!(rule instanceof Rule)) {
-      this.rules = this.rules.filter(ruleInEngine => ruleInEngine[this.ruleKeyField] !== rule)
+      this.rules = this.rules.filter(ruleInEngine => ruleInEngine.id !== rule)
       this.prioritizedRules = null
       return Boolean(this.rules.length)
     } else {
+      if (!rule) return false
       const index = this.rules.indexOf(rule)
       if (index === -1) return false
       this.prioritizedRules = null

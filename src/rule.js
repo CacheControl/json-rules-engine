@@ -15,6 +15,7 @@ class Rule extends EventEmitter {
    * @param {string} options.event.params - parameters to pass to the event listener
    * @param {Object} options.conditions - conditions to evaluate when processing this rule
    * @param {any} options.name - identifier for a particular rule, particularly valuable in RuleResult output
+   * @param {any} options.id - identifier for a particular rule, particularly valuable in RuleResult output
    * @return {Rule} instance
    */
   constructor (options) {
@@ -35,6 +36,10 @@ class Rule extends EventEmitter {
       this.setName(options.name)
     }
 
+    if (options && (options.id)) {
+      this.setId(options.id)
+    }
+
     const priority = (options && options.priority) || 1
     this.setPriority(priority)
 
@@ -50,6 +55,18 @@ class Rule extends EventEmitter {
     priority = parseInt(priority, 10)
     if (priority <= 0) throw new Error('Priority must be greater than zero')
     this.priority = priority
+    return this
+  }
+
+  /**
+   * Sets the unique id of the rule
+   * @param {any} id - any truthy input
+   */
+  setId (id) {
+    if (!id && id !== 0) {
+      throw new Error('Rule "id" must be defined')
+    }
+    this.id = id
     return this
   }
 

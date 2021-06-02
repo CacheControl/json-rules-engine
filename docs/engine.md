@@ -8,7 +8,8 @@ The Engine stores and executes rules, emits events, and maintains state.
     * [engine.addFact(String id, Function [definitionFunc], Object [options])](#engineaddfactstring-id-function-definitionfunc-object-options)
     * [engine.removeFact(String id)](#engineremovefactstring-id)
     * [engine.addRule(Rule instance|Object options)](#engineaddrulerule-instanceobject-options)
-    * [engine.removeRule(Rule instance)](#engineremoverulerule-instance)
+    * [engine.updateRule(Rule instance|Object options)](#engineupdaterulerule-instanceobject-options)
+    * [engine.removeRule(Rule instance | String ruleId)](#engineremoverulerule-instance)
     * [engine.addOperator(String operatorName, Function evaluateFunc(factValue, jsonValue))](#engineaddoperatorstring-operatorname-function-evaluatefuncfactvalue-jsonvalue)
     * [engine.removeOperator(String operatorName)](#engineremoveoperatorstring-operatorname)
     * [engine.run([Object facts], [Object options]) -&gt; Promise ({ events: [], failureEvents: [], almanac: Almanac, results: [], failureResults: []})](#enginerunobject-facts-object-options---promise--events--failureevents--almanac-almanac-results--failureresults-)
@@ -44,8 +45,6 @@ undefined facts as `undefined`.  (default: false)
 
 `pathResolver` - Allows a custom object path resolution library to be used. (default: `json-path` syntax). See [custom path resolver](./rules.md#condition-helpers-custom-path-resolver) docs.
 
-`ruleKeyField` - By default this field is set to 'id', this field is the rule property that will be used when removing a rule by a key string or when updating rule
-
 ### engine.addFact(String id, Function [definitionFunc], Object [options])
 
 ```js
@@ -75,7 +74,7 @@ engine.removeFact('speed-of-light')
 ### engine.addRule(Rule instance|Object options)
 
 Adds a rule to the engine.  The engine will execute the rule upon the next ```run()```
-if the rule doesn't have value set at rule[engine.ruleKeyField], a random string will be set instead.
+if the rule doesn't have value set at rule.id, a random string will be set instead.
 
 ```js
 let Rule = require('json-rules-engine').Rule
@@ -117,6 +116,8 @@ engine.removeRule(rule.id)
 // adds a rule
 let rule = new Rule()
 engine.addRule(rule)
+
+// change rule condition
 rule.conditions.all = []
 
 //update it

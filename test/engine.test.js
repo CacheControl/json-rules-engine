@@ -93,6 +93,14 @@ describe('Engine', () => {
       engine.updateRule(rule)
       expect(engine.rules[0].conditions.all.length).to.equal(0)
     })
+    it('should throw error if rule not found', () => {
+      const rule1 = new Rule(factories.rule())
+      engine.addRule(rule1)
+      const rule2 = new Rule(factories.rule())
+      expect(() => {
+        engine.updateRule(rule2)
+      }).to.throw(/Engine: updateRule\(\) rule not found/)
+    })
   })
 
   describe('removeRule()', () => {
