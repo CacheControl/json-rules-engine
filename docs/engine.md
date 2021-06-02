@@ -120,7 +120,7 @@ engine.addRule(rule)
 // change rule condition
 rule.conditions.all = []
 
-//update it
+//update it in the engine
 engine.updateRule(rule)
 ```
 
