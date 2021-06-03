@@ -109,38 +109,60 @@ describe('Engine', () => {
   })
 
   describe('removeRule()', () => {
-    describe('rule instance', () => {
+    context('rule instance', () => {
       it('removes the rule', () => {
         const rule = new Rule(factories.rule())
         engine.addRule(rule)
         expect(engine.rules.length).to.equal(1)
-        engine.removeRule(rule)
+
+        const isRemoved = engine.removeRule(rule)
+
+        expect(isRemoved).to.be.true()
         expect(engine.rules.length).to.equal(0)
+        expect(engine.prioritizedRules).to.equal(null)
+      })
+
+      it('can only remove added rules', () => {
+        expect(engine.rules.length).to.equal(0)
+        const rule = new Rule(factories.rule())
+
+        const isRemoved = engine.removeRule(rule)
+
+        expect(isRemoved).to.equal(false)
+      })
+
+      it('clears the "prioritizedRules" cache', () => {
+        const rule = new Rule(factories.rule())
+        engine.addRule(rule)
+        engine.prioritizeRules()
+        engine.removeRule(rule)
         expect(engine.prioritizedRules).to.equal(null)
       })
     })
 
-    it('can only remove added rules', () => {
-      expect(engine.rules.length).to.equal(0)
-      const rule = new Rule(factories.rule())
-      const isRemoved = engine.removeRule(rule)
-      expect(isRemoved).to.equal(false)
-    })
+    context('rule id', () => {
+      it('removes rule based on rule id', () => {
+        const rule = new Rule(factories.rule())
+        engine.addRule(rule)
+        expect(engine.rules.length).to.equal(1)
 
-    it('clears the "prioritizedRules" cache', () => {
-      const rule = new Rule(factories.rule())
-      engine.addRule(rule)
-      engine.prioritizeRules()
-      engine.removeRule(rule)
-      expect(engine.prioritizedRules).to.equal(null)
-    })
-    it('removes rule based on ruleKey', () => {
-      const rule = new Rule(factories.rule())
-      engine.addRule(rule)
-      expect(engine.rules.length).to.equal(1)
-      engine.removeRule(rule.id)
-      expect(engine.rules.length).to.equal(0)
-      expect(engine.prioritizedRules).to.equal(null)
+        const isRemoved = engine.removeRule(rule.id)
+
+        expect(isRemoved).to.be.true()
+        expect(engine.rules.length).to.equal(0)
+        expect(engine.prioritizedRules).to.equal(null)
+      })
+
+      it('returns false when rule cannot be found', () => {
+        const rule = new Rule(factories.rule())
+        engine.addRule(rule)
+        expect(engine.rules.length).to.equal(1)
+
+        const isRemoved = engine.removeRule('not-found-id')
+
+        expect(isRemoved).to.be.false()
+        expect(engine.rules.length).to.equal(1)
+      })
     })
   })
 

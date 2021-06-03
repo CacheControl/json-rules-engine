@@ -76,9 +76,11 @@ class Engine extends EventEmitter {
    */
   removeRule (rule) {
     if (!(rule instanceof Rule)) {
-      this.rules = this.rules.filter(ruleInEngine => ruleInEngine.id !== rule)
+      const filteredRules = this.rules.filter(ruleInEngine => ruleInEngine.id !== rule)
+      const ruleRemoved = filteredRules.length !== this.rules.length
+      this.rules = filteredRules
       this.prioritizedRules = null
-      return Boolean(this.rules.length)
+      return ruleRemoved
     } else {
       if (!rule) return false
       const index = this.rules.indexOf(rule)
