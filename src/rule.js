@@ -36,9 +36,7 @@ class Rule extends EventEmitter {
       this.setName(options.name)
     }
 
-    if (options && (options.id)) {
-      this.setId(options.id)
-    }
+    this.setId(options ? options.id : null)
 
     const priority = (options && options.priority) || 1
     this.setPriority(priority)
@@ -63,10 +61,11 @@ class Rule extends EventEmitter {
    * @param {any} id - any truthy input
    */
   setId (id) {
-    if (!id && id !== 0) {
-      throw new Error('Rule "id" must be defined')
+    if (!id) {
+      this.id = '_' + Math.random().toString(36).substr(2, 9)
+    } else {
+      this.id = id
     }
-    this.id = id
     return this
   }
 

@@ -50,7 +50,6 @@ class Engine extends EventEmitter {
       rule = new Rule(properties)
     }
     rule.setEngine(this)
-    if (!rule.id) rule.id = '_' + Math.random().toString(36).substr(2, 9)
     this.rules.push(rule)
     this.prioritizedRules = null
     return this
