@@ -93,11 +93,7 @@ describe('Engine', () => {
       engine.updateRule(rule)
       expect(engine.rules[0].conditions.all.length).to.equal(0)
     })
-    it('should generate id for rule if not provided', () => {
-      const rule = new Rule(factories.rule())
-      expect(rule.id).to.not.equal(null)
-      expect(rule.id).to.not.equal(undefined)
-    })
+
     it('should throw error if rule not found', () => {
       const rule1 = new Rule(factories.rule())
       engine.addRule(rule1)

@@ -54,6 +54,27 @@ describe('Rule', () => {
       expect(rule.ruleEvent).to.eql(opts.event)
       expect(rule.name).to.eql(opts.name)
     })
+
+    context('id', () => {
+      it('autogenerates an id if none was provided', () => {
+        const rule = new Rule()
+        expect(rule.id).to.have.lengthOf(10)
+      })
+
+      it('sets the id if provided', () => {
+        let rule = new Rule({ id: 'test-id' })
+        expect(rule.id).to.equal('test-id')
+
+        rule = new Rule({ id: 0 })
+        expect(rule.id).to.equal(0)
+
+        rule = new Rule({ id: '' })
+        expect(rule.id).to.equal('')
+
+        rule = new Rule({ id: null })
+        expect(rule.id).to.equal(null)
+      })
+    })
   })
 
   describe('event emissions', () => {
@@ -83,6 +104,24 @@ describe('Rule', () => {
       }
       const rule = new Rule({ onFailure })
       rule.emit('failure', event)
+    })
+  })
+
+  describe('setEvent()', () => {
+    it('throws if no argument provided', () => {
+      expect(() => rule.setEvent()).to.throw(/Rule: setEvent\(\) requires event object/)
+    })
+
+    it('throws if argument is missing "type" property', () => {
+      expect(() => rule.setEvent({})).to.throw(/Rule: setEvent\(\) requires event object with "type" property/)
+    })
+  })
+
+  describe('setId()', () => {
+    it('changes the rule id', () => {
+      const newId = 'test-id-123'
+      rule.setId(newId)
+      expect(rule.id).to.equal(newId)
     })
   })
 
