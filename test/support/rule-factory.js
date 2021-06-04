@@ -3,6 +3,7 @@
 module.exports = (options) => {
   options = options || {}
   return {
+    name: options.name,
     priority: options.priority || 1,
     conditions: options.conditions || {
       all: [{

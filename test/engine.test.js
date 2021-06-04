@@ -86,18 +86,26 @@ describe('Engine', () => {
 
   describe('updateRule()', () => {
     it('updates rule', () => {
-      const rule = new Rule(factories.rule())
-      engine.addRule(rule)
+      let rule1 = new Rule(factories.rule({ name: 'rule1' }))
+      let rule2 = new Rule(factories.rule({ name: 'rule2' }))
+      engine.addRule(rule1)
+      engine.addRule(rule2)
       expect(engine.rules[0].conditions.all.length).to.equal(2)
-      rule.conditions = { all: [] }
-      engine.updateRule(rule)
-      expect(engine.rules[0].conditions.all.length).to.equal(0)
+      expect(engine.rules[1].conditions.all.length).to.equal(2)
+
+      rule1.conditions = { all: [] }
+      engine.updateRule(rule1)
+
+      rule1 = engine.rules.find(rule => rule.name === 'rule1')
+      rule2 = engine.rules.find(rule => rule.name === 'rule2')
+      expect(rule1.conditions.all.length).to.equal(0)
+      expect(rule2.conditions.all.length).to.equal(2)
     })
 
     it('should throw error if rule not found', () => {
-      const rule1 = new Rule(factories.rule())
+      const rule1 = new Rule(factories.rule({ name: 'rule1' }))
       engine.addRule(rule1)
-      const rule2 = new Rule(factories.rule())
+      const rule2 = new Rule(factories.rule({ name: 'rule2' }))
       expect(() => {
         engine.updateRule(rule2)
       }).to.throw(/Engine: updateRule\(\) rule not found/)
@@ -105,59 +113,86 @@ describe('Engine', () => {
   })
 
   describe('removeRule()', () => {
-    context('rule instance', () => {
-      it('removes the rule', () => {
-        const rule = new Rule(factories.rule())
-        engine.addRule(rule)
-        expect(engine.rules.length).to.equal(1)
+    function setup () {
+      const rule1 = new Rule(factories.rule({ name: 'rule1' }))
+      const rule2 = new Rule(factories.rule({ name: 'rule2' }))
+      engine.addRule(rule1)
+      engine.addRule(rule2)
+      engine.prioritizeRules()
 
-        const isRemoved = engine.removeRule(rule)
+      return [rule1, rule2]
+    }
+    context('remove by rule.name', () => {
+      it('removes a single rule', () => {
+        const [rule1] = setup()
+        expect(engine.rules.length).to.equal(2)
+
+        const isRemoved = engine.removeRule(rule1.name)
 
         expect(isRemoved).to.be.true()
-        expect(engine.rules.length).to.equal(0)
+        expect(engine.rules.length).to.equal(1)
         expect(engine.prioritizedRules).to.equal(null)
       })
 
-      it('can only remove added rules', () => {
-        expect(engine.rules.length).to.equal(0)
-        const rule = new Rule(factories.rule())
+      it('removes multiple rules with the same name', () => {
+        const [rule1] = setup()
+        const rule3 = new Rule(factories.rule({ name: rule1.name }))
+        engine.addRule(rule3)
+        expect(engine.rules.length).to.equal(3)
 
-        const isRemoved = engine.removeRule(rule)
-
-        expect(isRemoved).to.equal(false)
-      })
-
-      it('clears the "prioritizedRules" cache', () => {
-        const rule = new Rule(factories.rule())
-        engine.addRule(rule)
-        engine.prioritizeRules()
-        engine.removeRule(rule)
-        expect(engine.prioritizedRules).to.equal(null)
-      })
-    })
-
-    context('rule id', () => {
-      it('removes rule based on rule id', () => {
-        const rule = new Rule(factories.rule())
-        engine.addRule(rule)
-        expect(engine.rules.length).to.equal(1)
-
-        const isRemoved = engine.removeRule(rule.id)
+        const isRemoved = engine.removeRule(rule1.name)
 
         expect(isRemoved).to.be.true()
-        expect(engine.rules.length).to.equal(0)
+        expect(engine.rules.length).to.equal(1)
         expect(engine.prioritizedRules).to.equal(null)
       })
 
       it('returns false when rule cannot be found', () => {
-        const rule = new Rule(factories.rule())
-        engine.addRule(rule)
-        expect(engine.rules.length).to.equal(1)
+        setup()
+        expect(engine.rules.length).to.equal(2)
 
-        const isRemoved = engine.removeRule('not-found-id')
+        const isRemoved = engine.removeRule('not-found-name')
 
         expect(isRemoved).to.be.false()
+        expect(engine.rules.length).to.equal(2)
+        expect(engine.prioritizedRules).to.not.equal(null)
+      })
+    })
+    context('remove by rule object', () => {
+      it('removes a single rule', () => {
+        const [rule1] = setup()
+        expect(engine.rules.length).to.equal(2)
+
+        const isRemoved = engine.removeRule(rule1)
+
+        expect(isRemoved).to.be.true()
         expect(engine.rules.length).to.equal(1)
+        expect(engine.prioritizedRules).to.equal(null)
+      })
+
+      it('removes a single rule, even if two have the same name', () => {
+        const [rule1] = setup()
+        const rule3 = new Rule(factories.rule({ name: rule1.name }))
+        engine.addRule(rule3)
+        expect(engine.rules.length).to.equal(3)
+
+        const isRemoved = engine.removeRule(rule1)
+
+        expect(isRemoved).to.be.true()
+        expect(engine.rules.length).to.equal(2)
+        expect(engine.prioritizedRules).to.equal(null)
+      })
+
+      it('returns false when rule cannot be found', () => {
+        setup()
+        expect(engine.rules.length).to.equal(2)
+
+        const rule3 = new Rule(factories.rule({ name: 'rule3' }))
+        const isRemoved = engine.removeRule(rule3)
+
+        expect(isRemoved).to.be.false()
+        expect(engine.rules.length).to.equal(2)
+        expect(engine.prioritizedRules).to.not.equal(null)
       })
     })
   })

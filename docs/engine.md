@@ -74,7 +74,6 @@ engine.removeFact('speed-of-light')
 ### engine.addRule(Rule instance|Object options)
 
 Adds a rule to the engine.  The engine will execute the rule upon the next ```run()```
-if the rule doesn't have value set at rule.id, a random string will be set instead.
 
 ```js
 let Rule = require('json-rules-engine').Rule
@@ -93,9 +92,11 @@ let rule = new Rule()
 engine.addRule(rule)
 ```
 
- ### engine.removeRule(Rule instance)
+ ### engine.removeRule(Rule instance | Any ruleName) -> Boolean
 
- Removes a rule from the engine.
+ Removes a rule from the engine, either by passing a rule object or a rule name. When removing by rule name, all rules matching the provided name will be removed.
+
+ Method returns true when rule was successfully remove, or false when not found.
 
 ```javascript
 // adds a rule
@@ -105,7 +106,7 @@ engine.addRule(rule)
 //remove it
 engine.removeRule(rule)
 //or
-engine.removeRule(rule.id)
+engine.removeRule(rule.name)
 ```
 
  ### engine.updateRule(Rule instance|Object options)

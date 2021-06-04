@@ -1,5 +1,6 @@
-#### 7.0.0 / 2021-06-03
-  * Rules now receive a default `id` property, when none is passed to the constructor.
+#### 6.1.0 / 2021-06-03
+  * engine.removeRule() now supports removing rules by name
+  * Added engine.updateRule(rule)
 
 #### 6.0.1 / 2021-03-09
   * Updates Typescript types to include `failureEvents` in EngineResult.

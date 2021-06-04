@@ -60,7 +60,7 @@ class Engine extends EventEmitter {
    * @param {object|Rule} rule - rule definition. Must be a instance of Rule
    */
   updateRule (rule) {
-    const ruleIndex = this.rules.findIndex(ruleInEngine => (ruleInEngine.id === rule.id) && rule.id)
+    const ruleIndex = this.rules.findIndex(ruleInEngine => ruleInEngine.name === rule.name)
     if (ruleIndex > -1) {
       this.rules.splice(ruleIndex, 1)
       this.addRule(rule)
@@ -75,19 +75,21 @@ class Engine extends EventEmitter {
    * @param {object|Rule|string} rule - rule definition. Must be a instance of Rule
    */
   removeRule (rule) {
+    let ruleRemoved = false
     if (!(rule instanceof Rule)) {
-      const filteredRules = this.rules.filter(ruleInEngine => ruleInEngine.id !== rule)
-      const ruleRemoved = filteredRules.length !== this.rules.length
+      const filteredRules = this.rules.filter(ruleInEngine => ruleInEngine.name !== rule)
+      ruleRemoved = filteredRules.length !== this.rules.length
       this.rules = filteredRules
-      this.prioritizedRules = null
-      return ruleRemoved
     } else {
-      if (!rule) return false
       const index = this.rules.indexOf(rule)
-      if (index === -1) return false
-      this.prioritizedRules = null
-      return Boolean(this.rules.splice(index, 1).length)
+      if (index > -1) {
+        ruleRemoved = Boolean(this.rules.splice(index, 1).length)
+      }
     }
+    if (ruleRemoved) {
+      this.prioritizedRules = null
+    }
+    return ruleRemoved
   }
 
   /**
