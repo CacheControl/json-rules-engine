@@ -28,7 +28,7 @@ const accountData = {
  */
 module.exports = {
   getAccountInformation: (accountId) => {
-    var message = 'loading account information for "' + accountId + '"'
+    const message = 'loading account information for "' + accountId + '"'
     console.log(message.dim)
     return new Promise((resolve, reject) => {
       setImmediate(() => {
