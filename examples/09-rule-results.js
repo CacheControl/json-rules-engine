@@ -52,6 +52,8 @@ async function start () {
             return `was not an ${condition.fact}`
           case 'greaterThanInclusive':
             return `${condition.fact} of ${condition.factResult} was too low`
+          default:
+            return ''
         }
       }).join(' and ')
     console.log(`${message} ${detail}`.red)
