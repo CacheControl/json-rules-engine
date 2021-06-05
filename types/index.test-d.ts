@@ -58,6 +58,7 @@ const rule: Rule = new Rule(ruleProps);
 const ruleFromString: Rule = new Rule(JSON.stringify(ruleProps));
 expectType<Engine>(engine.addRule(rule));
 expectType<boolean>(engine.removeRule(ruleFromString));
+expectType<void>(engine.updateRule(ruleFromString));
 
 expectType<Rule>(rule.setConditions({ any: [] }));
 expectType<Rule>(rule.setEvent({ type: "test" }));

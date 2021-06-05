@@ -20,7 +20,8 @@ export class Engine {
   constructor(rules?: Array<RuleProperties>, options?: EngineOptions);
 
   addRule(rule: RuleProperties): this;
-  removeRule(rule: Rule): boolean;
+  removeRule(ruleOrName: Rule | string): boolean;
+  updateRule(rule: Rule): void;
 
   addOperator(operator: Operator): Map<string, Operator>;
   addOperator<A, B>(
