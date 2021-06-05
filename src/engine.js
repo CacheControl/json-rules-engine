@@ -209,7 +209,7 @@ class Engine extends EventEmitter {
     return Promise.all(ruleArray.map((rule) => {
       if (this.status !== RUNNING) {
         debug(`engine::run status:${this.status}; skipping remaining rules`)
-        return
+        return Promise.resolve()
       }
       return rule.evaluate(almanac).then((ruleResult) => {
         debug(`engine::run ruleResult:${ruleResult.result}`)
