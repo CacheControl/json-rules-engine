@@ -145,6 +145,16 @@ export class Rule implements RuleProperties {
   ): T extends true ? string : RuleSerializable;
 }
 
+export type FactHandler = (
+    result: {
+      fact: string;
+      operator: string;
+      value: { fact: string } | any;
+      receivedValue: { fact: string } | any
+    },
+    almanac: Almanac,
+) => void;
+
 interface ConditionProperties {
   fact: string;
   operator: string;
@@ -152,6 +162,8 @@ interface ConditionProperties {
   path?: string;
   priority?: number;
   params?: Record<string, any>;
+  onSuccess?: FactHandler;
+  onFailure?: FactHandler;
 }
 
 type NestedCondition = ConditionProperties | TopLevelCondition;
