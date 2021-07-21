@@ -56,6 +56,26 @@ describe('Condition', () => {
       const json = condition.toJSON()
       expect(json).to.equal('{"operator":"equal","value":{"fact":"weight","params":{"unit":"lbs"},"path":".value"},"fact":"age"}')
     })
+
+    it('converts "not" conditions', () => {
+      const properties = {
+        not: {
+          ...factories.condition({
+            fact: 'age',
+            value: {
+              fact: 'weight',
+              params: {
+                unit: 'lbs'
+              },
+              path: '.value'
+            }
+          })
+        }
+      }
+      const condition = new Condition(properties)
+      const json = condition.toJSON()
+      expect(json).to.equal('{"priority":1,"not":{"operator":"equal","value":{"fact":"weight","params":{"unit":"lbs"},"path":".value"},"fact":"age"}}')
+    })
   })
 
   describe('evaluate', () => {
@@ -266,6 +286,24 @@ describe('Condition', () => {
       const conditions = condition()
       conditions.all = { foo: true }
       expect(() => new Condition(conditions)).to.throw(/"all" must be an array/)
+    })
+
+    it('throws if is an array and condition is "not"', () => {
+      const conditions = {
+        not: [{ foo: true }]
+      }
+      expect(() => new Condition(conditions)).to.throw(/"not" cannot be an array/)
+    })
+
+    it('does not throw if is not an array and condition is "not"', () => {
+      const conditions = {
+        not: {
+          fact: 'foo',
+          operator: 'equal',
+          value: 'bar'
+        }
+      }
+      expect(() => new Condition(conditions)).to.not.throw()
     })
   })
 
