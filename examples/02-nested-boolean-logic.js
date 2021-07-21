@@ -38,9 +38,11 @@ async function start () {
           operator: 'equal',
           value: 48
         }, {
-          fact: 'personalFoulCount',
-          operator: 'greaterThanInclusive',
-          value: 6
+          not: {
+            fact: 'personalFoulCount',
+            operator: 'lessThan',
+            value: 6
+          }
         }]
       }]
     },
