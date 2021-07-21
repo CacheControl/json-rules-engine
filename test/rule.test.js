@@ -109,7 +109,7 @@ describe('Rule', () => {
   describe('setConditions()', () => {
     describe('validations', () => {
       it('throws an exception for invalid root conditions', () => {
-        expect(rule.setConditions.bind(rule, { foo: true })).to.throw(/"conditions" root must contain a single instance of "all" or "any"/)
+        expect(rule.setConditions.bind(rule, { foo: true })).to.throw(/"conditions" root must contain a single instance of "all", "any", or "not"/)
       })
     })
   })
