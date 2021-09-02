@@ -24,8 +24,8 @@ class Engine extends EventEmitter {
     this.rules = []
     this.allowUndefinedFacts = options.allowUndefinedFacts || false
     this.pathResolver = options.pathResolver || defaultPathResolver
-    const interpolation = options.interpolation || defaultInterpolation;
-    this.interpolation = typeof interpolation === 'string' ? new RegExp(interpolation) : interpolation;
+    this.interpolation = options.interpolation || defaultInterpolation;
+    if(!(this.interpolation instanceof RegExp) || !this.interpolation.global) throw new Error('interpolation option must be a global regexp')
     this.operators = new Map()
     this.facts = new Map()
     this.status = READY

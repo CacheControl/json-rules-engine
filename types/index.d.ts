@@ -1,7 +1,7 @@
 export interface EngineOptions {
   allowUndefinedFacts?: boolean;
   pathResolver?: PathResolver;
-  interpolation?: RegExp | string;
+  interpolation?: RegExp;
 }
 
 export interface EngineResult {
