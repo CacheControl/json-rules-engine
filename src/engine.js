@@ -7,6 +7,8 @@ import Almanac from './almanac'
 import EventEmitter from 'eventemitter2'
 import defaultOperators from './engine-default-operators'
 import debug from './debug'
+import { interpolateDeep, needsInterpolation, defaultInterpolation } from './interpolate';
+import { defaultPathResolver } from './resolver';
 
 export const READY = 'READY'
 export const RUNNING = 'RUNNING'
@@ -21,12 +23,16 @@ class Engine extends EventEmitter {
     super()
     this.rules = []
     this.allowUndefinedFacts = options.allowUndefinedFacts || false
-    this.pathResolver = options.pathResolver
+    this.pathResolver = options.pathResolver || defaultPathResolver
+    const interpolation = options.interpolation || defaultInterpolation;
+    this.interpolation = typeof interpolation === 'string' ? new RegExp(interpolation) : interpolation;
     this.operators = new Map()
     this.facts = new Map()
     this.status = READY
     rules.map(r => this.addRule(r))
     defaultOperators.map(o => this.addOperator(o))
+
+    this.interpolatableRules = new Set();
   }
 
   /**
@@ -49,6 +55,7 @@ class Engine extends EventEmitter {
       if (!Object.prototype.hasOwnProperty.call(properties, 'conditions')) throw new Error('Engine: addRule() argument requires "conditions" property')
       rule = new Rule(properties)
     }
+    if(needsInterpolation(rule,this.interpolation)) this.interpolatableRules.add(rule);
     rule.setEngine(this)
     this.rules.push(rule)
     this.prioritizedRules = null
@@ -62,7 +69,8 @@ class Engine extends EventEmitter {
   updateRule (rule) {
     const ruleIndex = this.rules.findIndex(ruleInEngine => ruleInEngine.name === rule.name)
     if (ruleIndex > -1) {
-      this.rules.splice(ruleIndex, 1)
+      const [old] = this.rules.splice(ruleIndex, 1)
+      this.interpolatableRules.delete(old);
       this.addRule(rule)
       this.prioritizedRules = null
     } else {
@@ -75,21 +83,25 @@ class Engine extends EventEmitter {
    * @param {object|Rule|string} rule - rule definition. Must be a instance of Rule
    */
   removeRule (rule) {
-    let ruleRemoved = false
+    let theRemovedRule;
     if (!(rule instanceof Rule)) {
-      const filteredRules = this.rules.filter(ruleInEngine => ruleInEngine.name !== rule)
-      ruleRemoved = filteredRules.length !== this.rules.length
+      const filteredRules = this.rules.filter(ruleInEngine => {
+        const isRule = ruleInEngine.name === rule;
+        if(!theRemovedRule && isRule) theRemovedRule = ruleInEngine;
+        return !isRule;
+      });
       this.rules = filteredRules
     } else {
       const index = this.rules.indexOf(rule)
       if (index > -1) {
-        ruleRemoved = Boolean(this.rules.splice(index, 1).length)
+        theRemovedRule = this.rules.splice(index, 1)[0];
       }
     }
-    if (ruleRemoved) {
+    if (theRemovedRule) {
       this.prioritizedRules = null
+      this.interpolatableRules.delete(theRemovedRule);
     }
-    return ruleRemoved
+    return Boolean(theRemovedRule);
   }
 
   /**
@@ -211,6 +223,7 @@ class Engine extends EventEmitter {
         debug(`engine::run status:${this.status}; skipping remaining rules`)
         return Promise.resolve()
       }
+
       return rule.evaluate(almanac).then((ruleResult) => {
         debug(`engine::run ruleResult:${ruleResult.result}`)
         almanac.addResult(ruleResult)
@@ -240,12 +253,28 @@ class Engine extends EventEmitter {
       pathResolver: this.pathResolver
     }
     const almanac = new Almanac(this.facts, runtimeFacts, almanacOptions)
-    const orderedSets = this.prioritizeRules()
+    const orderedSets = this.prioritizeRules();
+
     let cursor = Promise.resolve()
     // for each rule set, evaluate in parallel,
     // before proceeding to the next priority set.
     return new Promise((resolve, reject) => {
       orderedSets.map((set) => {
+        set = set.map(rule => {
+          if(!this.interpolatableRules.has(rule)) return rule;
+          rule = new Rule(
+            interpolateDeep(
+              rule.toJSON(true),
+              runtimeFacts,
+              this.interpolation,
+              this.pathResolver
+            )
+          );
+          rule.setEngine(this);
+          return rule;
+        });
+
+
         cursor = cursor.then(() => {
           return this.evaluateRules(set, almanac)
         }).catch(reject)

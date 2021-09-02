@@ -4,6 +4,7 @@ import Condition from './condition'
 import RuleResult from './rule-result'
 import debug from './debug'
 import EventEmitter from 'eventemitter2'
+import { needsInterpolation } from './interpolate'
 
 class Rule extends EventEmitter {
   /**

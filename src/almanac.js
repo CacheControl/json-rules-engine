@@ -4,12 +4,8 @@ import Fact from './fact'
 import { UndefinedFactError } from './errors'
 import debug from './debug'
 
-import { JSONPath } from 'jsonpath-plus'
 import isObjectLike from 'lodash.isobjectlike'
-
-function defaultPathResolver (value, path) {
-  return JSONPath({ path, json: value, wrap: false })
-}
+import { defaultPathResolver } from './resolver';
 
 /**
  * Fact results lookup

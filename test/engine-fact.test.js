@@ -61,11 +61,14 @@ describe('Engine: fact evaluation', () => {
         operator: 'lessThan',
         params: {
           eligibilityId: 1,
-          field: 'age'
+          field: '{{whichField}}'
         },
         value: 50
       }]
     }
+  }
+  const runtimeFacts = {
+    whichField:'age'
   }
   let successSpy
   let failureSpy
@@ -94,7 +97,7 @@ describe('Engine: fact evaluation', () => {
           value: true
         })
         setup(conditions)
-        return expect(engine.run()).to.be.rejectedWith(/Undefined fact: undefined-fact/)
+        return expect(engine.run(runtimeFacts)).to.be.rejectedWith(/Undefined fact: undefined-fact/)
       })
 
       context('treats undefined facts as falsey when allowUndefinedFacts is set', () => {
@@ -106,7 +109,7 @@ describe('Engine: fact evaluation', () => {
             value: true
           })
           setup(conditions, { allowUndefinedFacts: true })
-          await engine.run()
+          await engine.run(runtimeFacts)
           expect(successSpy).to.have.been.called()
           expect(failureSpy).to.not.have.been.called()
         })
@@ -131,7 +134,7 @@ describe('Engine: fact evaluation', () => {
   describe('params', () => {
     it('emits when the condition is met', async () => {
       setup()
-      await engine.run()
+      await engine.run(runtimeFacts)
       expect(successSpy).to.have.been.calledWith(event)
     })
 

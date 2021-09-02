@@ -3,6 +3,7 @@
 import sinon from 'sinon'
 import engineFactory, { Fact, Rule, Operator } from '../src/index'
 import defaultOperators from '../src/engine-default-operators'
+import Condition from '../src/condition'
 
 describe('Engine', () => {
   const operatorCount = defaultOperators.length
@@ -92,8 +93,7 @@ describe('Engine', () => {
       engine.addRule(rule2)
       expect(engine.rules[0].conditions.all.length).to.equal(2)
       expect(engine.rules[1].conditions.all.length).to.equal(2)
-
-      rule1.conditions = { all: [] }
+      rule1.conditions = new Condition({all:[]})
       engine.updateRule(rule1)
 
       rule1 = engine.rules.find(rule => rule.name === 'rule1')
