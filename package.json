@@ -1,5 +1,5 @@
 {
-  "name": "json-rules-engine",
+  "name": "@casparss/json-rules-engine",
   "version": "6.1.0",
   "description": "Rules Engine expressed in simple json",
   "main": "dist/index.js",
@@ -88,5 +88,8 @@
     "hash-it": "^5.0.0",
     "jsonpath-plus": "^5.0.7",
     "lodash.isobjectlike": "^4.0.0"
+  },
+  "publishConfig": {
+    "casparss:registry": "https://npm.pkg.github.com"
   }
 }
