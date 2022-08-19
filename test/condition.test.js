@@ -4,6 +4,7 @@ import Condition from '../src/condition'
 import defaultOperators from '../src/engine-default-operators'
 import Almanac from '../src/almanac'
 import Fact from '../src/fact'
+import Operator from '../src/operator'
 
 const operators = new Map()
 defaultOperators.forEach(o => operators.set(o.name, o))
@@ -84,6 +85,12 @@ describe('Condition', () => {
         condition.all = []
         return expect(condition.evaluate(almanac, operators)).to.be.rejectedWith('Cannot evaluate() a boolean condition')
       })
+    })
+
+    it('uses the params object in the operator function', async () => {
+      operators.set('paramsTestContrivedOperator', new Operator('paramsTestContrivedOperator', (a, b, params) => (a + params.c) === b))
+      setup({ operator: 'paramsTestContrivedOperator', params: { c: 5 } }, 45)
+      expect((await condition.evaluate(almanac, operators, 50)).result).to.equal(true)
     })
 
     it('evaluates "equal"', async () => {

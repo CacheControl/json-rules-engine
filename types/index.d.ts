@@ -48,7 +48,7 @@ export class Engine {
 }
 
 export interface OperatorEvaluator<A, B> {
-  (factValue: A, compareToValue: B): boolean;
+  (factValue: A, compareToValue: B, params?: Record<string, unknown>): boolean;
 }
 
 export class Operator<A = unknown, B = unknown> {
