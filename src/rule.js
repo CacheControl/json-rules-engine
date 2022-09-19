@@ -203,7 +203,7 @@ class Rule extends EventEmitter {
           return passes
         })
       } else {
-        return condition.evaluate(almanac, this.engine.operators)
+        return condition.evaluate(almanac, this.engine.operators, this.engine.pipes)
           .then(evaluationResult => {
             const passes = evaluationResult.result
             condition.factResult = evaluationResult.leftHandSideValue

@@ -6,7 +6,9 @@ import Operator from './operator'
 import Almanac from './almanac'
 import EventEmitter from 'eventemitter2'
 import defaultOperators from './engine-default-operators'
+import defaultPipes from "./engine-default-pipes"
 import debug from './debug'
+import Pipe from './pipe'
 
 export const READY = 'READY'
 export const RUNNING = 'RUNNING'
@@ -23,10 +25,12 @@ class Engine extends EventEmitter {
     this.allowUndefinedFacts = options.allowUndefinedFacts || false
     this.pathResolver = options.pathResolver
     this.operators = new Map()
+    this.pipes = new Map()
     this.facts = new Map()
     this.status = READY
     rules.map(r => this.addRule(r))
     defaultOperators.map(o => this.addOperator(o))
+    defaultPipes.map((p) => this.addPipe(p))
   }
 
   /**
@@ -94,7 +98,7 @@ class Engine extends EventEmitter {
 
   /**
    * Add a custom operator definition
-   * @param {string}   operatorOrName - operator identifier within the condition; i.e. instead of 'equals', 'greaterThan', etc
+   * @param {Operator|string}   operatorOrName - operator identifier within the condition; i.e. instead of 'equals', 'greaterThan', etc
    * @param {function(factValue, jsonValue)} callback - the method to execute when the operator is encountered.
    */
   addOperator (operatorOrName, cb) {
@@ -110,7 +114,7 @@ class Engine extends EventEmitter {
 
   /**
    * Remove a custom operator definition
-   * @param {string}   operatorOrName - operator identifier within the condition; i.e. instead of 'equals', 'greaterThan', etc
+   * @param {Operator|string}   operatorOrName - operator identifier within the condition; i.e. instead of 'equals', 'greaterThan', etc
    * @param {function(factValue, jsonValue)} callback - the method to execute when the operator is encountered.
    */
   removeOperator (operatorOrName) {
@@ -122,6 +126,38 @@ class Engine extends EventEmitter {
     }
 
     return this.operators.delete(operatorName)
+  }
+
+  /**
+   * Add a custom pipe definition
+   * @param {Pipe|string}   pipeOrName - pipe identifier within the condition; i.e. instead of 'scale', 'trim', etc
+   * @param {function(factValue, jsonValue)} callback - the method to execute when the pipe is encountered.
+   */
+  addPipe (pipeOrName, cb) {
+    let pipe
+    if (pipeOrName instanceof Pipe) {
+      pipe = pipeOrName
+    } else {
+      pipe = new Pipe(pipeOrName, cb)
+    }
+    debug(`engine::addPipe name:${pipe.name}`)
+    this.pipes.set(pipe.name, pipe)
+  }
+
+  /**
+   * Remove a custom pipe definition
+   * @param {Pipe|string}   pipeOrName - pipe identifier within the condition; i.e. instead of 'scale', 'trim', etc
+   * @param {function(factValue, jsonValue)} callback - the method to execute when the pipe is encountered.
+   */
+  removePipe (pipeOrName) {
+    let pipeName
+    if (pipeOrName instanceof Pipe) {
+      pipeName = pipeOrName.name
+    } else {
+      pipeName = pipeOrName
+    }
+
+    return this.operators.delete(pipeName)
   }
 
   /**
