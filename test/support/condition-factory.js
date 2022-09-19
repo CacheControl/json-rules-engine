@@ -4,6 +4,7 @@ module.exports = function (options) {
   return {
     fact: options.fact || null,
     value: options.value || null,
-    operator: options.operator || 'equal'
+    operator: options.operator || 'equal',
+    pipes: options.pipes ,
   }
 }
