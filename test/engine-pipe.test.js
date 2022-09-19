@@ -104,30 +104,5 @@ describe('Engine: pipe', () => {
         expect(eventSpy).to.not.have.been.calledWith(event)
       })
     })
-
-    // it('emits when the condition is met', async () => {
-    //   const conditions = Object.assign({}, baseConditions)
-    //   conditions.any[0].params.wordIndex = 2
-    //   conditions.any[0].value = dictionary[2]
-    //   const engine = setup()
-    //   await engine.run()
-    //   expect(eventSpy).to.have.been.calledWith(event)
-    // })
-
-    // it('does not emit when the condition fails', async () => {
-    //   const conditions = Object.assign({}, baseConditions)
-    //   conditions.any[0].params.wordIndex = 0
-    //   conditions.any[0].value = 'coffee'
-    //   const engine = setup()
-    //   await engine.run()
-    //   expect(eventSpy).to.not.have.been.calledWith(event)
-    // })
-
-    // it('throws when it encounters an unregistered operator', async () => {
-    //   const conditions = Object.assign({}, baseConditions)
-    //   conditions.any[0].operator = 'unknown-operator'
-    //   const engine = setup()
-    //   return expect(engine.run()).to.eventually.be.rejectedWith('Unknown operator: unknown-operator')
-    // })
   })
 })
