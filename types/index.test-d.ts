@@ -10,17 +10,19 @@ import rulesEngine, {
   PathResolver,
   Rule,
   RuleProperties,
-  RuleSerializable
+  RuleSerializable,
+  PipeEvaluator,
+  Pipe,
 } from "../";
 
 // setup basic fixture data
 const ruleProps: RuleProperties = {
   conditions: {
-    all: []
+    all: [],
   },
   event: {
-    type: "message"
-  }
+    type: "message",
+  },
 };
 
 const complexRuleProps: RuleProperties = {
@@ -29,25 +31,25 @@ const complexRuleProps: RuleProperties = {
       {
         any: [
           {
-            all: []
+            all: [],
           },
           {
             fact: "foo",
             operator: "equal",
-            value: "bar"
-          }
-        ]
-      }
-    ]
+            value: "bar",
+          },
+        ],
+      },
+    ],
   },
   event: {
-    type: "message"
-  }
+    type: "message",
+  },
 };
 
 // path resolver
-const pathResolver = function(value: object, path: string): any {}
-expectType<PathResolver>(pathResolver)
+const pathResolver = function (value: object, path: string): any {};
+expectType<PathResolver>(pathResolver);
 
 // default export test
 expectType<Engine>(rulesEngine([ruleProps]));
@@ -72,16 +74,22 @@ const operatorEvaluator: OperatorEvaluator<number, number> = (
   a: number,
   b: number
 ) => a === b;
-expectType<Map<string, Operator>>(
-  engine.addOperator("test", operatorEvaluator)
-);
+expectType<void>(engine.addOperator("test", operatorEvaluator));
 const operator: Operator = new Operator(
   "test",
   operatorEvaluator,
   (num: number) => num > 0
 );
-expectType<Map<string, Operator>>(engine.addOperator(operator));
+expectType<void>(engine.addOperator(operator));
 expectType<boolean>(engine.removeOperator(operator));
+
+// Pipe tests
+const pipeEvaluator: PipeEvaluator<number, number> = (a: number, b: number) =>
+  a * b;
+expectType<void>(engine.addPipe("test", pipeEvaluator));
+const pipe: Pipe = new Pipe("test", pipeEvaluator, (num: number) => num > 0);
+expectType<void>(engine.addPipe(pipe));
+expectType<boolean>(engine.removePipe(pipe));
 
 // Fact tests
 const fact = new Fact<number>("test-fact", 3);

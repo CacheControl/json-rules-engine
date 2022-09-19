@@ -23,12 +23,16 @@ export class Engine {
   removeRule(ruleOrName: Rule | string): boolean;
   updateRule(rule: Rule): void;
 
-  addOperator(operator: Operator): Map<string, Operator>;
+  addOperator(operator: Operator): void;
   addOperator<A, B>(
     operatorName: string,
     callback: OperatorEvaluator<A, B>
-  ): Map<string, Operator>;
+  ): void;
   removeOperator(operator: Operator | string): boolean;
+
+  addPipe(pipe: Pipe): void;
+  addPipe<A, B>(pipeName: string, callback: PipeEvaluator<A, B>): void;
+  removePipe(pipe: Pipe | string): boolean;
 
   addFact<T>(fact: Fact<T>): this;
   addFact<T>(
@@ -56,6 +60,19 @@ export class Operator<A = unknown, B = unknown> {
   constructor(
     name: string,
     evaluator: OperatorEvaluator<A, B>,
+    validator?: (factValue: A) => boolean
+  );
+}
+
+export interface PipeEvaluator<A, R> {
+  (factValue: A, ...args: any): R;
+}
+
+export class Pipe<A = unknown, R = unknown> {
+  public name: string;
+  constructor(
+    name: string,
+    evaluator: PipeEvaluator<A, R>,
     validator?: (factValue: A) => boolean
   );
 }
@@ -98,10 +115,7 @@ export interface Event {
   params?: Record<string, any>;
 }
 
-export type PathResolver = (
-  value: object,
-  path: string,
-) => any;
+export type PathResolver = (value: object, path: string) => any;
 
 export type EventHandler = (
   event: Event,
