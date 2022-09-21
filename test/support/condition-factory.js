@@ -1,10 +1,13 @@
 'use strict'
 
 module.exports = function (options) {
-  return {
+  const cond = {
     fact: options.fact || null,
     value: options.value || null,
     operator: options.operator || 'equal',
-    pipes: options.pipes ,
   }
+  if (options.pipes) {
+    cond.pipes = options.pipes
+  }
+  return cond
 }
