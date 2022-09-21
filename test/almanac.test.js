@@ -1,6 +1,8 @@
 import { Fact } from '../src/index'
 import Almanac from '../src/almanac'
+import {UndefinedFactError, UndefinedFactErrorCode} from "../src/index";
 import sinon from 'sinon'
+import {expect} from "chai";
 
 describe('Almanac', () => {
   let almanac
@@ -161,6 +163,16 @@ describe('Almanac', () => {
       expect(result).to.deep.equal(['George', 'Thomas'])
     })
 
+    it('missing fact throws UndefinedFactError', async () => {
+        almanac = new Almanac()
+        try {
+            await almanac.factValue('foo')
+            expect.fail("Expected an error");
+        } catch (err) {
+            expect(err.code).to.deep.equal(UndefinedFactErrorCode)
+            expect(err).to.instanceof(UndefinedFactError)
+        }
+    })
     describe('caching', () => {
       function setup (factOptions) {
         const fact = new Fact('foo', async (params, facts) => {
