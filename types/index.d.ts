@@ -39,8 +39,8 @@ export class Engine {
   removeFact(factOrId: string | Fact): boolean;
   getFact<T>(factId: string): Fact<T>;
 
-  on(eventName: "success", handler: EventHandler): this;
-  on(eventName: "failure", handler: EventHandler): this;
+  on(eventName: 'success', handler: EventHandler): this;
+  on(eventName: 'failure', handler: EventHandler): this;
   on(eventName: string, handler: EventHandler): this;
 
   run(facts?: Record<string, any>): Promise<EngineResult>;
@@ -98,10 +98,7 @@ export interface Event {
   params?: Record<string, any>;
 }
 
-export type PathResolver = (
-  value: object,
-  path: string,
-) => any;
+export type PathResolver = (value: object, path: string) => any;
 
 export type EventHandler = (
   event: Event,
@@ -119,7 +116,7 @@ export interface RuleProperties {
 }
 export type RuleSerializable = Pick<
   Required<RuleProperties>,
-  "conditions" | "event" | "name" | "priority"
+  'conditions' | 'event' | 'name' | 'priority'
 >;
 
 export interface RuleResult {
@@ -157,4 +154,5 @@ interface ConditionProperties {
 type NestedCondition = ConditionProperties | TopLevelCondition;
 type AllConditions = { all: NestedCondition[] };
 type AnyConditions = { any: NestedCondition[] };
-export type TopLevelCondition = AllConditions | AnyConditions;
+type NotConditions = { not: NestedCondition };
+export type TopLevelCondition = AllConditions | AnyConditions | NotConditions;
