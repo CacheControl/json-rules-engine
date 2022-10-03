@@ -3,6 +3,5 @@ npm-debug.log
 .vscode
 .idea
 .DS_Store
-dist
 *.tgz
 package-lock.json
