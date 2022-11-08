@@ -1,6 +1,6 @@
 {
   "name": "@recurforever/json-rules-engine",
-  "version": "6.1.0",
+  "version": "6.1.2",
   "description": "Rules Engine expressed in simple json",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
