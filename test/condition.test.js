@@ -12,6 +12,7 @@ function condition () {
   return {
     all: [{
       id: '6ed20017-375f-40c9-a1d2-6d7e0f4733c5',
+      name: "team participation in form",
       fact: 'team_participation',
       operator: 'equal',
       value: 50,
@@ -29,6 +30,7 @@ describe('Condition', () => {
       expect(subject).to.have.property('operator')
       expect(subject).to.have.property('value')
       expect(subject).to.have.property('path')
+      expect(subject).to.have.property('name');
     })
 
     it('boolean conditions have properties', () => {

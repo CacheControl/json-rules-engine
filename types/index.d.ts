@@ -152,10 +152,11 @@ interface ConditionProperties {
   path?: string;
   priority?: number;
   params?: Record<string, any>;
+  name?: string;
 }
 
 type NestedCondition = ConditionProperties | TopLevelCondition;
-type AllConditions = { all: NestedCondition[] };
-type AnyConditions = { any: NestedCondition[] };
-type NotConditions = { not: NestedCondition };
+type AllConditions = { all: NestedCondition[]; name?: string; priority?: number; };
+type AnyConditions = { any: NestedCondition[]; name?: string; priority?: number; };
+type NotConditions = { not: NestedCondition; name?: string; priority?: number; };
 export type TopLevelCondition = AllConditions | AnyConditions | NotConditions;

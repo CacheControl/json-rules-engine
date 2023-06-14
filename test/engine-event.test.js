@@ -25,15 +25,19 @@ describe('Engine: event', () => {
    */
   function simpleSetup () {
     const conditions = {
-      any: [{
-        fact: 'age',
-        operator: 'greaterThanInclusive',
-        value: 21
-      }, {
-        fact: 'qualified',
-        operator: 'equal',
-        value: true
-      }]
+      any: [
+        {
+          name: 'over 21',
+          fact: 'age',
+          operator: 'greaterThanInclusive',
+          value: 21
+        },
+        {
+          fact: 'qualified',
+          operator: 'equal',
+          value: true
+        }
+      ]
     }
     engine = engineFactory()
     const ruleOptions = { conditions, event, priority: 100 }
@@ -50,25 +54,32 @@ describe('Engine: event', () => {
    */
   function advancedSetup () {
     const conditions = {
-      any: [{
-        fact: 'age',
-        operator: 'greaterThanInclusive',
-        value: 21
-      }, {
-        fact: 'qualified',
-        operator: 'equal',
-        value: true
-      }, {
-        all: [{
-          fact: 'zipCode',
-          operator: 'in',
-          value: [80211, 80403]
-        }, {
-          fact: 'gender',
-          operator: 'notEqual',
-          value: 'female'
-        }]
-      }]
+      any: [
+        {
+          fact: 'age',
+          operator: 'greaterThanInclusive',
+          value: 21
+        },
+        {
+          fact: 'qualified',
+          operator: 'equal',
+          value: true
+        },
+        {
+          all: [
+            {
+              fact: 'zipCode',
+              operator: 'in',
+              value: [80211, 80403]
+            },
+            {
+              fact: 'gender',
+              operator: 'notEqual',
+              value: 'female'
+            }
+          ]
+        }
+      ]
     }
     engine = engineFactory()
     const ruleOptions = { conditions, event, priority: 100 }
@@ -91,6 +102,7 @@ describe('Engine: event', () => {
         expect(ruleResult.result).to.be.true()
         expect(ruleResult.conditions.any[0].result).to.be.true()
         expect(ruleResult.conditions.any[0].factResult).to.equal(21)
+        expect(ruleResult.conditions.any[0].name).to.equal('over 21')
         expect(ruleResult.conditions.any[1].result).to.be.false()
         expect(ruleResult.conditions.any[1].factResult).to.equal(false)
       }
@@ -177,11 +189,13 @@ describe('Engine: event', () => {
         params: drinkOrderParams
       }
       const drinkOrderConditions = {
-        any: [{
-          fact: 'canOrderDrinks',
-          operator: 'equal',
-          value: true
-        }]
+        any: [
+          {
+            fact: 'canOrderDrinks',
+            operator: 'equal',
+            value: true
+          }
+        ]
       }
       const drinkOrderRule = factories.rule({
         conditions: drinkOrderConditions,
@@ -193,7 +207,10 @@ describe('Engine: event', () => {
         engine.on('success', function (event, almanac, ruleResult) {
           switch (event.type) {
             case 'setDrinkingFlag':
-              almanac.addRuntimeFact('canOrderDrinks', event.params.canOrderDrinks)
+              almanac.addRuntimeFact(
+                'canOrderDrinks',
+                event.params.canOrderDrinks
+              )
               break
             case 'offerDrink':
               expect(event.params).to.eql(drinkOrderParams)
@@ -257,7 +274,9 @@ describe('Engine: event', () => {
         expect(ruleResult.conditions.any[1].factResult).to.equal(false)
         expect(ruleResult.conditions.any[2].result).to.be.false()
         expect(ruleResult.conditions.any[2].all[0].result).to.be.false()
-        expect(ruleResult.conditions.any[2].all[0].factResult).to.equal(ZIP_CODE)
+        expect(ruleResult.conditions.any[2].all[0].factResult).to.equal(
+          ZIP_CODE
+        )
         expect(ruleResult.conditions.any[2].all[1].result).to.be.false()
         expect(ruleResult.conditions.any[2].all[1].factResult).to.equal(GENDER)
       }
@@ -375,7 +394,8 @@ describe('Engine: event', () => {
       rule.on('success', successSpy)
       await engine.run()
       const ruleResult = successSpy.getCall(0).args[2]
-      const expected = '{"conditions":{"priority":1,"any":[{"operator":"greaterThanInclusive","value":21,"fact":"age","factResult":21,"result":true},{"operator":"equal","value":true,"fact":"qualified","factResult":false,"result":false}]},"event":{"type":"setDrinkingFlag","params":{"canOrderDrinks":true}},"priority":100,"result":true}'
+      const expected =
+        '{"conditions":{"priority":1,"any":[{"name":"over 21","operator":"greaterThanInclusive","value":21,"fact":"age","factResult":21,"result":true},{"operator":"equal","value":true,"fact":"qualified","factResult":false,"result":false}]},"event":{"type":"setDrinkingFlag","params":{"canOrderDrinks":true}},"priority":100,"result":true}'
       expect(JSON.stringify(ruleResult)).to.equal(expected)
     })
   })

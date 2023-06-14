@@ -44,6 +44,9 @@ export default class Condition {
     if (this.priority) {
       props.priority = this.priority
     }
+    if (this.name) {
+      props.name = this.name
+    }
     const oper = Condition.booleanOperator(this)
     if (oper) {
       if (Array.isArray(this[oper])) {
