@@ -14,8 +14,8 @@
 ## Overview
 
 An almanac collects facts through an engine run cycle.  As the engine computes fact values,
-the results are stored in the almanac and cache'd.  If the engine detects a fact computation has
-been previously computed, it re-uses the cache'd result from the almanac.  Every time ```engine.run()``` is invoked,
+the results are stored in the almanac and cached.  If the engine detects a fact computation has
+been previously computed, it reuses the cached result from the almanac.  Every time ```engine.run()``` is invoked,
 a new almanac is instantiated.
 
 The almanac for the current engine run is available as arguments passed to the fact evaluation methods and
