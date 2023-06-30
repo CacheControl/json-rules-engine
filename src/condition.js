@@ -10,15 +10,17 @@ export default class Condition {
     Object.assign(this, properties)
     if (booleanOperator) {
       const subConditions = properties[booleanOperator]
-      if (!(Array.isArray(subConditions))) {
-        throw new Error(`"${booleanOperator}" must be an array`)
-      }
+      const subConditionsIsArray = Array.isArray(subConditions)
+      if (booleanOperator !== 'not' && !subConditionsIsArray) throw new Error(`"${booleanOperator}" must be an array`)
+      if (booleanOperator === 'not' && subConditionsIsArray) throw new Error(`"${booleanOperator}" cannot be an array`)
       this.operator = booleanOperator
       // boolean conditions always have a priority; default 1
       this.priority = parseInt(properties.priority, 10) || 1
-      this[booleanOperator] = subConditions.map((c) => {
-        return new Condition(c)
-      })
+      if (subConditionsIsArray) {
+        this[booleanOperator] = subConditions.map((c) => new Condition(c))
+      } else {
+        this[booleanOperator] = new Condition(subConditions)
+      }
     } else {
       if (!Object.prototype.hasOwnProperty.call(properties, 'fact')) throw new Error('Condition: constructor "fact" property required')
       if (!Object.prototype.hasOwnProperty.call(properties, 'operator')) throw new Error('Condition: constructor "operator" property required')
@@ -44,7 +46,11 @@ export default class Condition {
     }
     const oper = Condition.booleanOperator(this)
     if (oper) {
-      props[oper] = this[oper].map((c) => c.toJSON(stringify))
+      if (Array.isArray(this[oper])) {
+        props[oper] = this[oper].map((c) => c.toJSON(false))
+      } else {
+        props[oper] = this[oper].toJSON(false)
+      }
     } else {
       props.operator = this.operator
       props.value = this.value
@@ -110,27 +116,29 @@ export default class Condition {
   /**
    * Returns the boolean operator for the condition
    * If the condition is not a boolean condition, the result will be 'undefined'
-   * @return {string 'all' or 'any'}
+   * @return {string 'all', 'any', or 'not'}
    */
   static booleanOperator (condition) {
     if (Object.prototype.hasOwnProperty.call(condition, 'any')) {
       return 'any'
     } else if (Object.prototype.hasOwnProperty.call(condition, 'all')) {
       return 'all'
+    } else if (Object.prototype.hasOwnProperty.call(condition, 'not')) {
+      return 'not'
     }
   }
 
   /**
    * Returns the condition's boolean operator
    * Instance version of Condition.isBooleanOperator
-   * @returns {string,undefined} - 'any', 'all', or undefined (if not a boolean condition)
+   * @returns {string,undefined} - 'any', 'all', 'not' or undefined (if not a boolean condition)
    */
   booleanOperator () {
     return Condition.booleanOperator(this)
   }
 
   /**
-   * Whether the operator is boolean ('all', 'any')
+   * Whether the operator is boolean ('all', 'any', 'not')
    * @returns {Boolean}
    */
   isBooleanOperator () {

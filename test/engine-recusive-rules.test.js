@@ -162,4 +162,72 @@ describe('Engine: recursive rules', () => {
       expect(eventSpy).to.not.have.been.calledOnce()
     })
   })
+
+  const notNotCondition = {
+    not: {
+      not: {
+        fact: 'age',
+        operator: 'lessThan',
+        value: 65
+      }
+    }
+  }
+
+  describe('"not" nested directly within a "not"', () => {
+    it('evaluates true when facts pass rules', async () => {
+      setup(notNotCondition)
+      engine.addFact('age', 30)
+      await engine.run()
+      expect(eventSpy).to.have.been.calledOnce()
+    })
+
+    it('evaluates false when facts do not pass rules', async () => {
+      setup(notNotCondition)
+      engine.addFact('age', 65)
+      await engine.run()
+      expect(eventSpy).to.not.have.been.calledOnce()
+    })
+  })
+
+  const nestedNotCondition = {
+    not: {
+      all: [
+        {
+          fact: 'age',
+          operator: 'lessThan',
+          value: 65
+        },
+        {
+          fact: 'age',
+          operator: 'greaterThan',
+          value: 21
+        },
+        {
+          not: {
+            fact: 'income',
+            operator: 'lessThanInclusive',
+            value: 100
+          }
+        }
+      ]
+    }
+  }
+
+  describe('outer "not" with nested "all" and nested "not" condition', () => {
+    it('evaluates true when facts pass rules', async () => {
+      setup(nestedNotCondition)
+      engine.addFact('age', 30)
+      engine.addFact('income', 100)
+      await engine.run()
+      expect(eventSpy).to.have.been.calledOnce()
+    })
+
+    it('evaluates false when facts do not pass rules', async () => {
+      setup(nestedNotCondition)
+      engine.addFact('age', 30)
+      engine.addFact('income', 101)
+      await engine.run()
+      expect(eventSpy).to.not.have.been.calledOnce()
+    })
+  })
 })

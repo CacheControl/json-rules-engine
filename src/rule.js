@@ -70,8 +70,8 @@ class Rule extends EventEmitter {
    * @param {object} conditions - conditions, root element must be a boolean operator
    */
   setConditions (conditions) {
-    if (!Object.prototype.hasOwnProperty.call(conditions, 'all') && !Object.prototype.hasOwnProperty.call(conditions, 'any')) {
-      throw new Error('"conditions" root must contain a single instance of "all" or "any"')
+    if (!Object.prototype.hasOwnProperty.call(conditions, 'all') && !Object.prototype.hasOwnProperty.call(conditions, 'any') && !Object.prototype.hasOwnProperty.call(conditions, 'not')) {
+      throw new Error('"conditions" root must contain a single instance of "all", "any", or "not"')
     }
     this.conditions = new Condition(conditions)
     return this
@@ -193,10 +193,12 @@ class Rule extends EventEmitter {
         let comparisonPromise
         if (condition.operator === 'all') {
           comparisonPromise = all(subConditions)
-        } else {
+        } else if (condition.operator === 'any') {
           comparisonPromise = any(subConditions)
+        } else {
+          comparisonPromise = not(subConditions)
         }
-        // for booleans, rule passing is determined by the all/any result
+        // for booleans, rule passing is determined by the all/any/not result
         return comparisonPromise.then(comparisonValue => {
           const passes = comparisonValue === true
           condition.result = passes
@@ -230,18 +232,24 @@ class Rule extends EventEmitter {
     }
 
     /**
-     * Evaluates a set of conditions based on an 'all' or 'any' operator.
+     * Evaluates a set of conditions based on an 'all', 'any', or 'not' operator.
      *   First, orders the top level conditions based on priority
      *   Iterates over each priority set, evaluating each condition
      *   If any condition results in the rule to be guaranteed truthy or falsey,
      *   it will short-circuit and not bother evaluating any additional rules
      * @param  {Condition[]} conditions - conditions to be evaluated
-     * @param  {string('all'|'any')} operator
+     * @param  {string('all'|'any'|'not')} operator
      * @return {Promise(boolean)} rule evaluation result
      */
     const prioritizeAndRun = (conditions, operator) => {
       if (conditions.length === 0) {
         return Promise.resolve(true)
+      }
+      if (conditions.length === 1) {
+        // no prioritizing is necessary, just evaluate the single condition
+        // 'all' and 'any' will give the same results with a single condition so no method is necessary
+        // this also covers the 'not' case which should only ever have a single condition
+        return evaluateCondition(conditions[0])
       }
       let method = Array.prototype.some
       if (operator === 'all') {
@@ -293,6 +301,15 @@ class Rule extends EventEmitter {
     }
 
     /**
+     * Runs a 'not' boolean operator on a single condition
+     * @param  {Condition} condition to be evaluated
+     * @return {Promise(boolean)} condition evaluation result
+     */
+    const not = (condition) => {
+      return prioritizeAndRun([condition], 'not').then(result => !result)
+    }
+
+    /**
      * Emits based on rule evaluation result, and decorates ruleResult with 'result' property
      * @param {RuleResult} ruleResult
      */
@@ -305,8 +322,11 @@ class Rule extends EventEmitter {
     if (ruleResult.conditions.any) {
       return any(ruleResult.conditions.any)
         .then(result => processResult(result))
-    } else {
+    } else if (ruleResult.conditions.all) {
       return all(ruleResult.conditions.all)
+        .then(result => processResult(result))
+    } else {
+      return not(ruleResult.conditions.not)
         .then(result => processResult(result))
     }
   }

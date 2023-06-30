@@ -157,4 +157,5 @@ interface ConditionProperties {
 type NestedCondition = ConditionProperties | TopLevelCondition;
 type AllConditions = { all: NestedCondition[] };
 type AnyConditions = { any: NestedCondition[] };
-export type TopLevelCondition = AllConditions | AnyConditions;
+type NotConditions = { not: NestedCondition };
+export type TopLevelCondition = AllConditions | AnyConditions | NotConditions;
