@@ -85,8 +85,8 @@
   "dependencies": {
     "clone": "^2.1.2",
     "eventemitter2": "^6.4.4",
-    "hash-it": "^5.0.0",
-    "jsonpath-plus": "^5.0.7",
+    "hash-it": "^6.0.0",
+    "jsonpath-plus": "^7.2.0",
     "lodash.isobjectlike": "^4.0.0"
   }
 }
