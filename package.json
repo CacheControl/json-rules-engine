@@ -1,6 +1,6 @@
 {
   "name": "json-rules-engine",
-  "version": "6.1.2",
+  "version": "6.2.0",
   "description": "Rules Engine expressed in simple json",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -55,6 +55,9 @@
     ]
   },
   "author": "Cache Hamm <cache.hamm@gmail.com>",
+  "contributors": [
+    "Chris Pardy <chris.pardy@ownup.com>"
+  ],
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/cachecontrol/json-rules-engine/issues"
