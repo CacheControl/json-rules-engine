@@ -27,3 +27,7 @@ jobs:
     - run: npm install
     - run: npm run build --if-present
     - run: npm test
+    # https://github.com/marketplace/actions/npm-publish
+    - uses: JS-DevTools/npm-publish@v2
+      with:
+        token: ${{ secrets.NPM_TOKEN }}
