@@ -32,7 +32,7 @@ async function start () {
           operator: 'greaterThanInclusive',
           value: 5
         }],
-        name: "short foul limit"
+        name: 'short foul limit'
       }, {
         all: [{
           fact: 'gameDuration',
@@ -45,7 +45,7 @@ async function start () {
             value: 6
           }
         }],
-        name: "long foul limit"
+        name: 'long foul limit'
       }]
     },
     event: { // define the event to fire when the conditions evaluate truthy
