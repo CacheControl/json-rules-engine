@@ -14,7 +14,7 @@ Rules contain a set of _conditions_ and a single _event_.  When the engine is ru
     * [toJSON(Boolean stringify = true)](#tojsonboolean-stringify--true)
 * [Conditions](#conditions)
     * [Basic conditions](#basic-conditions)
-    * [Boolean expressions: all and any](#boolean-expressions-all-and-any)
+    * [Boolean expressions: all, any, and not](#boolean-expressions-all-any-and-not)
     * [Condition helpers: params](#condition-helpers-params)
     * [Condition helpers: path](#condition-helpers-path)
     * [Condition helpers: custom path resolver](#condition-helpers-custom-path-resolver)
