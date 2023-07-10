@@ -10,6 +10,6 @@
   "author": "Cache Hamm <cache.hamm@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "json-rules-engine": "6.0.0-alpha-3"
+    "json-rules-engine": "../"
   }
 }
