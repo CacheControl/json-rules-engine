@@ -15,6 +15,7 @@ Rules contain a set of _conditions_ and a single _event_.  When the engine is ru
 * [Conditions](#conditions)
     * [Basic conditions](#basic-conditions)
     * [Boolean expressions: all, any, and not](#boolean-expressions-all-any-and-not)
+    * [Condition Reference](#condition-reference)
     * [Condition helpers: params](#condition-helpers-params)
     * [Condition helpers: path](#condition-helpers-path)
     * [Condition helpers: custom path resolver](#condition-helpers-custom-path-resolver)
@@ -136,7 +137,7 @@ See the [hello-world](../examples/01-hello-world.js) example.
 
 ### Boolean expressions: `all`, `any`, and `not`
 
-Each rule's conditions *must* have an `all` or `any` operator containing an array of conditions at its root or a `not` operator containing a single condition.  The `all` operator specifies that all conditions contained within must be truthy for the rule to be considered a `success`.  The `any` operator only requires one condition to be truthy for the rule to succeed. The `not` operator will negate whatever condition it contains.
+Each rule's conditions *must* have an `all` or `any` operator containing an array of conditions at its root, a `not` operator containing a single condition, or a condition reference. The `all` operator specifies that all conditions contained within must be truthy for the rule to be considered a `success`.  The `any` operator only requires one condition to be truthy for the rule to succeed. The `not` operator will negate whatever condition it contains.
 
 ```js
 // all:
@@ -174,7 +175,30 @@ let rule = new Rule({
 })
 ```
 
-Notice in the second example how `all`, `any`, and 'not' can be nested within one another to produce complex boolean expressions.  See the [nested-boolean-logic](../examples/02-nested-boolean-logic.js) example.
+Notice in the second example how `all`, `any`, and `not` can be nested within one another to produce complex boolean expressions.  See the [nested-boolean-logic](../examples/02-nested-boolean-logic.js) example.
+
+### Condition Reference
+
+Rules may reference conditions based on their name.
+
+```js
+let rule = new Rule({
+  conditions: {
+    all: [
+      { condition: 'conditionName' },
+      { /* additional condition */ }
+    ]
+  }
+})
+```
+
+Before running the rule the condition should be added to the engine.
+
+```js
+engine.setCondition('conditionName', { /* conditions */ });
+```
+
+Conditions must start with `all`, `any`, `not`, or reference a condition.
 
 ### Condition helpers: `params`
 
