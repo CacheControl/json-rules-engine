@@ -7,6 +7,7 @@ import Almanac from './almanac'
 import EventEmitter from 'eventemitter2'
 import defaultOperators from './engine-default-operators'
 import debug from './debug'
+import Condition from './condition'
 
 export const READY = 'READY'
 export const RUNNING = 'RUNNING'
@@ -21,9 +22,11 @@ class Engine extends EventEmitter {
     super()
     this.rules = []
     this.allowUndefinedFacts = options.allowUndefinedFacts || false
+    this.allowUndefinedConditions = options.allowUndefinedConditions || false
     this.pathResolver = options.pathResolver
     this.operators = new Map()
     this.facts = new Map()
+    this.conditions = new Map()
     this.status = READY
     rules.map(r => this.addRule(r))
     defaultOperators.map(o => this.addOperator(o))
@@ -90,6 +93,31 @@ class Engine extends EventEmitter {
       this.prioritizedRules = null
     }
     return ruleRemoved
+  }
+
+  /**
+   * sets a condition that can be referenced by the given name.
+   * If a condition with the given name has already been set this will replace it.
+   * @param {string} name - the name of the condition to be referenced by rules.
+   * @param {object} conditions - the conditions to use when the condition is referenced.
+   */
+  setCondition (name, conditions) {
+    if (!name) throw new Error('Engine: setCondition() requires name')
+    if (!conditions) throw new Error('Engine: setCondition() requires conditions')
+    if (!Object.prototype.hasOwnProperty.call(conditions, 'all') && !Object.prototype.hasOwnProperty.call(conditions, 'any') && !Object.prototype.hasOwnProperty.call(conditions, 'not') && !Object.prototype.hasOwnProperty.call(conditions, 'condition')) {
+      throw new Error('"conditions" root must contain a single instance of "all", "any", "not", or "condition"')
+    }
+    this.conditions.set(name, new Condition(conditions))
+    return this
+  }
+
+  /**
+   * Removes a condition that has previously been added to this engine
+   * @param {string} name - the name of the condition to remove.
+   * @returns true if the condition existed, otherwise false
+   */
+  removeCondition (name) {
+    return this.conditions.delete(name)
   }
 
   /**

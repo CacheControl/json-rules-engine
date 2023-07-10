@@ -21,7 +21,7 @@ export default class Condition {
       } else {
         this[booleanOperator] = new Condition(subConditions)
       }
-    } else {
+    } else if (!Object.prototype.hasOwnProperty.call(properties, 'condition')) {
       if (!Object.prototype.hasOwnProperty.call(properties, 'fact')) throw new Error('Condition: constructor "fact" property required')
       if (!Object.prototype.hasOwnProperty.call(properties, 'operator')) throw new Error('Condition: constructor "operator" property required')
       if (!Object.prototype.hasOwnProperty.call(properties, 'value')) throw new Error('Condition: constructor "value" property required')
@@ -54,6 +54,8 @@ export default class Condition {
       } else {
         props[oper] = this[oper].toJSON(false)
       }
+    } else if (this.isConditionReference()) {
+      props.condition = this.condition
     } else {
       props.operator = this.operator
       props.value = this.value
@@ -146,5 +148,13 @@ export default class Condition {
    */
   isBooleanOperator () {
     return Condition.booleanOperator(this) !== undefined
+  }
+
+  /**
+   * Whether the condition represents a reference to a condition
+   * @returns {Boolean}
+   */
+  isConditionReference () {
+    return Object.prototype.hasOwnProperty.call(this, 'condition')
   }
 }

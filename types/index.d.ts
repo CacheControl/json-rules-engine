@@ -1,5 +1,6 @@
 export interface EngineOptions {
   allowUndefinedFacts?: boolean;
+  allowUndefinedConditions?: boolean;
   pathResolver?: PathResolver;
 }
 
@@ -22,6 +23,9 @@ export class Engine {
   addRule(rule: RuleProperties): this;
   removeRule(ruleOrName: Rule | string): boolean;
   updateRule(rule: Rule): void;
+
+  setCondition(name: string, conditions: TopLevelCondition): this;
+  removeCondition(name: string): boolean;
 
   addOperator(operator: Operator): Map<string, Operator>;
   addOperator<A, B>(
@@ -98,10 +102,7 @@ export interface Event {
   params?: Record<string, any>;
 }
 
-export type PathResolver = (
-  value: object,
-  path: string,
-) => any;
+export type PathResolver = (value: object, path: string) => any;
 
 export type EventHandler = (
   event: Event,
@@ -156,7 +157,24 @@ interface ConditionProperties {
 }
 
 type NestedCondition = ConditionProperties | TopLevelCondition;
-type AllConditions = { all: NestedCondition[]; name?: string; priority?: number; };
-type AnyConditions = { any: NestedCondition[]; name?: string; priority?: number; };
-type NotConditions = { not: NestedCondition; name?: string; priority?: number; };
-export type TopLevelCondition = AllConditions | AnyConditions | NotConditions;
+type AllConditions = {
+  all: NestedCondition[];
+  name?: string;
+  priority?: number;
+};
+type AnyConditions = {
+  any: NestedCondition[];
+  name?: string;
+  priority?: number;
+};
+type NotConditions = { not: NestedCondition; name?: string; priority?: number };
+type ConditionReference = {
+  condition: string;
+  name?: string;
+  priority?: number;
+};
+export type TopLevelCondition =
+  | AllConditions
+  | AnyConditions
+  | NotConditions
+  | ConditionReference;
