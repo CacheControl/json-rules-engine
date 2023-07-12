@@ -3,6 +3,7 @@
 import Condition from './condition'
 import RuleResult from './rule-result'
 import debug from './debug'
+import deepClone from 'clone'
 import EventEmitter from 'eventemitter2'
 
 class Rule extends EventEmitter {
@@ -70,8 +71,8 @@ class Rule extends EventEmitter {
    * @param {object} conditions - conditions, root element must be a boolean operator
    */
   setConditions (conditions) {
-    if (!Object.prototype.hasOwnProperty.call(conditions, 'all') && !Object.prototype.hasOwnProperty.call(conditions, 'any') && !Object.prototype.hasOwnProperty.call(conditions, 'not')) {
-      throw new Error('"conditions" root must contain a single instance of "all", "any", or "not"')
+    if (!Object.prototype.hasOwnProperty.call(conditions, 'all') && !Object.prototype.hasOwnProperty.call(conditions, 'any') && !Object.prototype.hasOwnProperty.call(conditions, 'not') && !Object.prototype.hasOwnProperty.call(conditions, 'condition')) {
+      throw new Error('"conditions" root must contain a single instance of "all", "any", "not", or "condition"')
     }
     this.conditions = new Condition(conditions)
     return this
@@ -188,7 +189,9 @@ class Rule extends EventEmitter {
      * @return {Promise(true|false)} - resolves with the result of the condition evaluation
      */
     const evaluateCondition = (condition) => {
-      if (condition.isBooleanOperator()) {
+      if (condition.isConditionReference()) {
+        return realize(this.engine.conditions.get(condition.condition), condition)
+      } else if (condition.isBooleanOperator()) {
         const subConditions = condition[condition.operator]
         let comparisonPromise
         if (condition.operator === 'all') {
@@ -307,6 +310,23 @@ class Rule extends EventEmitter {
      */
     const not = (condition) => {
       return prioritizeAndRun([condition], 'not').then(result => !result)
+    }
+
+    const realize = (condition, conditionReference) => {
+      if (!condition) {
+        if (this.engine.allowUndefinedConditions) {
+          // undefined conditions always fail
+          conditionReference.result = false
+          return Promise.resolve(false)
+        } else {
+          throw new Error(`No condition ${conditionReference.condition} exists`)
+        }
+      } else {
+        // project the referenced condition onto reference object and evaluate it.
+        delete conditionReference.condition
+        Object.assign(conditionReference, deepClone(condition))
+        return evaluateCondition(conditionReference)
+      }
     }
 
     /**

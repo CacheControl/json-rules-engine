@@ -12,6 +12,8 @@ The Engine stores and executes rules, emits events, and maintains state.
     * [engine.removeRule(Rule instance | String ruleId)](#engineremoverulerule-instance)
     * [engine.addOperator(String operatorName, Function evaluateFunc(factValue, jsonValue))](#engineaddoperatorstring-operatorname-function-evaluatefuncfactvalue-jsonvalue)
     * [engine.removeOperator(String operatorName)](#engineremoveoperatorstring-operatorname)
+    * [engine.setCondition(String name, Object conditions)](#enginesetconditionstring-name-object-conditions)
+    * [engine.removeCondition(String name)](#engineremovecondtionstring-name)
     * [engine.run([Object facts], [Object options]) -&gt; Promise ({ events: [], failureEvents: [], almanac: Almanac, results: [], failureResults: []})](#enginerunobject-facts-object-options---promise--events--failureevents--almanac-almanac-results--failureresults-)
     * [engine.stop() -&gt; Engine](#enginestop---engine)
       * [engine.on('success', Function(Object event, Almanac almanac, RuleResult ruleResult))](#engineonsuccess-functionobject-event-almanac-almanac-ruleresult-ruleresult)
@@ -42,6 +44,11 @@ let engine = new Engine([Array rules], options)
 `allowUndefinedFacts` - By default, when a running engine encounters an undefined fact,
 an exception is thrown.  Turning this option on will cause the engine to treat
 undefined facts as `undefined`.  (default: false)
+
+`allowUndefinedConditions` - By default, when a running engine encounters a
+condition reference that cannot be resolved an exception is thrown. Turning
+this option on will cause the engine to treat unresolvable condition references
+as failed conditions. (default: false)
 
 `pathResolver` - Allows a custom object path resolution library to be used. (default: `json-path` syntax). See [custom path resolver](./rules.md#condition-helpers-custom-path-resolver) docs.
 
@@ -172,6 +179,71 @@ engine.addOperator('startsWithLetter', (factValue, jsonValue) => {
 engine.removeOperator('startsWithLetter');
 ```
 
+### engine.setCondition(String name, Object conditions)
+
+Adds or updates a condition to the engine. Rules may include references to this condition. Conditions must start with `all`, `any`, `not`, or reference a condition.
+
+```javascript
+engine.setCondition('validLogin', {
+  all: [
+    {
+      operator: 'notEqual',
+      fact: 'loginToken',
+      value: null
+    },
+    {
+      operator: 'greaterThan',
+      fact: 'loginToken',
+      path: '$.expirationTime',
+      value: { fact: 'now' }
+    }
+  ]
+});
+
+engine.addRule({
+  condtions: {
+    all: [
+      {
+        condition: 'validLogin'
+      },
+      {
+        operator: 'contains',
+        fact: 'loginToken',
+        path: '$.role',
+        value: 'admin'
+      }
+    ]
+  },
+  event: {
+    type: 'AdminAccessAllowed'
+  }
+})
+
+```
+
+### engine.removeCondition(String name)
+
+Removes the condition that was previously added.
+
+```javascript
+engine.setCondition('validLogin', {
+  all: [
+    {
+      operator: 'notEqual',
+      fact: 'loginToken',
+      value: null
+    },
+    {
+      operator: 'greaterThan',
+      fact: 'loginToken',
+      path: '$.expirationTime',
+      value: { fact: 'now' }
+    }
+  ]
+});
+
+engine.removeCondition('validLogin');
+```
 
 
 ### engine.run([Object facts], [Object options]) -> Promise ({ events: [], failureEvents: [], almanac: Almanac, results: [], failureResults: []})
