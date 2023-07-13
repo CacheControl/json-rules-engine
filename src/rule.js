@@ -71,8 +71,15 @@ class Rule extends EventEmitter {
    * @param {object} conditions - conditions, root element must be a boolean operator
    */
   setConditions (conditions) {
-    if (!Object.prototype.hasOwnProperty.call(conditions, 'all') && !Object.prototype.hasOwnProperty.call(conditions, 'any') && !Object.prototype.hasOwnProperty.call(conditions, 'not') && !Object.prototype.hasOwnProperty.call(conditions, 'condition')) {
-      throw new Error('"conditions" root must contain a single instance of "all", "any", "not", or "condition"')
+    if (
+      !Object.prototype.hasOwnProperty.call(conditions, 'all') &&
+      !Object.prototype.hasOwnProperty.call(conditions, 'any') &&
+      !Object.prototype.hasOwnProperty.call(conditions, 'not') &&
+      !Object.prototype.hasOwnProperty.call(conditions, 'condition')
+    ) {
+      throw new Error(
+        '"conditions" root must contain a single instance of "all", "any", "not", or "condition"'
+      )
     }
     this.conditions = new Condition(conditions)
     return this
@@ -86,7 +93,11 @@ class Rule extends EventEmitter {
    */
   setEvent (event) {
     if (!event) throw new Error('Rule: setEvent() requires event object')
-    if (!Object.prototype.hasOwnProperty.call(event, 'type')) throw new Error('Rule: setEvent() requires event object with "type" property')
+    if (!Object.prototype.hasOwnProperty.call(event, 'type')) {
+      throw new Error(
+        'Rule: setEvent() requires event object with "type" property'
+      )
+    }
     this.ruleEvent = {
       type: event.type
     }
@@ -170,9 +181,11 @@ class Rule extends EventEmitter {
       sets[priority].push(condition)
       return sets
     }, {})
-    return Object.keys(factSets).sort((a, b) => {
-      return Number(a) > Number(b) ? -1 : 1 // order highest priority -> lowest
-    }).map((priority) => factSets[priority])
+    return Object.keys(factSets)
+      .sort((a, b) => {
+        return Number(a) > Number(b) ? -1 : 1 // order highest priority -> lowest
+      })
+      .map((priority) => factSets[priority])
   }
 
   /**
@@ -181,7 +194,12 @@ class Rule extends EventEmitter {
    * @return {Promise(RuleResult)} rule evaluation result
    */
   evaluate (almanac) {
-    const ruleResult = new RuleResult(this.conditions, this.ruleEvent, this.priority, this.name)
+    const ruleResult = new RuleResult(
+      this.conditions,
+      this.ruleEvent,
+      this.priority,
+      this.name
+    )
 
     /**
      * Evaluates the rule conditions
@@ -190,7 +208,7 @@ class Rule extends EventEmitter {
      */
     const evaluateCondition = (condition) => {
       if (condition.isConditionReference()) {
-        return realize(this.engine.conditions.get(condition.condition), condition)
+        return realize(condition)
       } else if (condition.isBooleanOperator()) {
         const subConditions = condition[condition.operator]
         let comparisonPromise
@@ -202,14 +220,15 @@ class Rule extends EventEmitter {
           comparisonPromise = not(subConditions)
         }
         // for booleans, rule passing is determined by the all/any/not result
-        return comparisonPromise.then(comparisonValue => {
+        return comparisonPromise.then((comparisonValue) => {
           const passes = comparisonValue === true
           condition.result = passes
           return passes
         })
       } else {
-        return condition.evaluate(almanac, this.engine.operators)
-          .then(evaluationResult => {
+        return condition
+          .evaluate(almanac, this.engine.operators)
+          .then((evaluationResult) => {
             const passes = evaluationResult.result
             condition.factResult = evaluationResult.leftHandSideValue
             condition.result = passes
@@ -225,13 +244,14 @@ class Rule extends EventEmitter {
      * @return {Promise(boolean)} whether conditions evaluated truthy or falsey based on condition evaluation + method
      */
     const evaluateConditions = (conditions, method) => {
-      if (!(Array.isArray(conditions))) conditions = [conditions]
+      if (!Array.isArray(conditions)) conditions = [conditions]
 
-      return Promise.all(conditions.map((condition) => evaluateCondition(condition)))
-        .then(conditionResults => {
-          debug('rule::evaluateConditions results', conditionResults)
-          return method.call(conditionResults, (result) => result === true)
-        })
+      return Promise.all(
+        conditions.map((condition) => evaluateCondition(condition))
+      ).then((conditionResults) => {
+        debug('rule::evaluateConditions results', conditionResults)
+        return method.call(conditionResults, (result) => result === true)
+      })
     }
 
     /**
@@ -267,14 +287,18 @@ class Rule extends EventEmitter {
         cursor = cursor.then((setResult) => {
           // after the first set succeeds, don't fire off the remaining promises
           if ((operator === 'any' && setResult === true) || stop) {
-            debug('prioritizeAndRun::detected truthy result; skipping remaining conditions')
+            debug(
+              'prioritizeAndRun::detected truthy result; skipping remaining conditions'
+            )
             stop = true
             return true
           }
 
           // after the first set fails, don't fire off the remaining promises
           if ((operator === 'all' && setResult === false) || stop) {
-            debug('prioritizeAndRun::detected falsey result; skipping remaining conditions')
+            debug(
+              'prioritizeAndRun::detected falsey result; skipping remaining conditions'
+            )
             stop = true
             return false
           }
@@ -309,17 +333,25 @@ class Rule extends EventEmitter {
      * @return {Promise(boolean)} condition evaluation result
      */
     const not = (condition) => {
-      return prioritizeAndRun([condition], 'not').then(result => !result)
+      return prioritizeAndRun([condition], 'not').then((result) => !result)
     }
 
-    const realize = (condition, conditionReference) => {
+    /**
+     * Dereferences the condition reference and then evaluates it.
+     * @param {Condition} conditionReference
+     * @returns {Promise(boolean)} condition evaluation result
+     */
+    const realize = (conditionReference) => {
+      const condition = this.engine.conditions.get(conditionReference.condition)
       if (!condition) {
         if (this.engine.allowUndefinedConditions) {
           // undefined conditions always fail
           conditionReference.result = false
           return Promise.resolve(false)
         } else {
-          throw new Error(`No condition ${conditionReference.condition} exists`)
+          throw new Error(
+            `No condition ${conditionReference.condition} exists`
+          )
         }
       } else {
         // project the referenced condition onto reference object and evaluate it.
@@ -336,18 +368,27 @@ class Rule extends EventEmitter {
     const processResult = (result) => {
       ruleResult.setResult(result)
       const event = result ? 'success' : 'failure'
-      return this.emitAsync(event, ruleResult.event, almanac, ruleResult).then(() => ruleResult)
+      return this.emitAsync(event, ruleResult.event, almanac, ruleResult).then(
+        () => ruleResult
+      )
     }
 
     if (ruleResult.conditions.any) {
-      return any(ruleResult.conditions.any)
-        .then(result => processResult(result))
+      return any(ruleResult.conditions.any).then((result) =>
+        processResult(result)
+      )
     } else if (ruleResult.conditions.all) {
-      return all(ruleResult.conditions.all)
-        .then(result => processResult(result))
+      return all(ruleResult.conditions.all).then((result) =>
+        processResult(result)
+      )
+    } else if (ruleResult.conditions.not) {
+      return not(ruleResult.conditions.not).then((result) =>
+        processResult(result)
+      )
     } else {
-      return not(ruleResult.conditions.not)
-        .then(result => processResult(result))
+      return realize(
+        ruleResult.conditions
+      ).then((result) => processResult(result))
     }
   }
 }
