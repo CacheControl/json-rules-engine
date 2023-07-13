@@ -277,4 +277,45 @@ describe('Engine: condition', () => {
       expect(results[0]).to.nested.include(nestedCondition)
     })
   })
+
+  describe('top-level condition reference', () => {
+    const sendEvent = {
+      type: 'checkSending',
+      params: {
+        sendRetirementPayment: true
+      }
+    }
+
+    const retiredName = 'retired'
+    const retiredCondition = {
+      all: [
+        { fact: 'isRetired', operator: 'equal', value: true }
+      ]
+    }
+
+    const sendConditions = {
+      condition: retiredName
+    }
+
+    let eventSpy
+    beforeEach(() => {
+      eventSpy = sandbox.spy()
+      const sendRule = factories.rule({
+        conditions: sendConditions,
+        event: sendEvent
+      })
+      engine = engineFactory()
+
+      engine.addRule(sendRule)
+      engine.setCondition(retiredName, retiredCondition)
+
+      engine.addFact('isRetired', true)
+      engine.on('success', eventSpy)
+    })
+
+    it('evaluates top level conditions correctly', async () => {
+      await engine.run()
+      expect(eventSpy).to.have.been.called()
+    })
+  })
 })
