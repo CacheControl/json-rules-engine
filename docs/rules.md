@@ -349,6 +349,29 @@ engine.on('failure', function(event, almanac, ruleResult) {
 })
 ```
 
+### Referencing Facts In Events
+
+With the engine option [`replaceFactsInEventParams`](./engine.md#options) the parameters of the event may include references to facts in the same form as [Comparing Facts](#comparing-facts). These references will be replaced with the value of the fact before the event is emitted.
+
+```js
+const engine = new Engine([], { replaceFactsInEventParams: true });
+engine.addRule({
+    conditions: { /* ... */ },
+    event: {
+      type: "gameover",
+      params: {
+        initials: {
+          fact: "currentHighScore",
+          path: "$.initials",
+          params: { foo: 'bar' }
+        }
+      }
+    }
+  })
+```
+
+See [11-using-facts-in-events.js](../examples/11-using-facts-in-events.js) for a complete example.
+
 ## Operators
 
 Each rule condition must begin with a boolean operator(```all```, ```any```, or ```not```) at its root.

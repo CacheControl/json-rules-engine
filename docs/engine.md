@@ -50,6 +50,8 @@ condition reference that cannot be resolved an exception is thrown. Turning
 this option on will cause the engine to treat unresolvable condition references
 as failed conditions. (default: false)
 
+`replaceFactsInEventParams` - By default when rules succeed or fail the events emitted are clones of the event in the rule declaration. When setting this option to true the parameters on the events will be have any fact references resolved. (default: false)
+
 `pathResolver` - Allows a custom object path resolution library to be used. (default: `json-path` syntax). See [custom path resolver](./rules.md#condition-helpers-custom-path-resolver) docs.
 
 ### engine.addFact(String id, Function [definitionFunc], Object [options])

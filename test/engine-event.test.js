@@ -1,6 +1,6 @@
 'use strict'
 
-import engineFactory from '../src/index'
+import engineFactory, { Fact } from '../src/index'
 import Almanac from '../src/almanac'
 import sinon from 'sinon'
 
@@ -301,6 +301,110 @@ describe('Engine: event', () => {
     })
   })
 
+  context('engine events: with facts', () => {
+    const eventWithFact = {
+      type: 'countedEnough',
+      params: {
+        count: { fact: 'count' }
+      }
+    }
+
+    const expectedEvent = { type: 'countedEnough', params: { count: 5 } }
+
+    function setup (replaceFactsInEventParams, event = eventWithFact) {
+      const conditions = {
+        any: [
+          {
+            fact: 'success',
+            operator: 'equal',
+            value: true
+          }
+        ]
+      }
+
+      const ruleOptions = { conditions, event, priority: 100 }
+      const countedEnoughRule = factories.rule(ruleOptions)
+      engine = engineFactory([countedEnoughRule], {
+        replaceFactsInEventParams
+      })
+    }
+    context('without flag', () => {
+      beforeEach(() => setup(false))
+      it('"success" passes the event without resolved facts', async () => {
+        const successSpy = sandbox.spy()
+        engine.on('success', successSpy)
+        const { results } = await engine.run({ success: true, count: 5 })
+        expect(results[0].event).to.deep.equal(eventWithFact)
+        expect(successSpy.firstCall.args[0]).to.deep.equal(eventWithFact)
+      })
+
+      it('failure passes the event without resolved facts', async () => {
+        const failureSpy = sandbox.spy()
+        engine.on('failure', failureSpy)
+        const { failureResults } = await engine.run({ success: false, count: 5 })
+        expect(failureResults[0].event).to.deep.equal(eventWithFact)
+        expect(failureSpy.firstCall.args[0]).to.deep.equal(eventWithFact)
+      })
+    })
+    context('with flag', () => {
+      beforeEach(() => setup(true))
+      it('"success" passes the event with resolved facts', async () => {
+        const successSpy = sandbox.spy()
+        engine.on('success', successSpy)
+        const { results } = await engine.run({ success: true, count: 5 })
+        expect(results[0].event).to.deep.equal(expectedEvent)
+        expect(successSpy.firstCall.args[0]).to.deep.equal(expectedEvent)
+      })
+
+      it('failure passes the event with resolved facts', async () => {
+        const failureSpy = sandbox.spy()
+        engine.on('failure', failureSpy)
+        const { failureResults } = await engine.run({ success: false, count: 5 })
+        expect(failureResults[0].event).to.deep.equal(expectedEvent)
+        expect(failureSpy.firstCall.args[0]).to.deep.equal(expectedEvent)
+      })
+      context('using fact params and path', () => {
+        const eventWithFactWithParamsAndPath = {
+          type: 'countedEnough',
+          params: {
+            count: {
+              fact: 'count',
+              params: { incrementBy: 5 },
+              path: '$.next'
+            }
+          }
+        }
+
+        beforeEach(() => {
+          setup(true, eventWithFactWithParamsAndPath)
+          engine.addFact(
+            new Fact('count', async ({ incrementBy }) => {
+              return {
+                previous: 0,
+                next: incrementBy
+              }
+            })
+          )
+        })
+        it('"success" passes the event with resolved facts', async () => {
+          const successSpy = sandbox.spy()
+          engine.on('success', successSpy)
+          const { results } = await engine.run({ success: true })
+          expect(results[0].event).to.deep.equal(expectedEvent)
+          expect(successSpy.firstCall.args[0]).to.deep.equal(expectedEvent)
+        })
+
+        it('failure passes the event with resolved facts', async () => {
+          const failureSpy = sandbox.spy()
+          engine.on('failure', failureSpy)
+          const { failureResults } = await engine.run({ success: false })
+          expect(failureResults[0].event).to.deep.equal(expectedEvent)
+          expect(failureSpy.firstCall.args[0]).to.deep.equal(expectedEvent)
+        })
+      })
+    })
+  })
+
   context('rule events: simple', () => {
     beforeEach(() => simpleSetup())
 
@@ -383,6 +487,105 @@ describe('Engine: event', () => {
       expect(results).to.have.lengthOf(0)
       expect(failureSpy.callCount).to.equal(1)
       expect(successSpy.callCount).to.equal(0)
+    })
+  })
+
+  context('rule events: with facts', () => {
+    const expectedEvent = { type: 'countedEnough', params: { count: 5 } }
+    const eventWithFact = {
+      type: 'countedEnough',
+      params: {
+        count: { fact: 'count' }
+      }
+    }
+
+    function setup (replaceFactsInEventParams, event = eventWithFact) {
+      const conditions = {
+        any: [
+          {
+            fact: 'success',
+            operator: 'equal',
+            value: true
+          }
+        ]
+      }
+
+      const ruleOptions = { conditions, event, priority: 100 }
+      const countedEnoughRule = factories.rule(ruleOptions)
+      engine = engineFactory([countedEnoughRule], {
+        replaceFactsInEventParams
+      })
+    }
+    context('without flag', () => {
+      beforeEach(() => setup(false))
+      it('"success" passes the event without resolved facts', async () => {
+        const successSpy = sandbox.spy()
+        engine.rules[0].on('success', successSpy)
+        await engine.run({ success: true, count: 5 })
+        expect(successSpy.firstCall.args[0]).to.deep.equal(eventWithFact)
+      })
+
+      it('failure passes the event without resolved facts', async () => {
+        const failureSpy = sandbox.spy()
+        engine.rules[0].on('failure', failureSpy)
+        await engine.run({ success: false, count: 5 })
+        expect(failureSpy.firstCall.args[0]).to.deep.equal(eventWithFact)
+      })
+    })
+    context('with flag', () => {
+      beforeEach(() => setup(true))
+      it('"success" passes the event with resolved facts', async () => {
+        const successSpy = sandbox.spy()
+        engine.rules[0].on('success', successSpy)
+        await engine.run({ success: true, count: 5 })
+        expect(successSpy.firstCall.args[0]).to.deep.equal(expectedEvent)
+      })
+
+      it('failure passes the event with resolved facts', async () => {
+        const failureSpy = sandbox.spy()
+        engine.rules[0].on('failure', failureSpy)
+        await engine.run({ success: false, count: 5 })
+        expect(failureSpy.firstCall.args[0]).to.deep.equal(expectedEvent)
+      })
+      context('using fact params and path', () => {
+        const eventWithFactWithParamsAndPath = {
+          type: 'countedEnough',
+          params: {
+            count: {
+              fact: 'count',
+              params: { incrementBy: 5 },
+              path: '$.next'
+            }
+          }
+        }
+
+        beforeEach(() => {
+          setup(true, eventWithFactWithParamsAndPath)
+          engine.addFact(
+            new Fact('count', async ({ incrementBy }) => {
+              return {
+                previous: 0,
+                next: incrementBy
+              }
+            })
+          )
+        })
+        it('"success" passes the event with resolved facts', async () => {
+          const successSpy = sandbox.spy()
+          engine.on('success', successSpy)
+          const { results } = await engine.run({ success: true })
+          expect(results[0].event).to.deep.equal(expectedEvent)
+          expect(successSpy.firstCall.args[0]).to.deep.equal(expectedEvent)
+        })
+
+        it('failure passes the event with resolved facts', async () => {
+          const failureSpy = sandbox.spy()
+          engine.on('failure', failureSpy)
+          const { failureResults } = await engine.run({ success: false })
+          expect(failureResults[0].event).to.deep.equal(expectedEvent)
+          expect(failureSpy.firstCall.args[0]).to.deep.equal(expectedEvent)
+        })
+      })
     })
   })
 
