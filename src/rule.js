@@ -367,8 +367,12 @@ class Rule extends EventEmitter {
      */
     const processResult = (result) => {
       ruleResult.setResult(result)
+      let processEvent = Promise.resolve()
+      if (this.engine.replaceFactsInEventParams) {
+        processEvent = ruleResult.resolveEventParams(almanac)
+      }
       const event = result ? 'success' : 'failure'
-      return this.emitAsync(event, ruleResult.event, almanac, ruleResult).then(
+      return processEvent.then(() => this.emitAsync(event, ruleResult.event, almanac, ruleResult)).then(
         () => ruleResult
       )
     }

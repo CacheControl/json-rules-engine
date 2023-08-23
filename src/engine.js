@@ -23,6 +23,7 @@ class Engine extends EventEmitter {
     this.rules = []
     this.allowUndefinedFacts = options.allowUndefinedFacts || false
     this.allowUndefinedConditions = options.allowUndefinedConditions || false
+    this.replaceFactsInEventParams = options.replaceFactsInEventParams || false
     this.pathResolver = options.pathResolver
     this.operators = new Map()
     this.facts = new Map()

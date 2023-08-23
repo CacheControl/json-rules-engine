@@ -1,7 +1,6 @@
 'use strict'
 
 import debug from './debug'
-import isObjectLike from 'lodash.isobjectlike'
 
 export default class Condition {
   constructor (properties) {
@@ -11,8 +10,8 @@ export default class Condition {
     if (booleanOperator) {
       const subConditions = properties[booleanOperator]
       const subConditionsIsArray = Array.isArray(subConditions)
-      if (booleanOperator !== 'not' && !subConditionsIsArray) throw new Error(`"${booleanOperator}" must be an array`)
-      if (booleanOperator === 'not' && subConditionsIsArray) throw new Error(`"${booleanOperator}" cannot be an array`)
+      if (booleanOperator !== 'not' && !subConditionsIsArray) { throw new Error(`"${booleanOperator}" must be an array`) }
+      if (booleanOperator === 'not' && subConditionsIsArray) { throw new Error(`"${booleanOperator}" cannot be an array`) }
       this.operator = booleanOperator
       // boolean conditions always have a priority; default 1
       this.priority = parseInt(properties.priority, 10) || 1
@@ -22,9 +21,9 @@ export default class Condition {
         this[booleanOperator] = new Condition(subConditions)
       }
     } else if (!Object.prototype.hasOwnProperty.call(properties, 'condition')) {
-      if (!Object.prototype.hasOwnProperty.call(properties, 'fact')) throw new Error('Condition: constructor "fact" property required')
-      if (!Object.prototype.hasOwnProperty.call(properties, 'operator')) throw new Error('Condition: constructor "operator" property required')
-      if (!Object.prototype.hasOwnProperty.call(properties, 'value')) throw new Error('Condition: constructor "value" property required')
+      if (!Object.prototype.hasOwnProperty.call(properties, 'fact')) { throw new Error('Condition: constructor "fact" property required') }
+      if (!Object.prototype.hasOwnProperty.call(properties, 'operator')) { throw new Error('Condition: constructor "operator" property required') }
+      if (!Object.prototype.hasOwnProperty.call(properties, 'value')) { throw new Error('Condition: constructor "value" property required') }
 
       // a non-boolean condition does not have a priority by default. this allows
       // priority to be dictated by the fact definition
@@ -80,17 +79,6 @@ export default class Condition {
   }
 
   /**
-   * Interprets .value as either a primitive, or if a fact, retrieves the fact value
-   */
-  _getValue (almanac) {
-    const value = this.value
-    if (isObjectLike(value) && Object.prototype.hasOwnProperty.call(value, 'fact')) { // value: { fact: 'xyz' }
-      return almanac.factValue(value.fact, value.params, value.path)
-    }
-    return Promise.resolve(value)
-  }
-
-  /**
    * Takes the fact result and compares it to the condition 'value', using the operator
    *   LHS                      OPER       RHS
    * <fact + params + path>  <operator>  <value>
@@ -102,20 +90,28 @@ export default class Condition {
   evaluate (almanac, operatorMap) {
     if (!almanac) return Promise.reject(new Error('almanac required'))
     if (!operatorMap) return Promise.reject(new Error('operatorMap required'))
-    if (this.isBooleanOperator()) return Promise.reject(new Error('Cannot evaluate() a boolean condition'))
+    if (this.isBooleanOperator()) { return Promise.reject(new Error('Cannot evaluate() a boolean condition')) }
 
     const op = operatorMap.get(this.operator)
-    if (!op) return Promise.reject(new Error(`Unknown operator: ${this.operator}`))
+    if (!op) { return Promise.reject(new Error(`Unknown operator: ${this.operator}`)) }
 
-    return this._getValue(almanac) // todo - parallelize
-      .then(rightHandSideValue => {
-        return almanac.factValue(this.fact, this.params, this.path)
-          .then(leftHandSideValue => {
-            const result = op.evaluate(leftHandSideValue, rightHandSideValue)
-            debug(`condition::evaluate <${JSON.stringify(leftHandSideValue)} ${this.operator} ${JSON.stringify(rightHandSideValue)}?> (${result})`)
-            return { result, leftHandSideValue, rightHandSideValue, operator: this.operator }
-          })
-      })
+    return Promise.all([
+      almanac.getValue(this.value),
+      almanac.factValue(this.fact, this.params, this.path)
+    ]).then(([rightHandSideValue, leftHandSideValue]) => {
+      const result = op.evaluate(leftHandSideValue, rightHandSideValue)
+      debug(
+        `condition::evaluate <${JSON.stringify(leftHandSideValue)} ${
+          this.operator
+        } ${JSON.stringify(rightHandSideValue)}?> (${result})`
+      )
+      return {
+        result,
+        leftHandSideValue,
+        rightHandSideValue,
+        operator: this.operator
+      }
+    })
   }
 
   /**
