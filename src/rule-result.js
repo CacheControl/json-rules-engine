@@ -1,7 +1,7 @@
 'use strict'
 
 import deepClone from 'clone'
-import { isObject } from 'lodash'
+import isObject from 'lodash.isobjectlike'
 
 export default class RuleResult {
   constructor (conditions, event, priority, name) {
