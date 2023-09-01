@@ -1,6 +1,7 @@
 export interface EngineOptions {
   allowUndefinedFacts?: boolean;
   allowUndefinedConditions?: boolean;
+  replaceFactsInEventParams?: boolean;
   pathResolver?: PathResolver;
 }
 
