@@ -26,7 +26,7 @@ export class Engine {
   removeRule(ruleOrName: Rule | string): boolean;
   updateRule(rule: Rule): void;
 
-  setCondition(name: string, conditions: TopLevelCondition): this;
+  setCondition(name: string, conditions: object | Condition): this;
   removeCondition(name: string): boolean;
 
   addOperator(operator: Operator): Map<string, Operator>;
@@ -137,10 +137,10 @@ export interface RuleResult {
 export class Rule implements RuleProperties {
   constructor(ruleProps: RuleProperties | string);
   name: string;
-  conditions: TopLevelCondition;
+  conditions: Condition;
   event: Event;
   priority: number;
-  setConditions(conditions: TopLevelCondition): this;
+  setConditions(conditions: object | Condition): this;
   setEvent(event: Event): this;
   setPriority(priority: number): this;
   toJSON(): string;
@@ -163,6 +163,10 @@ export class Condition {
 
 export class ConditionConstructor {
   construct(options: object): Condition
+}
+
+export class TopLevelConditionConstructor extends ConditionConstructor {
+  constructor(nestedConditionConstructor?: ConditionConstructor)
 }
 
 interface ConditionProperties {

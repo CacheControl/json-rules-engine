@@ -1,6 +1,6 @@
 import AllCondition from './all-condition'
 import AnyCondition from './any-condition'
-import ConditionConstructor from './condition-constructor'
+import ConditionConstructor, { TopLevelConditionConstructor } from './condition-constructor'
 import neverCondition from './never-condition'
 import ComparisonCondition from './comparison-condition'
 import ConditionReference from './condition-reference'
@@ -15,5 +15,6 @@ export {
   neverCondition,
   ComparisonCondition,
   ConditionReference,
-  NotCondition
+  NotCondition,
+  TopLevelConditionConstructor
 }

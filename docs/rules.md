@@ -73,7 +73,7 @@ let rule = new Rule(options)
 
 **options.name** : `[Any]` A way of naming your rules, allowing them to be easily identifiable in [Rule Results](#rule-results).  This is usually of type `String`, but could also be `Object`, `Array`, or `Number`. Note that the name need not be unique, and that it has no impact on execution of the rule.
 
-**options.conditionConstructor**: [ConditionConstructor] - The condition constructor class to use when given condition options. Allows for custom conditions to be created by specifying a new condition constructor. (default: new ConditionConstructor)
+**options.conditionConstructor**: [ConditionConstructor] - The condition constructor class to use when given condition options. Allows for custom conditions to be created by specifying a new condition constructor. (default: new TopLevelConditionConstructor())
 
 ### setConditions(Array conditions)
 

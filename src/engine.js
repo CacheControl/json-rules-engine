@@ -7,7 +7,7 @@ import Almanac from './almanac'
 import EventEmitter from 'eventemitter2'
 import defaultOperators from './engine-default-operators'
 import debug from './debug'
-import ConditionConstructor from './condition'
+import { TopLevelConditionConstructor } from './condition'
 
 export const READY = 'READY'
 export const RUNNING = 'RUNNING'
@@ -25,7 +25,7 @@ class Engine extends EventEmitter {
     this.allowUndefinedConditions = options.allowUndefinedConditions || false
     this.replaceFactsInEventParams = options.replaceFactsInEventParams || false
     this.pathResolver = options.pathResolver
-    this.conditionConstructor = options.conditionConstructor || new ConditionConstructor()
+    this.conditionConstructor = options.conditionConstructor || new TopLevelConditionConstructor()
     this.operators = new Map()
     this.facts = new Map()
     this.conditions = new Map()
@@ -109,9 +109,6 @@ class Engine extends EventEmitter {
   setCondition (name, conditions) {
     if (!name) throw new Error('Engine: setCondition() requires name')
     if (!conditions) throw new Error('Engine: setCondition() requires conditions')
-    if (!Object.prototype.hasOwnProperty.call(conditions, 'all') && !Object.prototype.hasOwnProperty.call(conditions, 'any') && !Object.prototype.hasOwnProperty.call(conditions, 'not') && !Object.prototype.hasOwnProperty.call(conditions, 'condition')) {
-      throw new Error('"conditions" root must contain a single instance of "all", "any", "not", or "condition"')
-    }
     this.conditions.set(name, this.conditionConstructor.construct(conditions))
     return this
   }

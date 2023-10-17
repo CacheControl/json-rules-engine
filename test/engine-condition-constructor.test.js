@@ -33,4 +33,9 @@ describe('Engine: conditionConstructor', () => {
     engine.addRule(ruleOpts)
     expect(conditionConstructor.construct).to.have.been.calledWith(ruleOpts.conditions)
   })
+
+  it('allows non-top-level conditions if the constructor will allow them.', () => {
+    const conditionOpts = { never: true }
+    expect(engine.setCondition.bind(engine, 'test', conditionOpts)).not.to.throw()
+  })
 })

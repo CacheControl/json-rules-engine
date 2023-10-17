@@ -2,7 +2,7 @@
 
 import RuleResult from './rule-result'
 import EventEmitter from 'eventemitter2'
-import ConditionConstructor, { neverCondition } from './condition'
+import { neverCondition, TopLevelConditionConstructor } from './condition'
 
 class Rule extends EventEmitter {
   /**
@@ -24,7 +24,7 @@ class Rule extends EventEmitter {
     if (options && options.conditionConstructor) {
       this.conditionConstructor = options.conditionConstructor
     } else {
-      this.conditionConstructor = new ConditionConstructor()
+      this.conditionConstructor = new TopLevelConditionConstructor()
     }
     if (options && options.conditions) {
       this.setConditions(options.conditions)
@@ -74,16 +74,6 @@ class Rule extends EventEmitter {
    * @param {object} conditions - conditions, root element must be a boolean operator
    */
   setConditions (conditions) {
-    if (
-      !Object.prototype.hasOwnProperty.call(conditions, 'all') &&
-      !Object.prototype.hasOwnProperty.call(conditions, 'any') &&
-      !Object.prototype.hasOwnProperty.call(conditions, 'not') &&
-      !Object.prototype.hasOwnProperty.call(conditions, 'condition')
-    ) {
-      throw new Error(
-        '"conditions" root must contain a single instance of "all", "any", "not", or "condition"'
-      )
-    }
     this.conditions = this.conditionConstructor.construct(conditions)
     return this
   }
