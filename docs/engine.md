@@ -54,6 +54,8 @@ as failed conditions. (default: false)
 
 `pathResolver` - Allows a custom object path resolution library to be used. (default: `json-path` syntax). See [custom path resolver](./rules.md#condition-helpers-custom-path-resolver) docs.
 
+`conditionConstructor` - The condition constructor class to use when given condition options. Allows for custom conditions to be created by specifying a new condition constructor. (default: new ConditionConstructor)
+
 ### engine.addFact(String id, Function [definitionFunc], Object [options])
 
 ```js

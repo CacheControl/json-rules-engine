@@ -3,6 +3,7 @@ export interface EngineOptions {
   allowUndefinedConditions?: boolean;
   replaceFactsInEventParams?: boolean;
   pathResolver?: PathResolver;
+  conditionConstructor?: ConditionConstructor;
 }
 
 export interface EngineResult {
@@ -118,6 +119,7 @@ export interface RuleProperties {
   priority?: number;
   onSuccess?: EventHandler;
   onFailure?: EventHandler;
+  conditionConstructor?: ConditionConstructor;
 }
 export type RuleSerializable = Pick<
   Required<RuleProperties>,
@@ -145,6 +147,22 @@ export class Rule implements RuleProperties {
   toJSON<T extends boolean>(
     stringify: T
   ): T extends true ? string : RuleSerializable;
+}
+
+export class Condition {
+  constructor(properties: object);
+  toJSON(stringify: true): {name?: string, priority?: number}
+  getPriority(almanac: Almanac): number | undefined;
+  evaluate(
+    almanac: Almanac,
+    operatorMap: { get(operatorName: string): Operator },
+    conditionMap: { get(conditionName): Condition}
+  ): Promise<{ result: boolean, priority: number | undefined, name?: string }>
+  skip(): {name?: string, priority?: number}
+}
+
+export class ConditionConstructor {
+  construct(options: object): Condition
 }
 
 interface ConditionProperties {

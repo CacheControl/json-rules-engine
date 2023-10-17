@@ -21,7 +21,11 @@ class Rule extends EventEmitter {
     if (typeof options === 'string') {
       options = JSON.parse(options)
     }
-    this.conditionConstructor = new ConditionConstructor()
+    if (options && options.conditionConstructor) {
+      this.conditionConstructor = options.conditionConstructor
+    } else {
+      this.conditionConstructor = new ConditionConstructor()
+    }
     if (options && options.conditions) {
       this.setConditions(options.conditions)
     }

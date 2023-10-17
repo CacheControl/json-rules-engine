@@ -25,7 +25,7 @@ class Engine extends EventEmitter {
     this.allowUndefinedConditions = options.allowUndefinedConditions || false
     this.replaceFactsInEventParams = options.replaceFactsInEventParams || false
     this.pathResolver = options.pathResolver
-    this.conditionConstructor = new ConditionConstructor()
+    this.conditionConstructor = options.conditionConstructor || new ConditionConstructor()
     this.operators = new Map()
     this.facts = new Map()
     this.conditions = new Map()
@@ -52,6 +52,9 @@ class Engine extends EventEmitter {
     } else {
       if (!Object.prototype.hasOwnProperty.call(properties, 'event')) throw new Error('Engine: addRule() argument requires "event" property')
       if (!Object.prototype.hasOwnProperty.call(properties, 'conditions')) throw new Error('Engine: addRule() argument requires "conditions" property')
+      if (!Object.prototype.hasOwnProperty.call(properties, 'conditionConstructor')) {
+        properties.conditionConstructor = this.conditionConstructor
+      }
       rule = new Rule(properties)
     }
     rule.setEngine(this)
