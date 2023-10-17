@@ -164,6 +164,18 @@ export default class Almanac {
   }
 
   /**
+   * Returns the priority of the fact if one exists.
+   * @param {string} factId - fact identifier
+   */
+  factPriority (factId) {
+    const fact = this._getFact(factId)
+    if (fact === undefined) {
+      return undefined
+    }
+    return fact.priority
+  }
+
+  /**
    * Interprets value as either a primitive, or if a fact, retrieves the fact value
    */
   getValue (value) {

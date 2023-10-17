@@ -1,6 +1,7 @@
 import { Fact } from '../src/index'
 import Almanac from '../src/almanac'
 import sinon from 'sinon'
+import { expect } from 'chai'
 
 describe('Almanac', () => {
   let almanac
@@ -187,6 +188,24 @@ describe('Almanac', () => {
         almanac.factValue('foo')
         expect(factSpy).to.have.been.calledOnce()
       })
+    })
+  })
+
+  describe('factPriority()', () => {
+    function setup (priority) {
+      const fact = new Fact('foo', 5, { priority })
+      const factMap = new Map([[fact.id, fact]])
+      return new Almanac(factMap)
+    }
+
+    it('returns the priority if the fact exists', () => {
+      const almanac = setup(3)
+      expect(almanac.factPriority('foo')).to.equal(3)
+    })
+
+    it("returns undefined if the fact doesn't exist", () => {
+      const almanac = setup(6)
+      expect(almanac.factPriority('bar')).to.equal(undefined)
     })
   })
 })
