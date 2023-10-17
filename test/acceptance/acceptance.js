@@ -27,27 +27,33 @@ describe('Acceptance', () => {
     type: 'event-2'
   }
   const expectedFirstRuleResult = {
-    all: [{
-      fact: 'high-priority',
-      params: {
-        factParam
+    all: [
+      {
+        fact: 'high-priority',
+        params: {
+          factParam
+        },
+        operator: 'contains',
+        path: '$.values',
+        value: 2,
+        priority: 2,
+        factResult: [2],
+        valueResult: 2,
+        result: true
       },
-      operator: 'contains',
-      path: '$.values',
-      value: 2,
-      factResult: [2],
-      result: true
-    },
-    {
-      fact: 'low-priority',
-      operator: 'in',
-      value: [2],
-      factResult: 2,
-      result: true
-    }
+      {
+        fact: 'low-priority',
+        operator: 'in',
+        value: [2],
+        priority: 1,
+        factResult: 2,
+        valueResult: [2],
+        result: true
+      }
     ],
     operator: 'all',
-    priority: 1
+    priority: 1,
+    result: true
   }
   let successSpy
   let failureSpy
@@ -55,7 +61,7 @@ describe('Acceptance', () => {
   let lowPrioritySpy
 
   function delay (value) {
-    return new Promise(resolve => setTimeout(() => resolve(value), 5))
+    return new Promise((resolve) => setTimeout(() => resolve(value), 5))
   }
 
   function setup (options = {}) {
@@ -67,19 +73,22 @@ describe('Acceptance', () => {
       name: 'first',
       priority: 10,
       conditions: {
-        all: [{
-          fact: 'high-priority',
-          params: {
-            factParam
+        all: [
+          {
+            fact: 'high-priority',
+            params: {
+              factParam
+            },
+            operator: 'contains',
+            path: '$.values',
+            value: options.highPriorityValue
           },
-          operator: 'contains',
-          path: '$.values',
-          value: options.highPriorityValue
-        }, {
-          fact: 'low-priority',
-          operator: 'in',
-          value: options.lowPriorityValue
-        }]
+          {
+            fact: 'low-priority',
+            operator: 'in',
+            value: options.lowPriorityValue
+          }
+        ]
       },
       event: event1,
       onSuccess: async (event, almanac, ruleResults) => {
@@ -88,7 +97,11 @@ describe('Acceptance', () => {
         expect(ruleResults.priority).to.equal(10)
         expect(ruleResults.conditions).to.deep.equal(expectedFirstRuleResult)
 
-        return delay(almanac.addRuntimeFact('rule-created-fact', { array: options.highPriorityValue }))
+        return delay(
+          almanac.addRuntimeFact('rule-created-fact', {
+            array: options.highPriorityValue
+          })
+        )
       }
     })
 
@@ -96,37 +109,47 @@ describe('Acceptance', () => {
       name: 'second',
       priority: 1,
       conditions: {
-        all: [{
-          fact: 'high-priority',
-          params: {
-            factParam
-          },
-          operator: 'containsDivisibleValuesOf',
-          path: '$.values',
-          value: {
-            fact: 'rule-created-fact',
-            path: '$.array' // set by 'success' of first rule
+        all: [
+          {
+            fact: 'high-priority',
+            params: {
+              factParam
+            },
+            operator: 'containsDivisibleValuesOf',
+            path: '$.values',
+            value: {
+              fact: 'rule-created-fact',
+              path: '$.array' // set by 'success' of first rule
+            }
           }
-        }]
+        ]
       },
       event: event2
     })
 
     engine.addOperator('containsDivisibleValuesOf', (factValue, jsonValue) => {
-      return factValue.some(v => v % jsonValue === 0)
+      return factValue.some((v) => v % jsonValue === 0)
     })
 
-    engine.addFact('high-priority', async function (params, almanac) {
-      highPrioritySpy(params)
-      const idx = await almanac.factValue('sub-fact')
-      return delay({ values: [idx + params.factParam] }) // { values: [baseIndex + factParam] }
-    }, { priority: 2 })
+    engine.addFact(
+      'high-priority',
+      async function (params, almanac) {
+        highPrioritySpy(params)
+        const idx = await almanac.factValue('sub-fact')
+        return delay({ values: [idx + params.factParam] }) // { values: [baseIndex + factParam] }
+      },
+      { priority: 2 }
+    )
 
-    engine.addFact('low-priority', async function (params, almanac) {
-      lowPrioritySpy(params)
-      const idx = await almanac.factValue('sub-fact')
-      return delay(idx + 1) // baseIndex + 1
-    }, { priority: 1 })
+    engine.addFact(
+      'low-priority',
+      async function (params, almanac) {
+        lowPrioritySpy(params)
+        const idx = await almanac.factValue('sub-fact')
+        return delay(idx + 1) // baseIndex + 1
+      },
+      { priority: 1 }
+    )
 
     engine.addFact('sub-fact', async function (params, almanac) {
       const baseIndex = await almanac.factValue('baseIndex')
@@ -146,12 +169,9 @@ describe('Acceptance', () => {
       lowPriorityValue: [2]
     })
 
-    const {
-      results,
-      failureResults,
-      events,
-      failureEvents
-    } = await engine.run({ baseIndex: 1 })
+    const { results, failureResults, events, failureEvents } = await engine.run(
+      { baseIndex: 1 }
+    )
 
     // results
     expect(results.length).to.equal(2)
@@ -160,29 +180,30 @@ describe('Acceptance', () => {
         all: [
           {
             fact: 'high-priority',
-            factResult: [
-              2
-            ],
+            factResult: [2],
             operator: 'contains',
             params: {
               factParam: 1
             },
             path: '$.values',
+            priority: 2,
             result: true,
-            value: 2
+            value: 2,
+            valueResult: 2
           },
           {
             fact: 'low-priority',
             factResult: 2,
             operator: 'in',
+            priority: 1,
             result: true,
-            value: [
-              2
-            ]
+            value: [2],
+            valueResult: [2]
           }
         ],
         operator: 'all',
-        priority: 1
+        priority: 1,
+        result: true
       },
       event: {
         params: {
@@ -199,23 +220,24 @@ describe('Acceptance', () => {
         all: [
           {
             fact: 'high-priority',
-            factResult: [
-              2
-            ],
+            factResult: [2],
             operator: 'containsDivisibleValuesOf',
             params: {
               factParam: 1
             },
             path: '$.values',
+            priority: 2,
             result: true,
             value: {
               fact: 'rule-created-fact',
               path: '$.array'
-            }
+            },
+            valueResult: 2
           }
         ],
         operator: 'all',
-        priority: 1
+        priority: 1,
+        result: true
       },
       event: {
         type: 'event-2'
@@ -246,16 +268,13 @@ describe('Acceptance', () => {
       lowPriorityValue: [3] // falsey
     })
 
-    const {
-      results,
-      failureResults,
-      events,
-      failureEvents
-    } = await engine.run({ baseIndex: 1, 'rule-created-fact': '' })
+    const { results, failureResults, events, failureEvents } = await engine.run(
+      { baseIndex: 1, 'rule-created-fact': '' }
+    )
 
     expect(results.length).to.equal(0)
     expect(failureResults.length).to.equal(2)
-    expect(failureResults.every(rr => rr.result === false)).to.be.true()
+    expect(failureResults.every((rr) => rr.result === false)).to.be.true()
 
     expect(events.length).to.equal(0)
     expect(failureEvents.length).to.equal(2)

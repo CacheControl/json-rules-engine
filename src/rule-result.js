@@ -5,15 +5,11 @@ import isObject from 'lodash.isobjectlike'
 
 export default class RuleResult {
   constructor (conditions, event, priority, name) {
-    this.conditions = deepClone(conditions)
+    this.conditions = conditions
+    this.result = conditions.result
     this.event = deepClone(event)
-    this.priority = deepClone(priority)
-    this.name = deepClone(name)
-    this.result = null
-  }
-
-  setResult (result) {
-    this.result = result
+    this.priority = priority
+    this.name = name
   }
 
   resolveEventParams (almanac) {
@@ -35,7 +31,7 @@ export default class RuleResult {
 
   toJSON (stringify = true) {
     const props = {
-      conditions: this.conditions.toJSON(false),
+      conditions: this.conditions,
       event: this.event,
       priority: this.priority,
       name: this.name,

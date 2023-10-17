@@ -184,43 +184,6 @@ describe('Rule', () => {
     })
   })
 
-  describe('priotizeConditions()', () => {
-    const conditions = [{
-      fact: 'age',
-      operator: 'greaterThanInclusive',
-      value: 18
-    }, {
-      fact: 'segment',
-      operator: 'equal',
-      value: 'human'
-    }, {
-      fact: 'accountType',
-      operator: 'equal',
-      value: 'admin'
-    }, {
-      fact: 'state',
-      operator: 'equal',
-      value: 'admin'
-    }]
-
-    it('orders based on priority', async () => {
-      const engine = new Engine()
-      engine.addFact('state', async () => {}, { priority: 500 })
-      engine.addFact('segment', async () => {}, { priority: 50 })
-      engine.addFact('accountType', async () => {}, { priority: 25 })
-      engine.addFact('age', async () => {}, { priority: 100 })
-      const rule = new Rule()
-      rule.setEngine(engine)
-
-      const prioritizedConditions = rule.prioritizeConditions(conditions)
-      expect(prioritizedConditions.length).to.equal(4)
-      expect(prioritizedConditions[0][0].fact).to.equal('state')
-      expect(prioritizedConditions[1][0].fact).to.equal('age')
-      expect(prioritizedConditions[2][0].fact).to.equal('segment')
-      expect(prioritizedConditions[3][0].fact).to.equal('accountType')
-    })
-  })
-
   describe('evaluate()', () => {
     function setup () {
       const engine = new Engine()

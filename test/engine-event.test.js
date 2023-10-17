@@ -341,7 +341,10 @@ describe('Engine: event', () => {
       it('failure passes the event without resolved facts', async () => {
         const failureSpy = sandbox.spy()
         engine.on('failure', failureSpy)
-        const { failureResults } = await engine.run({ success: false, count: 5 })
+        const { failureResults } = await engine.run({
+          success: false,
+          count: 5
+        })
         expect(failureResults[0].event).to.deep.equal(eventWithFact)
         expect(failureSpy.firstCall.args[0]).to.deep.equal(eventWithFact)
       })
@@ -359,7 +362,10 @@ describe('Engine: event', () => {
       it('failure passes the event with resolved facts', async () => {
         const failureSpy = sandbox.spy()
         engine.on('failure', failureSpy)
-        const { failureResults } = await engine.run({ success: false, count: 5 })
+        const { failureResults } = await engine.run({
+          success: false,
+          count: 5
+        })
         expect(failureResults[0].event).to.deep.equal(expectedEvent)
         expect(failureSpy.firstCall.args[0]).to.deep.equal(expectedEvent)
       })
@@ -597,9 +603,38 @@ describe('Engine: event', () => {
       rule.on('success', successSpy)
       await engine.run()
       const ruleResult = successSpy.getCall(0).args[2]
-      const expected =
-        '{"conditions":{"priority":1,"any":[{"name":"over 21","operator":"greaterThanInclusive","value":21,"fact":"age","factResult":21,"result":true},{"operator":"equal","value":true,"fact":"qualified","factResult":false,"result":false}]},"event":{"type":"setDrinkingFlag","params":{"canOrderDrinks":true}},"priority":100,"result":true}'
-      expect(JSON.stringify(ruleResult)).to.equal(expected)
+      const expected = {
+        conditions: {
+          priority: 1,
+          operator: 'any',
+          any: [
+            {
+              name: 'over 21',
+              operator: 'greaterThanInclusive',
+              value: 21,
+              valueResult: 21,
+              priority: 1,
+              fact: 'age',
+              factResult: 21,
+              result: true
+            },
+            {
+              operator: 'equal',
+              value: true,
+              valueResult: true,
+              priority: 1,
+              fact: 'qualified',
+              factResult: false,
+              result: false
+            }
+          ],
+          result: true
+        },
+        event: { type: 'setDrinkingFlag', params: { canOrderDrinks: true } },
+        priority: 100,
+        result: true
+      }
+      expect(JSON.parse(JSON.stringify(ruleResult))).to.eql(expected)
     })
   })
 })
