@@ -41,6 +41,31 @@ describe('Almanac', () => {
     })
   })
 
+  describe('addFact', () => {
+    it('supports runtime facts as key => values', () => {
+      almanac = new Almanac()
+      almanac.addFact('fact1', 3)
+      return expect(almanac.factValue('fact1')).to.eventually.equal(3)
+    })
+
+    it('supporrts runtime facts as dynamic callbacks', async () => {
+      almanac = new Almanac()
+      almanac.addFact('fact1', () => {
+        factSpy()
+        return Promise.resolve(3)
+      })
+      await expect(almanac.factValue('fact1')).to.eventually.equal(3)
+      await expect(factSpy).to.have.been.calledOnce()
+    })
+
+    it('supports runtime fact instances', () => {
+      const fact = new Fact('fact1', 3)
+      almanac = new Almanac()
+      almanac.addFact(fact)
+      return expect(almanac.factValue('fact1')).to.eventually.equal(fact.value)
+    })
+  })
+
   describe('addEvent() / getEvents()', () => {
     const event = {};
     ['success', 'failure'].forEach(outcome => {

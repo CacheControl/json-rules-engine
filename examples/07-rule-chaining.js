@@ -39,16 +39,16 @@ async function start () {
     event: { type: 'drinks-screwdrivers' },
     priority: 10, // IMPORTANT!  Set a higher priority for the drinkRule, so it runs first
     onSuccess: async function (event, almanac) {
-      almanac.addRuntimeFact('screwdriverAficionado', true)
+      almanac.addFact('screwdriverAficionado', true)
 
       // asychronous operations can be performed within callbacks
       // engine execution will not proceed until the returned promises is resolved
       const accountId = await almanac.factValue('accountId')
       const accountInfo = await getAccountInformation(accountId)
-      almanac.addRuntimeFact('accountInfo', accountInfo)
+      almanac.addFact('accountInfo', accountInfo)
     },
     onFailure: function (event, almanac) {
-      almanac.addRuntimeFact('screwdriverAficionado', false)
+      almanac.addFact('screwdriverAficionado', false)
     }
   }
   engine.addRule(drinkRule)

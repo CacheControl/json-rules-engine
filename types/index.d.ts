@@ -71,6 +71,12 @@ export class Almanac {
     params?: Record<string, any>,
     path?: string
   ): Promise<T>;
+  addFact<T>(fact: Fact<T>): this;
+  addFact<T>(
+    id: string,
+    valueCallback: DynamicFactCallback<T> | T,
+    options?: FactOptions
+  ): this;
   addRuntimeFact(factId: string, value: any): void;
 }
 

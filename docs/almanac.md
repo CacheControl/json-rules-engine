@@ -3,6 +3,7 @@
 * [Overview](#overview)
 * [Methods](#methods)
     * [almanac.factValue(Fact fact, Object params, String path) -&gt; Promise](#almanacfactvaluefact-fact-object-params-string-path---promise)
+    * [almanac.addFact(String id, Function [definitionFunc], Object [options])](#almanacaddfactstring-id-function-definitionfunc-object-options)
     * [almanac.addRuntimeFact(String factId, Mixed value)](#almanacaddruntimefactstring-factid-mixed-value)
     * [almanac.getEvents(String outcome) -&gt; Events[]](#almanacgeteventsstring-outcome---events)
     * [almanac.getResults() -&gt; RuleResults[]](#almanacgetresults---ruleresults)
@@ -33,8 +34,28 @@ almanac
   .then( value => console.log(value))
 ```
 
+### almanac.addFact(String id, Function [definitionFunc], Object [options])
+
+Sets a fact in the almanac. Used in conjunction with rule and engine event emissions.
+
+```js
+// constant facts:
+engine.addFact('speed-of-light', 299792458)
+
+// facts computed via function
+engine.addFact('account-type', function getAccountType(params, almanac) {
+  // ...
+})
+
+// facts with options:
+engine.addFact('account-type', function getAccountType(params, almanac) {
+  // ...
+}, { cache: false, priority: 500 })
+```
+
 ### almanac.addRuntimeFact(String factId, Mixed value)
 
+**Deprecated** Use `almanac.addFact` instead
 Sets a constant fact mid-run.  Often used in conjunction with rule and engine event emissions.
 
 ```js
