@@ -1,8 +1,15 @@
-export interface EngineOptions {
+export interface AlmanacOptions {
   allowUndefinedFacts?: boolean;
+  pathResolver?: PathResolver;
+}
+
+export interface EngineOptions extends AlmanacOptions {
   allowUndefinedConditions?: boolean;
   replaceFactsInEventParams?: boolean;
-  pathResolver?: PathResolver;
+}
+
+export interface RunOptions {
+  almanac?: Almanac;
 }
 
 export interface EngineResult {
@@ -48,7 +55,7 @@ export class Engine {
   on(eventName: "failure", handler: EventHandler): this;
   on(eventName: string, handler: EventHandler): this;
 
-  run(facts?: Record<string, any>): Promise<EngineResult>;
+  run(facts?: Record<string, any>, runOptions?: RunOptions): Promise<EngineResult>;
   stop(): this;
 }
 
@@ -66,6 +73,7 @@ export class Operator<A = unknown, B = unknown> {
 }
 
 export class Almanac {
+  constructor(options?: AlmanacOptions);
   factValue<T>(
     factId: string,
     params?: Record<string, any>,

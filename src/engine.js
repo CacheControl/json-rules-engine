@@ -261,14 +261,15 @@ class Engine extends EventEmitter {
    * @param  {Object} runOptions - run options
    * @return {Promise} resolves when the engine has completed running
    */
-  run (runtimeFacts = {}) {
+  run (runtimeFacts = {}, runOptions = {}) {
     debug('engine::run started')
     this.status = RUNNING
-    const almanacOptions = {
+
+    const almanac = runOptions.almanac || new Almanac({
       allowUndefinedFacts: this.allowUndefinedFacts,
       pathResolver: this.pathResolver
-    }
-    const almanac = new Almanac(almanacOptions)
+    })
+
     this.facts.forEach(fact => {
       almanac.addFact(fact)
     })
