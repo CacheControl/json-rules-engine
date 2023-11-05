@@ -268,7 +268,21 @@ class Engine extends EventEmitter {
       allowUndefinedFacts: this.allowUndefinedFacts,
       pathResolver: this.pathResolver
     }
-    const almanac = new Almanac(this.facts, runtimeFacts, almanacOptions)
+    const almanac = new Almanac(almanacOptions)
+    this.facts.forEach(fact => {
+      almanac.addFact(fact)
+    })
+    for (const factId in runtimeFacts) {
+      let fact
+      if (runtimeFacts[factId] instanceof Fact) {
+        fact = runtimeFacts[factId]
+      } else {
+        fact = new Fact(factId, runtimeFacts[factId])
+      }
+
+      almanac.addFact(fact)
+      debug(`engine::run initialized runtime fact:${fact.id} with ${fact.value}<${typeof fact.value}>`)
+    }
     const orderedSets = this.prioritizeRules()
     let cursor = Promise.resolve()
     // for each rule set, evaluate in parallel,

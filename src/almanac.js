@@ -17,25 +17,13 @@ function defaultPathResolver (value, path) {
  * A new almanac is used for every engine run()
  */
 export default class Almanac {
-  constructor (factMap, runtimeFacts = {}, options = {}) {
-    this.factMap = new Map(factMap)
+  constructor (options = {}) {
+    this.factMap = new Map()
     this.factResultsCache = new Map() // { cacheKey:  Promise<factValu> }
     this.allowUndefinedFacts = Boolean(options.allowUndefinedFacts)
     this.pathResolver = options.pathResolver || defaultPathResolver
     this.events = { success: [], failure: [] }
     this.ruleResults = []
-
-    for (const factId in runtimeFacts) {
-      let fact
-      if (runtimeFacts[factId] instanceof Fact) {
-        fact = runtimeFacts[factId]
-      } else {
-        fact = new Fact(factId, runtimeFacts[factId])
-      }
-
-      this._addConstantFact(fact)
-      debug(`almanac::constructor initialized runtime fact:${fact.id} with ${fact.value}<${typeof fact.value}>`)
-    }
   }
 
   /**
