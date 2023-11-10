@@ -17,25 +17,13 @@ function defaultPathResolver (value, path) {
  * A new almanac is used for every engine run()
  */
 export default class Almanac {
-  constructor (factMap, runtimeFacts = {}, options = {}) {
-    this.factMap = new Map(factMap)
+  constructor (options = {}) {
+    this.factMap = new Map()
     this.factResultsCache = new Map() // { cacheKey:  Promise<factValu> }
     this.allowUndefinedFacts = Boolean(options.allowUndefinedFacts)
     this.pathResolver = options.pathResolver || defaultPathResolver
     this.events = { success: [], failure: [] }
     this.ruleResults = []
-
-    for (const factId in runtimeFacts) {
-      let fact
-      if (runtimeFacts[factId] instanceof Fact) {
-        fact = runtimeFacts[factId]
-      } else {
-        fact = new Fact(factId, runtimeFacts[factId])
-      }
-
-      this._addConstantFact(fact)
-      debug(`almanac::constructor initialized runtime fact:${fact.id} with ${fact.value}<${typeof fact.value}>`)
-    }
   }
 
   /**
@@ -104,7 +92,31 @@ export default class Almanac {
   }
 
   /**
+   * Add a fact definition to the engine.  Facts are called by rules as they are evaluated.
+   * @param {object|Fact} id - fact identifier or instance of Fact
+   * @param {function} definitionFunc - function to be called when computing the fact value for a given rule
+   * @param {Object} options - options to initialize the fact with. used when "id" is not a Fact instance
+   */
+  addFact (id, valueOrMethod, options) {
+    let factId = id
+    let fact
+    if (id instanceof Fact) {
+      factId = id.id
+      fact = id
+    } else {
+      fact = new Fact(id, valueOrMethod, options)
+    }
+    debug(`almanac::addFact id:${factId}`)
+    this.factMap.set(factId, fact)
+    if (fact.isConstant()) {
+      this._setFactValue(fact, {}, fact.value)
+    }
+    return this
+  }
+
+  /**
    * Adds a constant fact during runtime.  Can be used mid-run() to add additional information
+   * @deprecated use addFact
    * @param {String} fact - fact identifier
    * @param {Mixed} value - constant value of the fact
    */

@@ -23,20 +23,33 @@ describe('Almanac', () => {
     })
 
     it('adds runtime facts', () => {
-      almanac = new Almanac(new Map(), { modelId: 'XYZ' })
+      almanac = new Almanac()
+      almanac.addFact('modelId', 'XYZ')
       expect(almanac.factMap.get('modelId').value).to.equal('XYZ')
     })
   })
 
-  describe('constructor', () => {
+  describe('addFact', () => {
     it('supports runtime facts as key => values', () => {
-      almanac = new Almanac(new Map(), { fact1: 3 })
+      almanac = new Almanac()
+      almanac.addFact('fact1', 3)
       return expect(almanac.factValue('fact1')).to.eventually.equal(3)
+    })
+
+    it('supporrts runtime facts as dynamic callbacks', async () => {
+      almanac = new Almanac()
+      almanac.addFact('fact1', () => {
+        factSpy()
+        return Promise.resolve(3)
+      })
+      await expect(almanac.factValue('fact1')).to.eventually.equal(3)
+      await expect(factSpy).to.have.been.calledOnce()
     })
 
     it('supports runtime fact instances', () => {
       const fact = new Fact('fact1', 3)
-      almanac = new Almanac(new Map(), { fact1: fact })
+      almanac = new Almanac()
+      almanac.addFact(fact)
       return expect(almanac.factValue('fact1')).to.eventually.equal(fact.value)
     })
   })
@@ -69,9 +82,8 @@ describe('Almanac', () => {
         if (params.userId) return params.userId
         return 'unknown'
       })
-      const factMap = new Map()
-      factMap.set(fact.id, fact)
-      almanac = new Almanac(factMap)
+      almanac = new Almanac()
+      almanac.addFact(fact)
     })
 
     it('allows parameters to be passed to the fact', async () => {
@@ -106,10 +118,9 @@ describe('Almanac', () => {
 
   describe('_getFact', _ => {
     it('retrieves the fact object', () => {
-      const facts = new Map()
       const fact = new Fact('id', 1)
-      facts.set(fact.id, fact)
-      almanac = new Almanac(facts)
+      almanac = new Almanac()
+      almanac.addFact(fact)
       expect(almanac._getFact('id')).to.equal(fact)
     })
   })
@@ -124,9 +135,8 @@ describe('Almanac', () => {
 
     function setup (f = new Fact('id', 1)) {
       fact = f
-      const facts = new Map()
-      facts.set(fact.id, fact)
-      almanac = new Almanac(facts)
+      almanac = new Almanac()
+      almanac.addFact(fact)
     }
     let fact
     const FACT_VALUE = 2
@@ -154,9 +164,8 @@ describe('Almanac', () => {
           name: 'Thomas'
         }]
       })
-      const factMap = new Map()
-      factMap.set(fact.id, fact)
-      almanac = new Almanac(factMap)
+      almanac = new Almanac()
+      almanac.addFact(fact)
       const result = await almanac.factValue('foo', null, '$..name')
       expect(result).to.deep.equal(['George', 'Thomas'])
     })
@@ -167,9 +176,8 @@ describe('Almanac', () => {
           factSpy()
           return 'unknown'
         }, factOptions)
-        const factMap = new Map()
-        factMap.set(fact.id, fact)
-        almanac = new Almanac(factMap)
+        almanac = new Almanac()
+        almanac.addFact(fact)
       }
 
       it('evaluates the fact every time when fact caching is off', () => {

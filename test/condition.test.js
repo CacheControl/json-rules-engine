@@ -91,7 +91,8 @@ describe('Condition', () => {
       const properties = Object.assign({}, conditionBase, options)
       condition = new Condition(properties)
       const fact = new Fact(conditionBase.fact, factValue)
-      almanac = new Almanac(new Map([[fact.id, fact]]))
+      almanac = new Almanac()
+      almanac.addFact(fact)
     }
 
     context('validations', () => {
@@ -118,12 +119,14 @@ describe('Condition', () => {
     it('evaluates "equal" to check for undefined', async () => {
       condition = new Condition({ fact: 'age', operator: 'equal', value: undefined })
       let fact = new Fact('age', undefined)
-      almanac = new Almanac(new Map([[fact.id, fact]]))
+      almanac = new Almanac()
+      almanac.addFact(fact)
 
       expect((await condition.evaluate(almanac, operators)).result).to.equal(true)
 
       fact = new Fact('age', 1)
-      almanac = new Almanac(new Map([[fact.id, fact]]))
+      almanac = new Almanac()
+      almanac.addFact(fact)
       expect((await condition.evaluate(almanac, operators)).result).to.equal(false)
     })
 
@@ -235,8 +238,8 @@ describe('Condition', () => {
       it('extracts the object property values using its "path" property', async () => {
         const condition = new Condition({ operator: 'equal', path: '$.[0].id', fact: 'age', value: 50 })
         const ageFact = new Fact('age', [{ id: 50 }, { id: 60 }])
-        const facts = new Map([[ageFact.id, ageFact]])
-        const almanac = new Almanac(facts)
+        const almanac = new Almanac()
+        almanac.addFact(ageFact)
         expect((await condition.evaluate(almanac, operators)).result).to.equal(true)
 
         condition.value = 100 // negative case
@@ -245,8 +248,8 @@ describe('Condition', () => {
 
       it('ignores "path" when non-objects are returned by the fact', async () => {
         const ageFact = new Fact('age', 50)
-        const facts = new Map([[ageFact.id, ageFact]])
-        const almanac = new Almanac(facts)
+        const almanac = new Almanac()
+        almanac.addFact(ageFact)
 
         const condition = new Condition({ operator: 'equal', path: '$.[0].id', fact: 'age', value: 50 })
         expect((await condition.evaluate(almanac, operators, 50)).result).to.equal(true)
@@ -273,8 +276,8 @@ describe('Condition', () => {
         }
 
         const usersFact = new Fact('users', userData)
-        const facts = new Map([[usersFact.id, usersFact]])
-        const almanac = new Almanac(facts)
+        const almanac = new Almanac()
+        almanac.addFact(usersFact)
         expect((await condition.evaluate(almanac, operators)).result).to.equal(true)
 
         condition.value = 'work' // negative case

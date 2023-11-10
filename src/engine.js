@@ -261,14 +261,29 @@ class Engine extends EventEmitter {
    * @param  {Object} runOptions - run options
    * @return {Promise} resolves when the engine has completed running
    */
-  run (runtimeFacts = {}) {
+  run (runtimeFacts = {}, runOptions = {}) {
     debug('engine::run started')
     this.status = RUNNING
-    const almanacOptions = {
+
+    const almanac = runOptions.almanac || new Almanac({
       allowUndefinedFacts: this.allowUndefinedFacts,
       pathResolver: this.pathResolver
+    })
+
+    this.facts.forEach(fact => {
+      almanac.addFact(fact)
+    })
+    for (const factId in runtimeFacts) {
+      let fact
+      if (runtimeFacts[factId] instanceof Fact) {
+        fact = runtimeFacts[factId]
+      } else {
+        fact = new Fact(factId, runtimeFacts[factId])
+      }
+
+      almanac.addFact(fact)
+      debug(`engine::run initialized runtime fact:${fact.id} with ${fact.value}<${typeof fact.value}>`)
     }
-    const almanac = new Almanac(this.facts, runtimeFacts, almanacOptions)
     const orderedSets = this.prioritizeRules()
     let cursor = Promise.resolve()
     // for each rule set, evaluate in parallel,

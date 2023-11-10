@@ -269,6 +269,16 @@ const {
 ```
 Link to the [Almanac documentation](./almanac.md)
 
+Optionally, you may specify a specific almanac instance via the almanac property.
+
+```js
+// create a custom Almanac
+const myCustomAlmanac = new CustomAlmanac();
+
+// run the engine with the custom almanac
+await engine.run({}, { almanac: myCustomAlmanac })
+```
+
 ### engine.stop() -> Engine
 
 Stops the rules engine from running the next priority set of Rules.  All remaining rules will be resolved as undefined,
