@@ -1,6 +1,7 @@
 'use strict'
 
 import debug from './debug'
+import { jsonStringifyWithBigInt } from './utils'
 
 export default class Condition {
   constructor (properties) {
@@ -101,9 +102,9 @@ export default class Condition {
     ]).then(([rightHandSideValue, leftHandSideValue]) => {
       const result = op.evaluate(leftHandSideValue, rightHandSideValue)
       debug(
-        `condition::evaluate <${JSON.stringify(leftHandSideValue)} ${
+        `condition::evaluate <${jsonStringifyWithBigInt(leftHandSideValue)} ${
           this.operator
-        } ${JSON.stringify(rightHandSideValue)}?> (${result})`
+        } ${jsonStringifyWithBigInt(rightHandSideValue)}?> (${result})`
       )
       return {
         result,
