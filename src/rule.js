@@ -265,49 +265,30 @@ class Rule extends EventEmitter {
      * @return {Promise(boolean)} rule evaluation result
      */
     const prioritizeAndRun = (conditions, operator) => {
-      if (conditions.length === 0) {
-        return Promise.resolve(true)
-      }
-      if (conditions.length === 1) {
-        // no prioritizing is necessary, just evaluate the single condition
-        // 'all' and 'any' will give the same results with a single condition so no method is necessary
-        // this also covers the 'not' case which should only ever have a single condition
-        return evaluateCondition(conditions[0])
-      }
-      let method = Array.prototype.some
-      if (operator === 'all') {
-        method = Array.prototype.every
-      }
-      const orderedSets = this.prioritizeConditions(conditions)
-      let cursor = Promise.resolve()
-      // use for() loop over Array.forEach to support IE8 without polyfill
-      for (let i = 0; i < orderedSets.length; i++) {
-        const set = orderedSets[i]
-        let stop = false
-        cursor = cursor.then((setResult) => {
-          // after the first set succeeds, don't fire off the remaining promises
-          if ((operator === 'any' && setResult === true) || stop) {
-            debug(
-              'prioritizeAndRun::detected truthy result; skipping remaining conditions'
-            )
-            stop = true
-            return true
+      if (conditions.length === 0) return Promise.resolve(true);
+      if (conditions.length === 1) return evaluateCondition(conditions[0]);
+    
+      const method = operator === 'all' ? Array.prototype.every : Array.prototype.some;
+      const orderedSets = this.prioritizeConditions(conditions);
+      let stop = false;
+    
+      const cursor = orderedSets.reduce((promise, set) => {
+        return promise.then((setResult) => {
+          if (stop) return setResult;
+          
+          const shouldStop = (operator === 'any' && setResult === true) || (operator === 'all' && setResult === false);
+          if (shouldStop) {
+            stop = true;
+            return setResult;
           }
-
-          // after the first set fails, don't fire off the remaining promises
-          if ((operator === 'all' && setResult === false) || stop) {
-            debug(
-              'prioritizeAndRun::detected falsey result; skipping remaining conditions'
-            )
-            stop = true
-            return false
-          }
-          // all conditions passed; proceed with running next set in parallel
-          return evaluateConditions(set, method)
-        })
-      }
-      return cursor
+    
+          return evaluateConditions(set, method);
+        });
+      }, Promise.resolve());
+    
+      return cursor;
     }
+
 
     /**
      * Runs an 'any' boolean operator on an array of conditions
