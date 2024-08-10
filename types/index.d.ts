@@ -51,9 +51,7 @@ export class Engine {
   removeFact(factOrId: string | Fact): boolean;
   getFact<T>(factId: string): Fact<T>;
 
-  on(eventName: "success", handler: EventHandler): this;
-  on(eventName: "failure", handler: EventHandler): this;
-  on(eventName: string, handler: EventHandler): this;
+  on<T = Event>(eventName: string, handler: EventHandler<T>): this;
 
   run(facts?: Record<string, any>, runOptions?: RunOptions): Promise<EngineResult>;
   stop(): this;
@@ -119,8 +117,8 @@ export interface Event {
 
 export type PathResolver = (value: object, path: string) => any;
 
-export type EventHandler = (
-  event: Event,
+export type EventHandler<T = Event> = (
+  event: T,
   almanac: Almanac,
   ruleResult: RuleResult
 ) => void;

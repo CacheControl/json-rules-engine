@@ -4,12 +4,14 @@ import rulesEngine, {
   Almanac,
   EngineResult,
   Engine,
+  Event,
   Fact,
   Operator,
   OperatorEvaluator,
   PathResolver,
   Rule,
   RuleProperties,
+  RuleResult,
   RuleSerializable
 } from "../";
 
@@ -93,6 +95,16 @@ expectType<Engine>(engine.addFact(fact));
 expectType<Engine>(engine.addFact(dynamicFact));
 expectType<boolean>(engine.removeFact(fact));
 expectType<Fact<string>>(engine.getFact<string>("test"));
+engine.on('success', (event, almanac, ruleResult) => {
+  expectType<Event>(event)
+  expectType<Almanac>(almanac)
+  expectType<RuleResult>(ruleResult)
+})
+engine.on<{ foo: Array<string> }>('foo', (event, almanac, ruleResult) => {
+  expectType<{ foo: Array<string> }>(event)
+  expectType<Almanac>(almanac)
+  expectType<RuleResult>(ruleResult)
+})
 
 // Run the Engine
 expectType<Promise<EngineResult>>(engine.run({ displayMessage: true }));
