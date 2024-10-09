@@ -2,12 +2,13 @@
 
 import Fact from './fact'
 import Rule from './rule'
-import Operator from './operator'
 import Almanac from './almanac'
 import EventEmitter from 'eventemitter2'
 import defaultOperators from './engine-default-operators'
+import defaultDecorators from './engine-default-operator-decorators'
 import debug from './debug'
 import Condition from './condition'
+import OperatorMap from './operator-map'
 
 export const READY = 'READY'
 export const RUNNING = 'RUNNING'
@@ -25,12 +26,13 @@ class Engine extends EventEmitter {
     this.allowUndefinedConditions = options.allowUndefinedConditions || false
     this.replaceFactsInEventParams = options.replaceFactsInEventParams || false
     this.pathResolver = options.pathResolver
-    this.operators = new Map()
+    this.operators = new OperatorMap()
     this.facts = new Map()
     this.conditions = new Map()
     this.status = READY
     rules.map(r => this.addRule(r))
     defaultOperators.map(o => this.addOperator(o))
+    defaultDecorators.map(d => this.addOperatorDecorator(d))
   }
 
   /**
@@ -127,30 +129,32 @@ class Engine extends EventEmitter {
    * @param {function(factValue, jsonValue)} callback - the method to execute when the operator is encountered.
    */
   addOperator (operatorOrName, cb) {
-    let operator
-    if (operatorOrName instanceof Operator) {
-      operator = operatorOrName
-    } else {
-      operator = new Operator(operatorOrName, cb)
-    }
-    debug(`engine::addOperator name:${operator.name}`)
-    this.operators.set(operator.name, operator)
+    this.operators.addOperator(operatorOrName, cb)
   }
 
   /**
    * Remove a custom operator definition
    * @param {string}   operatorOrName - operator identifier within the condition; i.e. instead of 'equals', 'greaterThan', etc
-   * @param {function(factValue, jsonValue)} callback - the method to execute when the operator is encountered.
    */
   removeOperator (operatorOrName) {
-    let operatorName
-    if (operatorOrName instanceof Operator) {
-      operatorName = operatorOrName.name
-    } else {
-      operatorName = operatorOrName
-    }
+    return this.operators.removeOperator(operatorOrName)
+  }
 
-    return this.operators.delete(operatorName)
+  /**
+   * Add a custom operator decorator
+   * @param {string}   decoratorOrName - decorator identifier within the condition; i.e. instead of 'someFact', 'everyValue', etc
+   * @param {function(factValue, jsonValue, next)} callback - the method to execute when the decorator is encountered.
+   */
+  addOperatorDecorator (decoratorOrName, cb) {
+    this.operators.addOperatorDecorator(decoratorOrName, cb)
+  }
+
+  /**
+   * Remove a custom operator decorator
+   * @param {string}   decoratorOrName - decorator identifier within the condition; i.e. instead of 'someFact', 'everyValue', etc
+   */
+  removeOperatorDecorator (decoratorOrName) {
+    return this.operators.removeOperatorDecorator(decoratorOrName)
   }
 
   /**

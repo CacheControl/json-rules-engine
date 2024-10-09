@@ -7,6 +7,8 @@ import rulesEngine, {
   Fact,
   Operator,
   OperatorEvaluator,
+  OperatorDecorator,
+  OperatorDecoratorEvaluator,
   PathResolver,
   Rule,
   RuleProperties,
@@ -82,6 +84,23 @@ const operator: Operator = new Operator(
 );
 expectType<void>(engine.addOperator(operator));
 expectType<boolean>(engine.removeOperator(operator));
+
+// Operator Decorator tests
+const operatorDecoratorEvaluator: OperatorDecoratorEvaluator<number[], number, number, number> = (
+  a: number[],
+  b: number,
+  next: OperatorEvaluator<number, number>
+) => next(a[0], b);
+expectType<void>(
+  engine.addOperatorDecorator("first", operatorDecoratorEvaluator)
+);
+const operatorDecorator: OperatorDecorator = new OperatorDecorator(
+  "first",
+  operatorDecoratorEvaluator,
+  (a: number[]) => a.length > 0
+);
+expectType<void>(engine.addOperatorDecorator(operatorDecorator));
+expectType<boolean>(engine.removeOperatorDecorator(operatorDecorator));
 
 // Fact tests
 const fact = new Fact<number>("test-fact", 3);
