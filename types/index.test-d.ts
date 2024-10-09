@@ -72,7 +72,7 @@ const operatorEvaluator: OperatorEvaluator<number, number> = (
   a: number,
   b: number
 ) => a === b;
-expectType<Map<string, Operator>>(
+expectType<void>(
   engine.addOperator("test", operatorEvaluator)
 );
 const operator: Operator = new Operator(
@@ -80,7 +80,7 @@ const operator: Operator = new Operator(
   operatorEvaluator,
   (num: number) => num > 0
 );
-expectType<Map<string, Operator>>(engine.addOperator(operator));
+expectType<void>(engine.addOperator(operator));
 expectType<boolean>(engine.removeOperator(operator));
 
 // Fact tests

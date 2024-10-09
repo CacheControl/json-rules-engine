@@ -35,11 +35,11 @@ export class Engine {
   setCondition(name: string, conditions: TopLevelCondition): this;
   removeCondition(name: string): boolean;
 
-  addOperator(operator: Operator): Map<string, Operator>;
+  addOperator(operator: Operator): void;
   addOperator<A, B>(
     operatorName: string,
     callback: OperatorEvaluator<A, B>
-  ): Map<string, Operator>;
+  ): void;
   removeOperator(operator: Operator | string): boolean;
 
   addFact<T>(fact: Fact<T>): this;
