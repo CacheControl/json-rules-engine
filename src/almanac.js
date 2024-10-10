@@ -5,7 +5,7 @@ import { UndefinedFactError } from './errors'
 import debug from './debug'
 
 import { JSONPath } from 'jsonpath-plus'
-import isObjectLike from 'lodash.isobjectlike'
+import isObjectLike from 'lodash/isObjectLike'
 
 function defaultPathResolver (value, path) {
   return JSONPath({ path, json: value, wrap: false })
