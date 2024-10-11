@@ -1,7 +1,6 @@
 'use strict'
 
 import deepClone from 'clone'
-import isObject from 'lodash/isObjectLike'
 
 export default class RuleResult {
   constructor (conditions, event, priority, name) {
@@ -17,7 +16,7 @@ export default class RuleResult {
   }
 
   resolveEventParams (almanac) {
-    if (isObject(this.event.params)) {
+    if (this.event.params != null && typeof this.event.params === 'object') {
       const updates = []
       for (const key in this.event.params) {
         if (Object.prototype.hasOwnProperty.call(this.event.params, key)) {
