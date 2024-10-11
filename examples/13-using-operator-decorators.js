@@ -79,12 +79,11 @@ async function start () {
     }
   }
 
-  engine.addRule(caseInsensitiveValidTags);
+  engine.addRule(caseInsensitiveValidTags)
 
   // third run with a tag that is valid if case insensitive
   facts = { tags: ['dev', 'PROD'] }
-  await engine.run(facts);
-
+  await engine.run(facts)
 }
 start()
 

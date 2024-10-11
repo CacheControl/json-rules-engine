@@ -106,7 +106,7 @@ export default class Almanac {
     } else {
       fact = new Fact(id, valueOrMethod, options)
     }
-    debug(`almanac::addFact id:${factId}`)
+    debug('almanac::addFact', { id: factId })
     this.factMap.set(factId, fact)
     if (fact.isConstant()) {
       this._setFactValue(fact, {}, fact.value)
@@ -121,7 +121,7 @@ export default class Almanac {
    * @param {Mixed} value - constant value of the fact
    */
   addRuntimeFact (factId, value) {
-    debug(`almanac::addRuntimeFact id:${factId}`)
+    debug('almanac::addRuntimeFact', { id: factId })
     const fact = new Fact(factId, value)
     return this._addConstantFact(fact)
   }
@@ -151,22 +151,22 @@ export default class Almanac {
       const cacheVal = cacheKey && this.factResultsCache.get(cacheKey)
       if (cacheVal) {
         factValuePromise = Promise.resolve(cacheVal)
-        debug(`almanac::factValue cache hit for fact:${factId}`)
+        debug('almanac::factValue cache hit for fact', { id: factId })
       } else {
-        debug(`almanac::factValue cache miss for fact:${factId}; calculating`)
+        debug('almanac::factValue cache miss, calculating', { id: factId })
         factValuePromise = this._setFactValue(fact, params, fact.calculate(params, this))
       }
     }
     if (path) {
-      debug(`condition::evaluate extracting object property ${path}`)
+      debug('condition::evaluate extracting object', { property: path })
       return factValuePromise
         .then(factValue => {
           if (isObjectLike(factValue)) {
             const pathValue = this.pathResolver(factValue, path)
-            debug(`condition::evaluate extracting object property ${path}, received: ${JSON.stringify(pathValue)}`)
+            debug('condition::evaluate extracting object', { property: path, received: pathValue })
             return pathValue
           } else {
-            debug(`condition::evaluate could not compute object path(${path}) of non-object: ${factValue} <${typeof factValue}>; continuing with ${factValue}`)
+            debug('condition::evaluate could not compute object path of non-object', { path, factValue, type: typeof factValue })
             return factValue
           }
         })

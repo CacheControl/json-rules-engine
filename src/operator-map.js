@@ -22,7 +22,7 @@ export default class OperatorMap {
     } else {
       operator = new Operator(operatorOrName, cb)
     }
-    debug(`operatorMap::addOperator name:${operator.name}`)
+    debug('operatorMap::addOperator', { name: operator.name })
     this.operators.set(operator.name, operator)
   }
 
@@ -64,7 +64,7 @@ export default class OperatorMap {
     } else {
       decorator = new OperatorDecorator(decoratorOrName, cb)
     }
-    debug(`operatorMap::addOperatorDecorator name:${decorator.name}`)
+    debug('operatorMap::addOperatorDecorator', { name: decorator.name })
     this.decorators.set(decorator.name, decorator)
   }
 
@@ -110,7 +110,7 @@ export default class OperatorMap {
         const decoratorName = opName.slice(0, firstDecoratorIndex)
         const decorator = this.decorators.get(decoratorName)
         if (!decorator) {
-          debug(`operatorMap::get invalid decorator named ${decoratorName}`)
+          debug('operatorMap::get invalid decorator', { name: decoratorName })
           return null
         }
         // we're going to apply this later, use unshift since we'll apply in reverse order
@@ -118,7 +118,7 @@ export default class OperatorMap {
         // continue looking for a known operator with the rest of the name
         opName = opName.slice(firstDecoratorIndex + 1)
       } else {
-        debug(`operatorMap::get no operator named ${opName}`)
+        debug('operatorMap::get no operator', { name: opName })
         return null
       }
     }

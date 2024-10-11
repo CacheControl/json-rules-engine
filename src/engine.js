@@ -172,7 +172,7 @@ class Engine extends EventEmitter {
     } else {
       fact = new Fact(id, valueOrMethod, options)
     }
-    debug(`engine::addFact id:${factId}`)
+    debug('engine::addFact', { id: factId })
     this.facts.set(factId, fact)
     return this
   }
@@ -241,11 +241,11 @@ class Engine extends EventEmitter {
   evaluateRules (ruleArray, almanac) {
     return Promise.all(ruleArray.map((rule) => {
       if (this.status !== RUNNING) {
-        debug(`engine::run status:${this.status}; skipping remaining rules`)
+        debug('engine::run, skipping remaining rules', { status: this.status })
         return Promise.resolve()
       }
       return rule.evaluate(almanac).then((ruleResult) => {
-        debug(`engine::run ruleResult:${ruleResult.result}`)
+        debug('engine::run', { ruleResult: ruleResult.result })
         almanac.addResult(ruleResult)
         if (ruleResult.result) {
           almanac.addEvent(ruleResult.event, 'success')
@@ -286,7 +286,7 @@ class Engine extends EventEmitter {
       }
 
       almanac.addFact(fact)
-      debug(`engine::run initialized runtime fact:${fact.id} with ${fact.value}<${typeof fact.value}>`)
+      debug('engine::run initialized runtime fact', { id: fact.id, value: fact.value, type: typeof fact.value })
     }
     const orderedSets = this.prioritizeRules()
     let cursor = Promise.resolve()

@@ -249,7 +249,7 @@ class Rule extends EventEmitter {
       return Promise.all(
         conditions.map((condition) => evaluateCondition(condition))
       ).then((conditionResults) => {
-        debug('rule::evaluateConditions results', conditionResults)
+        debug('rule::evaluateConditions', { results: conditionResults })
         return method.call(conditionResults, (result) => result === true)
       })
     }
