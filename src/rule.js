@@ -274,36 +274,16 @@ class Rule extends EventEmitter {
         // this also covers the 'not' case which should only ever have a single condition
         return evaluateCondition(conditions[0])
       }
-      let method = Array.prototype.some
-      if (operator === 'all') {
-        method = Array.prototype.every
-      }
       const orderedSets = this.prioritizeConditions(conditions)
-      let cursor = Promise.resolve()
+      let cursor = Promise.resolve(operator === 'all')
       // use for() loop over Array.forEach to support IE8 without polyfill
       for (let i = 0; i < orderedSets.length; i++) {
         const set = orderedSets[i]
-        let stop = false
         cursor = cursor.then((setResult) => {
-          // after the first set succeeds, don't fire off the remaining promises
-          if ((operator === 'any' && setResult === true) || stop) {
-            debug(
-              'prioritizeAndRun::detected truthy result; skipping remaining conditions'
-            )
-            stop = true
-            return true
-          }
-
-          // after the first set fails, don't fire off the remaining promises
-          if ((operator === 'all' && setResult === false) || stop) {
-            debug(
-              'prioritizeAndRun::detected falsey result; skipping remaining conditions'
-            )
-            stop = true
-            return false
-          }
-          // all conditions passed; proceed with running next set in parallel
-          return evaluateConditions(set, method)
+          // rely on the short-circuiting behavior of || and && to avoid evaluating subsequent conditions
+          return operator === 'any'
+            ? (setResult || evaluateConditions(set, Array.prototype.some))
+            : (setResult && evaluateConditions(set, Array.prototype.every))
         })
       }
       return cursor
