@@ -178,7 +178,7 @@ export default class Almanac {
    * Interprets value as either a primitive, or if a fact, retrieves the fact value
    */
   getValue (value) {
-    if (value != null && typeof value === 'object' && Object.prototype.hasOwnProperty.call(value, 'fact')) { // value = { fact: 'xyz' }
+    if (Boolean(value instanceof Object) && Object.prototype.hasOwnProperty.call(value, 'fact')) { // value = { fact: 'xyz' }
       return this.factValue(value.fact, value.params, value.path)
     }
     return Promise.resolve(value)

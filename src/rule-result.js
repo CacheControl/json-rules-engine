@@ -16,7 +16,7 @@ export default class RuleResult {
   }
 
   resolveEventParams (almanac) {
-    if (this.event.params != null && typeof this.event.params === 'object') {
+    if (this.event.params instanceof Object) {
       const updates = []
       for (const key in this.event.params) {
         if (Object.prototype.hasOwnProperty.call(this.event.params, key)) {
