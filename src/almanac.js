@@ -5,7 +5,6 @@ import { UndefinedFactError } from './errors'
 import debug from './debug'
 
 import { JSONPath } from 'jsonpath-plus'
-import isObjectLike from 'lodash.isobjectlike'
 
 function defaultPathResolver (value, path) {
   return JSONPath({ path, json: value, wrap: false })
@@ -161,7 +160,7 @@ export default class Almanac {
       debug(`condition::evaluate extracting object property ${path}`)
       return factValuePromise
         .then(factValue => {
-          if (isObjectLike(factValue)) {
+          if (factValue != null && typeof factValue === 'object') {
             const pathValue = this.pathResolver(factValue, path)
             debug(`condition::evaluate extracting object property ${path}, received: ${JSON.stringify(pathValue)}`)
             return pathValue
@@ -179,7 +178,7 @@ export default class Almanac {
    * Interprets value as either a primitive, or if a fact, retrieves the fact value
    */
   getValue (value) {
-    if (isObjectLike(value) && Object.prototype.hasOwnProperty.call(value, 'fact')) { // value = { fact: 'xyz' }
+    if (value != null && typeof value === 'object' && Object.prototype.hasOwnProperty.call(value, 'fact')) { // value = { fact: 'xyz' }
       return this.factValue(value.fact, value.params, value.path)
     }
     return Promise.resolve(value)
