@@ -35,12 +35,16 @@ export class Engine {
   setCondition(name: string, conditions: TopLevelCondition): this;
   removeCondition(name: string): boolean;
 
-  addOperator(operator: Operator): Map<string, Operator>;
+  addOperator(operator: Operator): void;
   addOperator<A, B>(
     operatorName: string,
     callback: OperatorEvaluator<A, B>
-  ): Map<string, Operator>;
+  ): void;
   removeOperator(operator: Operator | string): boolean;
+
+  addOperatorDecorator(decorator: OperatorDecorator): void;
+  addOperatorDecorator<A, B, NextA, NextB>(decoratorName: string, callback: OperatorDecoratorEvaluator<A, B, NextA, NextB>): void;
+  removeOperatorDecorator(decorator: OperatorDecorator | string): boolean;
 
   addFact<T>(fact: Fact<T>): this;
   addFact<T>(
@@ -68,6 +72,19 @@ export class Operator<A = unknown, B = unknown> {
     evaluator: OperatorEvaluator<A, B>,
     validator?: (factValue: A) => boolean
   );
+}
+
+export interface OperatorDecoratorEvaluator<A, B, NextA, NextB> {
+  (factValue: A, compareToValue: B, next: OperatorEvaluator<NextA, NextB>): boolean
+}
+
+export class OperatorDecorator<A = unknown, B = unknown, NextA = unknown, NextB = unknown> {
+  public name: string;
+  constructor(
+    name: string,
+    evaluator: OperatorDecoratorEvaluator<A, B, NextA, NextB>,
+    validator?: (factValue: A) => boolean
+  )
 }
 
 export class Almanac {

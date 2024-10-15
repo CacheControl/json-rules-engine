@@ -27,6 +27,11 @@ Rules contain a set of _conditions_ and a single _event_.  When the engine is ru
     * [String and Numeric operators:](#string-and-numeric-operators)
     * [Numeric operators:](#numeric-operators)
     * [Array operators:](#array-operators)
+* [Operator Decorators](#operator-decorators)
+    * [Array decorators:](#array-decorators)
+    * [Logical decorators:](#logical-decorators)
+    * [Utility decorators:](#utility-decorators)
+    * [Decorator composition:](#decorator-composition)
 * [Rule Results](#rule-results)
 * [Persisting](#persisting)
 
@@ -405,6 +410,35 @@ The ```operator``` compares the value returned by the ```fact``` to what is stor
   ```contains```  - _fact_ (an array) must include _value_
 
   ```doesNotContain```  - _fact_ (an array) must not include _value_
+
+## Operator Decorators
+
+Operator Decorators modify the behavior of an operator either by changing the input or the output. To specify one or more decorators prefix the name of the operator with them in the ```operator``` field and use the colon (```:```) symbol to separate decorators and the operator. For instance ```everyFact:greaterThan``` will produce an operator that checks that every element of the _fact_ is greater than the value.
+
+See [12-using-operator-decorators.js](../examples/13-using-operator-decorators.js) for an example.
+
+### Array Decorators:
+
+  ```everyFact``` - _fact_ (an array) must have every element pass the decorated operator for _value_
+
+  ```everyValue``` - _fact_ must pass the decorated operator for every element of _value_ (an array)
+
+  ```someFact``` - _fact_ (an array) must have at-least one element pass the decorated operator for _value_
+
+  ```someValue``` - _fact_ must pass the decorated operator for at-least one element of _value_ (an array)
+
+### Logical Decorators
+
+  ```not``` - negate the result of the decorated operator
+
+### Utility Decorators
+  ```swap``` - Swap _fact_ and _value_ for the decorated operator
+
+### Decorator Composition
+
+Operator Decorators can be composed by chaining them together with the colon to separate them. For example if you wanted to ensure that every number in an array was less than every number in another array you could use ```everyFact:everyValue:lessThan```.
+
+```swap``` and ```not``` are useful when there are not symmetric or negated versions of custom operators, for instance you could check if a _value_ does not start with a letter contained in a _fact_ using the decorated custom operator ```swap:not:startsWithLetter```. This allows a single custom operator to have 4 permutations.
 
 ## Rule Results
 

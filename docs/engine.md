@@ -12,6 +12,8 @@ The Engine stores and executes rules, emits events, and maintains state.
     * [engine.removeRule(Rule instance | String ruleId)](#engineremoverulerule-instance)
     * [engine.addOperator(String operatorName, Function evaluateFunc(factValue, jsonValue))](#engineaddoperatorstring-operatorname-function-evaluatefuncfactvalue-jsonvalue)
     * [engine.removeOperator(String operatorName)](#engineremoveoperatorstring-operatorname)
+    * [engine.addOperatorDecorator(String decoratorName, Function evaluateFunc(factValue, jsonValue, next))](#engineaddoperatordecoratorstring-decoratorname-function-evaluatefuncfactvalue-jsonvalue-next)
+    * [engine.removeOperatorDecorator(String decoratorName)](#engineremoveoperatordecoratorstring-decoratorname)
     * [engine.setCondition(String name, Object conditions)](#enginesetconditionstring-name-object-conditions)
     * [engine.removeCondition(String name)](#engineremovecondtionstring-name)
     * [engine.run([Object facts], [Object options]) -&gt; Promise ({ events: [], failureEvents: [], almanac: Almanac, results: [], failureResults: []})](#enginerunobject-facts-object-options---promise--events--failureevents--almanac-almanac-results--failureresults-)
@@ -179,6 +181,62 @@ engine.addOperator('startsWithLetter', (factValue, jsonValue) => {
 })
 
 engine.removeOperator('startsWithLetter');
+```
+
+### engine.addOperatorDecorator(String decoratorName, Function evaluateFunc(factValue, jsonValue, next))
+
+Adds a custom operator decorator to the engine.
+
+```js
+/*
+ * decoratorName - operator decorator identifier used in the rule condition
+ * evaluateFunc(factValue, jsonValue, next) - uses the decorated operator to compare the fact result to the condition 'value'
+ *    factValue - the value returned from the fact
+ *    jsonValue - the "value" property stored in the condition itself
+ *    next - the evaluateFunc of the decorated operator
+ */
+engine.addOperatorDecorator('first', (factValue, jsonValue, next) => {
+  if (!factValue.length) return false
+  return next(factValue[0], jsonValue)
+})
+
+engine.addOperatorDecorator('caseInsensitive', (factValue, jsonValue, next) => {
+  return next(factValue.toLowerCase(), jsonValue.toLowerCase())
+})
+
+// and to use the decorator...
+let rule = new Rule(
+  conditions: {
+    all: [
+      {
+        fact: 'username',
+        operator: 'first:caseInsensitive:equal', // reference the decorator:operator in the rule
+        value: 'a'
+      }
+    ]
+  }
+)
+```
+
+See the [operator decorator example](../examples/13-using-operator-decorators.js)
+
+
+
+### engine.removeOperatorDecorator(String decoratorName)
+
+Removes a operator decorator from the engine
+
+```javascript
+engine.addOperatorDecorator('first', (factValue, jsonValue, next) => {
+  if (!factValue.length) return false
+  return next(factValue[0], jsonValue)
+})
+
+engine.addOperatorDecorator('caseInsensitive', (factValue, jsonValue, next) => {
+  return next(factValue.toLowerCase(), jsonValue.toLowerCase())
+})
+
+engine.removeOperator('first');
 ```
 
 ### engine.setCondition(String name, Object conditions)
