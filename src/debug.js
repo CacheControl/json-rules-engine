@@ -1,10 +1,14 @@
-export default function debug (message) {
+
+function createDebug () {
   try {
     if ((typeof process !== 'undefined' && process.env && process.env.DEBUG && process.env.DEBUG.match(/json-rules-engine/)) ||
         (typeof window !== 'undefined' && window.localStorage && window.localStorage.debug && window.localStorage.debug.match(/json-rules-engine/))) {
-      console.log(message)
+      return console.debug.bind(console)
     }
   } catch (ex) {
     // Do nothing
   }
+  return () => {}
 }
+
+export default createDebug()

@@ -101,9 +101,12 @@ export default class Condition {
     ]).then(([rightHandSideValue, leftHandSideValue]) => {
       const result = op.evaluate(leftHandSideValue, rightHandSideValue)
       debug(
-        `condition::evaluate <${JSON.stringify(leftHandSideValue)} ${
-          this.operator
-        } ${JSON.stringify(rightHandSideValue)}?> (${result})`
+        'condition::evaluate', {
+          leftHandSideValue,
+          operator: this.operator,
+          rightHandSideValue,
+          result
+        }
       )
       return {
         result,

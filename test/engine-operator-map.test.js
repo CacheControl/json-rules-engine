@@ -77,10 +77,10 @@ describe('Engine Operator Map', () => {
   })
 
   it('the swap decorator', () => {
-    const factValue = 1;
-    const jsonValue = [1, 2, 3];
+    const factValue = 1
+    const jsonValue = [1, 2, 3]
 
-    const op = engine.operators.get('swap:contains');
+    const op = engine.operators.get('swap:contains')
     expect(op.evaluate(factValue, jsonValue)).to.be.true()
   })
 })
