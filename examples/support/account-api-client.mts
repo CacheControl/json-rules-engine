@@ -1,8 +1,6 @@
-"use strict";
+import "colors";
 
-require("colors");
-
-const accountData = {
+const accountData: Record<string, unknown> = {
   washington: {
     company: "microsoft",
     status: "terminated",
@@ -26,11 +24,11 @@ const accountData = {
 /**
  * mock api client for retrieving account information
  */
-module.exports = {
-  getAccountInformation: (accountId) => {
+export default {
+  getAccountInformation: (accountId: string) => {
     const message = 'loading account information for "' + accountId + '"';
     console.log(message.dim);
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       setImmediate(() => {
         resolve(accountData[accountId]);
       });

@@ -1,4 +1,3 @@
-"use strict";
 /*
  * This example demonstrates using operator decorators.
  *
@@ -11,8 +10,8 @@
  *   DEBUG=json-rules-engine node ./examples/12-using-operator-decorators.js
  */
 
-require("colors");
-const { Engine } = require("json-rules-engine");
+import "colors";
+import { Engine } from "json-rules-engine";
 
 async function start() {
   /**
@@ -43,7 +42,7 @@ async function start() {
 
   engine.addFact("validTags", ["dev", "staging", "load", "prod"]);
 
-  let facts;
+  let facts: { tags: string[] };
 
   engine
     .on("success", (event) => {
@@ -66,7 +65,7 @@ async function start() {
   // add a new decorator to allow for a case-insensitive match
   engine.addOperatorDecorator(
     "caseInsensitive",
-    (factValue, jsonValue, next) => {
+    (factValue: string, jsonValue: string, next) => {
       return next(factValue.toLowerCase(), jsonValue.toLowerCase());
     },
   );

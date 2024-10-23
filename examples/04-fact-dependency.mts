@@ -1,4 +1,3 @@
-"use strict";
 /*
  * This is an advanced example that demonstrates facts with dependencies
  * on other facts.  In addition, it demonstrates facts that load data asynchronously
@@ -11,9 +10,9 @@
  *   DEBUG=json-rules-engine node ./examples/04-fact-dependency.js
  */
 
-require("colors");
-const { Engine } = require("json-rules-engine");
-const accountClient = require("./support/account-api-client");
+import "colors";
+import { Engine } from "json-rules-engine";
+import accountClient from "./support/account-api-client.mjs";
 
 async function start() {
   /**
@@ -72,7 +71,7 @@ async function start() {
   /**
    * Register listeners with the engine for rule success and failure
    */
-  let facts;
+  let facts: Record<string, unknown>;
   engine
     .on("success", (event) => {
       console.log(
@@ -98,31 +97,33 @@ async function start() {
    * 'account-information' fact executes an api call and retrieves account data
    * - Demonstrates facts called only by other facts and never mentioned directly in a rule
    */
-  engine.addFact("account-information", (params, almanac) => {
-    return almanac.factValue("accountId").then((accountId) => {
-      return accountClient.getAccountInformation(accountId);
-    });
+  engine.addFact("account-information", async (_params, almanac) => {
+    const accountId = await almanac.factValue<string>("accountId");
+    return accountClient.getAccountInformation(accountId);
   });
 
   /**
    * 'employee-tenure' fact retrieves account-information, and computes the duration of employment
    * since the account was created using 'accountInformation.createdAt'
    */
-  engine.addFact("employee-tenure", (params, almanac) => {
-    return almanac
-      .factValue("account-information")
-      .then((accountInformation) => {
-        const created = new Date(accountInformation.createdAt);
-        const now = new Date();
-        switch (params.unit) {
-          case "years":
-            return now.getFullYear() - created.getFullYear();
-          case "milliseconds":
-          default:
-            return now.getTime() - created.getTime();
-        }
-      })
-      .catch(console.log);
+  engine.addFact("employee-tenure", async (params, almanac) => {
+    try {
+      const accountInformation = await almanac.factValue<{ createdAt: string }>(
+        "account-information",
+      );
+      const created = new Date(accountInformation.createdAt);
+      const now = new Date();
+      switch (params.unit) {
+        case "years":
+          return now.getFullYear() - created.getFullYear();
+        case "milliseconds":
+        default:
+          return now.getTime() - created.getTime();
+      }
+    } catch (err) {
+      console.log(err);
+      return undefined;
+    }
   });
 
   // first run, using washington's facts

@@ -1,4 +1,3 @@
-"use strict";
 /*
  * This is an advanced example that demonstrates using fact priorities to optimize the rules engine.
  *
@@ -9,9 +8,9 @@
  *   DEBUG=json-rules-engine node ./examples/05-optimizing-runtime-with-fact-priorities.js
  */
 
-require("colors");
-const { Engine } = require("json-rules-engine");
-const accountClient = require("./support/account-api-client");
+import "colors";
+import { Engine } from "json-rules-engine";
+import accountClient from "./support/account-api-client.mjs";
 
 async function start() {
   /**
@@ -81,12 +80,11 @@ async function start() {
    */
   engine.addFact(
     "account-information",
-    (params, almanac) => {
+    async (_params, almanac) => {
       // this fact will not be evaluated, because the "date" fact will fail first
       console.log('Checking the "account-information" fact...'); // this message will not appear
-      return almanac.factValue("accountId").then((accountId) => {
-        return accountClient.getAccountInformation(accountId);
-      });
+      const accountId = await almanac.factValue<string>("accountId");
+      return accountClient.getAccountInformation(accountId);
     },
     { priority: LOW },
   );
@@ -97,7 +95,7 @@ async function start() {
    */
   engine.addFact(
     "date",
-    (params, almanac) => {
+    () => {
       console.log('Checking the "date" fact...');
       return Date.now();
     },

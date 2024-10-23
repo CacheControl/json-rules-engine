@@ -1,4 +1,3 @@
-"use strict";
 /*
  * This is a basic example demonstrating how to leverage the metadata supplied by rule results
  *
@@ -8,8 +7,8 @@
  * For detailed output:
  *   DEBUG=json-rules-engine node ./examples/09-rule-results.js
  */
-require("colors");
-const { Engine } = require("json-rules-engine");
+import "colors";
+import { Engine, NestedCondition, RuleResult } from "json-rules-engine";
 
 async function start() {
   /**
@@ -43,20 +42,20 @@ async function start() {
     name: "Athlete GPA Rule",
   });
 
-  function render(message, ruleResult) {
+  function render(message: string, ruleResult: RuleResult) {
     // if rule succeeded, render success message
     if (ruleResult.result) {
       return console.log(`${message}`.green);
     }
     // if rule failed, iterate over each failed condition to determine why the student didn't qualify for athletics honor roll
-    const detail = ruleResult.conditions.all
-      .filter((condition) => !condition.result)
+    const detail = (ruleResult.conditions as { all: NestedCondition[] }).all
+      .filter((condition) => !(condition as { result?: boolean }).result)
       .map((condition) => {
-        switch (condition.operator) {
+        switch ((condition as { operator?: string }).operator) {
           case "equal":
-            return `was not an ${condition.fact}`;
+            return `was not an ${(condition as { fact?: string }).fact}`;
           case "greaterThanInclusive":
-            return `${condition.fact} of ${condition.factResult} was too low`;
+            return `${(condition as { fact: string }).fact} of ${(condition as { factResult?: unknown }).factResult} was too low`;
           default:
             return "";
         }
@@ -69,9 +68,9 @@ async function start() {
    * On success, retrieve the student's username and print rule name for display purposes, and render
    */
   engine.on("success", (event, almanac, ruleResult) => {
-    almanac.factValue("username").then((username) => {
+    almanac.factValue<string>("username").then((username) => {
       render(
-        `${username.bold} succeeded ${ruleResult.name}! ${event.params.message}`,
+        `${username.bold} succeeded ${ruleResult.name}! ${event.params!.message}`,
         ruleResult,
       );
     });
@@ -80,8 +79,8 @@ async function start() {
   /**
    * On failure, retrieve the student's username and print rule name for display purposes, and render
    */
-  engine.on("failure", (event, almanac, ruleResult) => {
-    almanac.factValue("username").then((username) => {
+  engine.on("failure", (_event, almanac, ruleResult) => {
+    almanac.factValue<string>("username").then((username) => {
       render(`${username.bold} failed ${ruleResult.name} - `, ruleResult);
     });
   });

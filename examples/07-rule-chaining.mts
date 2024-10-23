@@ -1,4 +1,3 @@
-"use strict";
 /*
  * This is an advanced example demonstrating rules that passed based off the
  * results of other rules by adding runtime facts.  It also demonstrates
@@ -11,9 +10,9 @@
  *   DEBUG=json-rules-engine node ./examples/07-rule-chaining.js
  */
 
-require("colors");
-const { Engine } = require("json-rules-engine");
-const { getAccountInformation } = require("./support/account-api-client");
+import "colors";
+import { Almanac, Engine } from "json-rules-engine";
+import apiClient from "./support/account-api-client.mjs";
 
 async function start() {
   /**
@@ -41,16 +40,16 @@ async function start() {
     },
     event: { type: "drinks-screwdrivers" },
     priority: 10, // IMPORTANT!  Set a higher priority for the drinkRule, so it runs first
-    onSuccess: async function (event, almanac) {
+    onSuccess: async function (_event: unknown, almanac: Almanac) {
       almanac.addFact("screwdriverAficionado", true);
 
       // asychronous operations can be performed within callbacks
       // engine execution will not proceed until the returned promises is resolved
-      const accountId = await almanac.factValue("accountId");
-      const accountInfo = await getAccountInformation(accountId);
+      const accountId = await almanac.factValue<string>("accountId");
+      const accountInfo = await apiClient.getAccountInformation(accountId);
       almanac.addFact("accountInfo", accountInfo);
     },
-    onFailure: function (event, almanac) {
+    onFailure: function (_event: unknown, almanac: Almanac) {
       almanac.addFact("screwdriverAficionado", false);
     },
   };
@@ -92,7 +91,9 @@ async function start() {
    */
   engine
     .on("success", async (event, almanac) => {
-      const accountInfo = await almanac.factValue("accountInfo");
+      const accountInfo = await almanac.factValue<{ company: string }>(
+        "accountInfo",
+      );
       const accountId = await almanac.factValue("accountId");
       console.log(
         `${accountId}(${accountInfo.company}) ` +
@@ -122,7 +123,7 @@ async function start() {
   let results = await engine.run(facts);
 
   // isScrewdriverAficionado was a fact set by engine.run()
-  let isScrewdriverAficionado = results.almanac.factValue(
+  let isScrewdriverAficionado = await results.almanac.factValue<boolean>(
     "screwdriverAficionado",
   );
   console.log(

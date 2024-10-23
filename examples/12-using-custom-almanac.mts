@@ -1,36 +1,36 @@
-"use strict";
+import "colors";
+import { Almanac, Engine } from "json-rules-engine";
 
-require("colors");
-const { Almanac, Engine } = require("json-rules-engine");
+type Pipe<T> = (value: T) => unknown;
 
 /**
  * Almanac that support piping values through named functions
  */
 class PipedAlmanac extends Almanac {
-  constructor(options) {
-    super(options);
-    this.pipes = new Map();
+  pipes = new Map<string, Pipe<unknown>>();
+
+  addPipe<T>(name: string, pipe: Pipe<T>) {
+    this.pipes.set(name, pipe as Pipe<unknown>);
   }
 
-  addPipe(name, pipe) {
-    this.pipes.set(name, pipe);
-  }
-
-  factValue(factId, params, path) {
-    let pipes = [];
+  async factValue<T>(
+    factId: string,
+    params?: Record<string, unknown>,
+    path?: string,
+  ) {
+    let pipes: string[] = [];
     if (params && "pipes" in params && Array.isArray(params.pipes)) {
       pipes = params.pipes;
       delete params.pipes;
     }
-    return super.factValue(factId, params, path).then((value) => {
-      return pipes.reduce((value, pipeName) => {
-        const pipe = this.pipes.get(pipeName);
-        if (pipe) {
-          return pipe(value);
-        }
-        return value;
-      }, value);
-    });
+    const value = await super.factValue(factId, params, path);
+    return pipes.reduce((value, pipeName) => {
+      const pipe = this.pipes.get(pipeName);
+      if (pipe) {
+        return pipe(value);
+      }
+      return value;
+    }, value) as T;
   }
 }
 
@@ -70,7 +70,7 @@ async function start() {
 
   const createAlmanacWithPipes = () => {
     const almanac = new PipedAlmanac();
-    almanac.addPipe("addOne", (v) => v + 1);
+    almanac.addPipe("addOne", (v: number) => v + 1);
     return almanac;
   };
 

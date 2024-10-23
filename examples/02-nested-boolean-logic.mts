@@ -1,4 +1,3 @@
-"use strict";
 /*
  * This example demonstates nested boolean logic - e.g. (x OR y) AND (a OR b).
  *
@@ -9,8 +8,8 @@
  *   DEBUG=json-rules-engine node ./examples/02-nested-boolean-logic.js
  */
 
-require("colors");
-const { Engine } = require("json-rules-engine");
+import "colors";
+import { Engine } from "json-rules-engine";
 
 async function start() {
   /**
@@ -77,7 +76,7 @@ async function start() {
 
   const { events } = await engine.run(facts);
 
-  events.map((event) => console.log(event.params.message.red));
+  events.map((event) => console.log(event.params!.message.red));
 }
 start();
 /*
