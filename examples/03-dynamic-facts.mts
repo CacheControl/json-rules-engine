@@ -1,4 +1,3 @@
-"use strict";
 /*
  * This example demonstrates computing fact values at runtime, and leveraging the 'path' feature
  * to select object properties returned by facts
@@ -10,11 +9,11 @@
  *   DEBUG=json-rules-engine node ./examples/03-dynamic-facts.js
  */
 
-require("colors");
-const { Engine } = require("json-rules-engine");
+import "colors";
+import { Engine } from "json-rules-engine";
 
 // example client for making asynchronous requests to an api, database, etc
-const apiClient = require("./support/account-api-client");
+import apiClient from "./support/account-api-client.mjs";
 
 async function start() {
   /**
@@ -65,10 +64,9 @@ async function start() {
    * into the engine.  The major advantage of this technique is that although there are THREE conditions
    * requiring this data, only ONE api call is made.  This results in much more efficient runtime performance.
    */
-  engine.addFact("account-information", function (params, almanac) {
-    return almanac.factValue("accountId").then((accountId) => {
-      return apiClient.getAccountInformation(accountId);
-    });
+  engine.addFact("account-information", async function (_params, almanac) {
+    const accountId = await almanac.factValue<string>("accountId");
+    return apiClient.getAccountInformation(accountId);
   });
 
   // define fact(s) known at runtime
@@ -76,7 +74,7 @@ async function start() {
   const { events } = await engine.run(facts);
 
   console.log(
-    facts.accountId + " is a " + events.map((event) => event.params.message),
+    facts.accountId + " is a " + events.map((event) => event.params!.message),
   );
 }
 start();

@@ -1,4 +1,3 @@
-"use strict";
 /*
  * This is the hello-world example from the README.
  *
@@ -9,8 +8,8 @@
  *   DEBUG=json-rules-engine node ./examples/01-hello-world.js
  */
 
-require("colors");
-const { Engine } = require("json-rules-engine");
+import "colors";
+import { Engine } from "json-rules-engine";
 
 async function start() {
   /**
@@ -51,7 +50,7 @@ async function start() {
   // engine.run() evaluates the rule using the facts provided
   const { events } = await engine.run(facts);
 
-  events.map((event) => console.log(event.params.data.green));
+  events.map((event) => console.log(event.params!.data.green));
 }
 
 start();

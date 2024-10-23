@@ -1,4 +1,3 @@
-"use strict";
 /*
  * This is an advanced example demonstrating rules that re-use a condition defined
  * in the engine.
@@ -10,8 +9,8 @@
  *   DEBUG=json-rules-engine node ./examples/10-condition-sharing.js
  */
 
-require("colors");
-const { Engine } = require("json-rules-engine");
+import "colors";
+import { Engine } from "json-rules-engine";
 
 async function start() {
   /**
@@ -105,7 +104,7 @@ async function start() {
     });
 
   // define fact(s) known at runtime
-  let facts = {
+  let facts: Record<string, unknown> = {
     accountId: "washington",
     drinksOrangeJuice: true,
     enjoysVodka: true,

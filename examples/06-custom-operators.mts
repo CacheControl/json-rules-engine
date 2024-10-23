@@ -1,4 +1,3 @@
-"use strict";
 /*
  * This example demonstrates using custom operators.
  *
@@ -15,8 +14,8 @@
  *   DEBUG=json-rules-engine node ./examples/06-custom-operators.js
  */
 
-require("colors");
-const { Engine } = require("json-rules-engine");
+import "colors";
+import { Engine } from "json-rules-engine";
 
 async function start() {
   /**
@@ -27,7 +26,7 @@ async function start() {
   /**
    * Define a 'startsWith' custom operator, for use in later rules
    */
-  engine.addOperator("startsWith", (factValue, jsonValue) => {
+  engine.addOperator("startsWith", (factValue: string, jsonValue: string) => {
     if (!factValue.length) return false;
     return factValue[0].toLowerCase() === jsonValue.toLowerCase();
   });
@@ -71,7 +70,7 @@ async function start() {
   engine.addRule(ruleB);
 
   // utility for printing output
-  const printEventType = {
+  const printEventType: Record<string, string> = {
     "start-with-a": 'start with "a"',
     "start-with-b": 'start with "b"',
   };
@@ -79,7 +78,7 @@ async function start() {
   /**
    * Register listeners with the engine for rule success and failure
    */
-  let facts;
+  let facts: Record<string, unknown>;
   engine
     .on("success", (event) => {
       console.log(facts.word + " DID ".green + printEventType[event.type]);

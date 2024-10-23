@@ -1,4 +1,3 @@
-"use strict";
 /*
  * This is an advanced example demonstrating an event that emits the value
  * of a fact in it's parameters.
@@ -10,8 +9,8 @@
  *   DEBUG=json-rules-engine node ./examples/11-using-facts-in-events.js
  */
 
-require("colors");
-const { Engine, Fact } = require("json-rules-engine");
+import "colors";
+import { Engine, Fact } from "json-rules-engine";
 
 async function start() {
   /**
@@ -20,7 +19,7 @@ async function start() {
   const engine = new Engine([], { replaceFactsInEventParams: true });
 
   // in-memory "database"
-  let currentHighScore = null;
+  let currentHighScore: { initials: string; score: number } | null = null;
   const currentHighScoreFact = new Fact(
     "currentHighScore",
     () => currentHighScore,
@@ -96,12 +95,19 @@ async function start() {
    * Register listeners with the engine for rule success
    */
   engine
-    .on("success", async ({ params: { initials, score } }) => {
-      console.log(`HIGH SCORE\n${initials} - ${score}`);
-    })
+    .on(
+      "success",
+      async ({
+        params: { initials, score },
+      }: {
+        params: { initials: string; score: number };
+      }) => {
+        console.log(`HIGH SCORE\n${initials} - ${score}`);
+      },
+    )
     .on("success", ({ type, params }) => {
       if (type === "highscore") {
-        currentHighScore = params;
+        currentHighScore = params as { initials: string; score: number };
       }
     });
 

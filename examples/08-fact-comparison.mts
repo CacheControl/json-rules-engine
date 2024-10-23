@@ -1,4 +1,3 @@
-"use strict";
 /*
  * This is a basic example demonstrating a condition that compares two facts
  *
@@ -9,8 +8,8 @@
  *   DEBUG=json-rules-engine node ./examples/08-fact-comparison.js
  */
 
-require("colors");
-const { Engine } = require("json-rules-engine");
+import "colors";
+import { Engine } from "json-rules-engine";
 
 async function start() {
   /**
@@ -52,36 +51,35 @@ async function start() {
   };
   engine.addRule(rule);
 
-  engine.addFact("account", (params, almanac) => {
+  engine.addFact("account", async (params, almanac) => {
     // get account list
-    return almanac.factValue("accounts").then((accounts) => {
-      // use "params" to filter down to the type specified, in this case the "customer" account
-      const customerAccount = accounts.filter(
-        (account) => account.type === params.accountType,
-      );
-      // return the customerAccount object, which "path" will use to pull the "balance" property
-      return customerAccount[0];
-    });
+    const accounts = await almanac.factValue<{ type: string }[]>("accounts");
+    // use "params" to filter down to the type specified, in this case the "customer" account
+    const customerAccount = accounts.filter(
+      (account) => account.type === params.accountType,
+    );
+    // return the customerAccount object, which "path" will use to pull the "balance" property
+    return customerAccount[0];
   });
 
-  engine.addFact("product", (params, almanac) => {
+  engine.addFact("product", async (params, almanac) => {
     // get product list
-    return almanac.factValue("products").then((products) => {
-      // use "params" to filter down to the product specified, in this case the "giftCard" product
-      const product = products.filter(
-        (product) => product.productId === params.productId,
-      );
-      // return the product object, which "path" will use to pull the "price" property
-      return product[0];
-    });
+    const products =
+      await almanac.factValue<{ productId: string }[]>("products");
+    // use "params" to filter down to the product specified, in this case the "giftCard" product
+    const product = products.filter(
+      (product) => product.productId === params.productId,
+    );
+    // return the product object, which "path" will use to pull the "price" property
+    return product[0];
   });
 
   /**
    * Register listeners with the engine for rule success and failure
    */
-  let facts;
+  let facts: Record<string, unknown>;
   engine
-    .on("success", (event, almanac) => {
+    .on("success", (event) => {
       console.log(
         facts.userId +
           " DID ".green +
