@@ -1,3 +1,3 @@
-'use strict'
+"use strict";
 
-module.exports = require('./json-rules-engine')
+module.exports = require("./json-rules-engine");

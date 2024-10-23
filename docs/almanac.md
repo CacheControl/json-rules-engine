@@ -1,37 +1,37 @@
 # Almanac
 
-* [Overview](#overview)
-* [Methods](#methods)
-    * [almanac.factValue(Fact fact, Object params, String path) -&gt; Promise](#almanacfactvaluefact-fact-object-params-string-path---promise)
-    * [almanac.addFact(String id, Function [definitionFunc], Object [options])](#almanacaddfactstring-id-function-definitionfunc-object-options)
-    * [almanac.addRuntimeFact(String factId, Mixed value)](#almanacaddruntimefactstring-factid-mixed-value)
-    * [almanac.getEvents(String outcome) -&gt; Events[]](#almanacgeteventsstring-outcome---events)
-    * [almanac.getResults() -&gt; RuleResults[]](#almanacgetresults---ruleresults)
-* [Common Use Cases](#common-use-cases)
-    * [Fact dependencies](#fact-dependencies)
-    * [Retrieve fact values when handling events](#retrieve-fact-values-when-handling-events)
-    * [Rule Chaining](#rule-chaining)
+- [Overview](#overview)
+- [Methods](#methods)
+  - [almanac.factValue(Fact fact, Object params, String path) -&gt; Promise](#almanacfactvaluefact-fact-object-params-string-path---promise)
+  - [almanac.addFact(String id, Function [definitionFunc], Object [options])](#almanacaddfactstring-id-function-definitionfunc-object-options)
+  - [almanac.addRuntimeFact(String factId, Mixed value)](#almanacaddruntimefactstring-factid-mixed-value)
+  - [almanac.getEvents(String outcome) -&gt; Events[]](#almanacgeteventsstring-outcome---events)
+  - [almanac.getResults() -&gt; RuleResults[]](#almanacgetresults---ruleresults)
+- [Common Use Cases](#common-use-cases)
+  - [Fact dependencies](#fact-dependencies)
+  - [Retrieve fact values when handling events](#retrieve-fact-values-when-handling-events)
+  - [Rule Chaining](#rule-chaining)
 
 ## Overview
 
-An almanac collects facts through an engine run cycle.  As the engine computes fact values,
-the results are stored in the almanac and cached.  If the engine detects a fact computation has
-been previously computed, it reuses the cached result from the almanac.  Every time ```engine.run()``` is invoked,
+An almanac collects facts through an engine run cycle. As the engine computes fact values,
+the results are stored in the almanac and cached. If the engine detects a fact computation has
+been previously computed, it reuses the cached result from the almanac. Every time `engine.run()` is invoked,
 a new almanac is instantiated.
 
 The almanac for the current engine run is available as arguments passed to the fact evaluation methods and
- to the engine ```success``` event.  The almanac may be used to define additional facts during runtime.
+to the engine `success` event. The almanac may be used to define additional facts during runtime.
 
 ## Methods
 
 ### almanac.factValue(Fact fact, Object params, String path) -> Promise
 
-Computes the value of the provided fact + params.  If "path" is provided, it will be used as a [json-path](https://goessner.net/articles/JsonPath/) accessor on the fact's return object.
+Computes the value of the provided fact + params. If "path" is provided, it will be used as a [json-path](https://goessner.net/articles/JsonPath/) accessor on the fact's return object.
 
 ```js
 almanac
-  .factValue('account-information', { accountId: 1 }, '.balance')
-  .then( value => console.log(value))
+  .factValue("account-information", { accountId: 1 }, ".balance")
+  .then((value) => console.log(value));
 ```
 
 ### almanac.addFact(String id, Function [definitionFunc], Object [options])
@@ -40,26 +40,30 @@ Sets a fact in the almanac. Used in conjunction with rule and engine event emiss
 
 ```js
 // constant facts:
-engine.addFact('speed-of-light', 299792458)
+engine.addFact("speed-of-light", 299792458);
 
 // facts computed via function
-engine.addFact('account-type', function getAccountType(params, almanac) {
+engine.addFact("account-type", function getAccountType(params, almanac) {
   // ...
-})
+});
 
 // facts with options:
-engine.addFact('account-type', function getAccountType(params, almanac) {
-  // ...
-}, { cache: false, priority: 500 })
+engine.addFact(
+  "account-type",
+  function getAccountType(params, almanac) {
+    // ...
+  },
+  { cache: false, priority: 500 },
+);
 ```
 
 ### almanac.addRuntimeFact(String factId, Mixed value)
 
 **Deprecated** Use `almanac.addFact` instead
-Sets a constant fact mid-run.  Often used in conjunction with rule and engine event emissions.
+Sets a constant fact mid-run. Often used in conjunction with rule and engine event emissions.
 
 ```js
-almanac.addRuntimeFact('account-id', 1)
+almanac.addRuntimeFact("account-id", 1);
 ```
 
 ### almanac.getEvents(String outcome) -> Events[]
@@ -67,11 +71,11 @@ almanac.addRuntimeFact('account-id', 1)
 Returns events by outcome ("success" or "failure") for the current engine run()
 
 ```js
-almanac.getEvents() // all events for every rule evaluated thus far
+almanac.getEvents(); // all events for every rule evaluated thus far
 
-almanac.getEvents('success') // array of success events
+almanac.getEvents("success"); // array of success events
 
-almanac.getEvents('failure') // array of failure events
+almanac.getEvents("failure"); // array of failure events
 ```
 
 ### almanac.getResults() -> RuleResults[]
@@ -79,20 +83,20 @@ almanac.getEvents('failure') // array of failure events
 Returns [rule results](./rules#rule-results) for the current engine run()
 
 ```js
-almanac.getResults()
+almanac.getResults();
 ```
 
 ## Common Use Cases
 
 ### Fact dependencies
 
-The most common use of the almanac is to access data computed by other facts during runtime.  This allows
+The most common use of the almanac is to access data computed by other facts during runtime. This allows
 leveraging the engine's caching mechanisms to design more efficient rules.
 
 The [fact-dependency](../examples/04-fact-dependency.js) example demonstrates a real world application of this technique.
 
-For example, say there were two facts: _is-funded-account_ and _account-balance_.  Both facts depend on the same _account-information_ data set.
-Using the Almanac, each fact can be defined to call a **base** fact responsible for loading the data.  This causes the engine
+For example, say there were two facts: _is-funded-account_ and _account-balance_. Both facts depend on the same _account-information_ data set.
+Using the Almanac, each fact can be defined to call a **base** fact responsible for loading the data. This causes the engine
 to make the API call for loading account information only once per account.
 
 ```js
@@ -146,10 +150,10 @@ engine.run({ accountId: 1 })
 
 ### Retrieve fact values when handling events
 
-When a rule evalutes truthy and its ```event``` is called, new facts may be defined by the event handler.
-  Note that with this technique, the rule priority becomes important; if a rule is expected to
-  define a fact value, it's important that rule be run prior to other rules that reference the fact.  To
-  learn more about setting rule priorities, see the [rule documentation](./rules.md).
+When a rule evalutes truthy and its `event` is called, new facts may be defined by the event handler.
+Note that with this technique, the rule priority becomes important; if a rule is expected to
+define a fact value, it's important that rule be run prior to other rules that reference the fact. To
+learn more about setting rule priorities, see the [rule documentation](./rules.md).
 
 ```js
 engine.on('success', (event, almanac) => {
@@ -166,7 +170,7 @@ engine.on('success', (event, almanac) => {
 ### Rule Chaining
 
 The `almanac.addRuntimeFact()` method may be used in conjunction with event emissions to
-set fact values during runtime, effectively enabling _rule-chaining_.  Note that ordering
+set fact values during runtime, effectively enabling _rule-chaining_. Note that ordering
 of rule execution is enabled via the `priority` option, and is crucial component to propertly
 configuring rule chaining.
 

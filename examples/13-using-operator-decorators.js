@@ -1,4 +1,4 @@
-'use strict'
+"use strict";
 /*
  * This example demonstrates using operator decorators.
  *
@@ -11,14 +11,14 @@
  *   DEBUG=json-rules-engine node ./examples/12-using-operator-decorators.js
  */
 
-require('colors')
-const { Engine } = require('json-rules-engine')
+require("colors");
+const { Engine } = require("json-rules-engine");
 
-async function start () {
+async function start() {
   /**
    * Setup a new engine
    */
-  const engine = new Engine()
+  const engine = new Engine();
 
   /**
    * Add a rule for validating a tag (fact)
@@ -26,66 +26,75 @@ async function start () {
    */
   const validTags = {
     conditions: {
-      all: [{
-        fact: 'tags',
-        operator: 'everyFact:in',
-        value: { fact: 'validTags' }
-      }]
+      all: [
+        {
+          fact: "tags",
+          operator: "everyFact:in",
+          value: { fact: "validTags" },
+        },
+      ],
     },
     event: {
-      type: 'valid tags'
-    }
-  }
+      type: "valid tags",
+    },
+  };
 
-  engine.addRule(validTags)
+  engine.addRule(validTags);
 
-  engine.addFact('validTags', ['dev', 'staging', 'load', 'prod'])
+  engine.addFact("validTags", ["dev", "staging", "load", "prod"]);
 
-  let facts
+  let facts;
 
   engine
-    .on('success', event => {
-      console.log(facts.tags.join(', ') + ' WERE'.green + ' all ' + event.type)
+    .on("success", (event) => {
+      console.log(facts.tags.join(", ") + " WERE".green + " all " + event.type);
     })
-    .on('failure', event => {
-      console.log(facts.tags.join(', ') + ' WERE NOT'.red + ' all ' + event.type)
-    })
+    .on("failure", (event) => {
+      console.log(
+        facts.tags.join(", ") + " WERE NOT".red + " all " + event.type,
+      );
+    });
 
   // first run with valid tags
-  facts = { tags: ['dev', 'prod'] }
-  await engine.run(facts)
+  facts = { tags: ["dev", "prod"] };
+  await engine.run(facts);
 
   // second run with an invalid tag
-  facts = { tags: ['dev', 'deleted'] }
-  await engine.run(facts)
+  facts = { tags: ["dev", "deleted"] };
+  await engine.run(facts);
 
   // add a new decorator to allow for a case-insensitive match
-  engine.addOperatorDecorator('caseInsensitive', (factValue, jsonValue, next) => {
-    return next(factValue.toLowerCase(), jsonValue.toLowerCase())
-  })
+  engine.addOperatorDecorator(
+    "caseInsensitive",
+    (factValue, jsonValue, next) => {
+      return next(factValue.toLowerCase(), jsonValue.toLowerCase());
+    },
+  );
 
   // new rule for case-insensitive validation
   const caseInsensitiveValidTags = {
     conditions: {
-      all: [{
-        fact: 'tags',
-        // everyFact has someValue that caseInsensitive is equal
-        operator: 'everyFact:someValue:caseInsensitive:equal',
-        value: { fact: 'validTags' }
-      }]
+      all: [
+        {
+          fact: "tags",
+          // everyFact has someValue that caseInsensitive is equal
+          operator: "everyFact:someValue:caseInsensitive:equal",
+          value: { fact: "validTags" },
+        },
+      ],
     },
     event: {
-      type: 'valid tags (case insensitive)'
-    }
-  }
+      type: "valid tags (case insensitive)",
+    },
+  };
 
-  engine.addRule(caseInsensitiveValidTags)
+  engine.addRule(caseInsensitiveValidTags);
 
   // third run with a tag that is valid if case insensitive
-  facts = { tags: ['dev', 'PROD'] }
-  await engine.run(facts)
+  facts = { tags: ["dev", "PROD"] };
+  await engine.run(facts);
 }
-start()
+start();
 
 /*
  * OUTPUT:

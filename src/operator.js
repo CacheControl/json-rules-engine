@@ -1,4 +1,4 @@
-'use strict'
+"use strict";
 
 export default class Operator {
   /**
@@ -8,13 +8,13 @@ export default class Operator {
    * @param {function}  [factValueValidator] - optional validator for asserting the data type of the fact
    * @returns {Operator} - instance
    */
-  constructor (name, cb, factValueValidator) {
-    this.name = String(name)
-    if (!name) throw new Error('Missing operator name')
-    if (typeof cb !== 'function') throw new Error('Missing operator callback')
-    this.cb = cb
-    this.factValueValidator = factValueValidator
-    if (!this.factValueValidator) this.factValueValidator = () => true
+  constructor(name, cb, factValueValidator) {
+    this.name = String(name);
+    if (!name) throw new Error("Missing operator name");
+    if (typeof cb !== "function") throw new Error("Missing operator callback");
+    this.cb = cb;
+    this.factValueValidator = factValueValidator;
+    if (!this.factValueValidator) this.factValueValidator = () => true;
   }
 
   /**
@@ -23,7 +23,7 @@ export default class Operator {
    * @param   {mixed} jsonValue - "value" property of the condition
    * @returns {Boolean} - whether the values pass the operator test
    */
-  evaluate (factValue, jsonValue) {
-    return this.factValueValidator(factValue) && this.cb(factValue, jsonValue)
+  evaluate(factValue, jsonValue) {
+    return this.factValueValidator(factValue) && this.cb(factValue, jsonValue);
   }
 }

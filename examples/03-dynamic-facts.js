@@ -1,4 +1,4 @@
-'use strict'
+"use strict";
 /*
  * This example demonstrates computing fact values at runtime, and leveraging the 'path' feature
  * to select object properties returned by facts
@@ -10,17 +10,17 @@
  *   DEBUG=json-rules-engine node ./examples/03-dynamic-facts.js
  */
 
-require('colors')
-const { Engine } = require('json-rules-engine')
+require("colors");
+const { Engine } = require("json-rules-engine");
 
 // example client for making asynchronous requests to an api, database, etc
-const apiClient = require('./support/account-api-client')
+const apiClient = require("./support/account-api-client");
 
-async function start () {
+async function start() {
   /**
    * Setup a new engine
    */
-  const engine = new Engine()
+  const engine = new Engine();
 
   /**
    * Rule for identifying microsoft employees taking pto on christmas
@@ -30,51 +30,56 @@ async function start () {
    */
   const microsoftRule = {
     conditions: {
-      all: [{
-        fact: 'account-information',
-        operator: 'equal',
-        value: 'microsoft',
-        path: '$.company' // access the 'company' property of "account-information"
-      }, {
-        fact: 'account-information',
-        operator: 'in',
-        value: ['active', 'paid-leave'], // 'status'' can be active or paid-leave
-        path: '$.status' // access the 'status' property of "account-information"
-      }, {
-        fact: 'account-information',
-        operator: 'contains',
-        value: '2016-12-25',
-        path: '$.ptoDaysTaken' // access the 'ptoDaysTaken' property of "account-information"
-      }]
+      all: [
+        {
+          fact: "account-information",
+          operator: "equal",
+          value: "microsoft",
+          path: "$.company", // access the 'company' property of "account-information"
+        },
+        {
+          fact: "account-information",
+          operator: "in",
+          value: ["active", "paid-leave"], // 'status'' can be active or paid-leave
+          path: "$.status", // access the 'status' property of "account-information"
+        },
+        {
+          fact: "account-information",
+          operator: "contains",
+          value: "2016-12-25",
+          path: "$.ptoDaysTaken", // access the 'ptoDaysTaken' property of "account-information"
+        },
+      ],
     },
     event: {
-      type: 'microsoft-christmas-pto',
+      type: "microsoft-christmas-pto",
       params: {
-        message: 'current microsoft employee taking christmas day off'
-      }
-    }
-  }
-  engine.addRule(microsoftRule)
+        message: "current microsoft employee taking christmas day off",
+      },
+    },
+  };
+  engine.addRule(microsoftRule);
 
   /**
    * 'account-information' fact executes an api call and retrieves account data, feeding the results
    * into the engine.  The major advantage of this technique is that although there are THREE conditions
    * requiring this data, only ONE api call is made.  This results in much more efficient runtime performance.
    */
-  engine.addFact('account-information', function (params, almanac) {
-    return almanac.factValue('accountId')
-      .then(accountId => {
-        return apiClient.getAccountInformation(accountId)
-      })
-  })
+  engine.addFact("account-information", function (params, almanac) {
+    return almanac.factValue("accountId").then((accountId) => {
+      return apiClient.getAccountInformation(accountId);
+    });
+  });
 
   // define fact(s) known at runtime
-  const facts = { accountId: 'lincoln' }
-  const { events } = await engine.run(facts)
+  const facts = { accountId: "lincoln" };
+  const { events } = await engine.run(facts);
 
-  console.log(facts.accountId + ' is a ' + events.map(event => event.params.message))
+  console.log(
+    facts.accountId + " is a " + events.map((event) => event.params.message),
+  );
 }
-start()
+start();
 
 /*
  * OUTPUT:

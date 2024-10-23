@@ -1,6 +1,6 @@
-'use strict'
+"use strict";
 
-import Operator from './operator'
+import Operator from "./operator";
 
 export default class OperatorDecorator {
   /**
@@ -10,13 +10,13 @@ export default class OperatorDecorator {
    * @param {function}  [factValueValidator] - optional validator for asserting the data type of the fact
    * @returns {OperatorDecorator} - instance
    */
-  constructor (name, cb, factValueValidator) {
-    this.name = String(name)
-    if (!name) throw new Error('Missing decorator name')
-    if (typeof cb !== 'function') throw new Error('Missing decorator callback')
-    this.cb = cb
-    this.factValueValidator = factValueValidator
-    if (!this.factValueValidator) this.factValueValidator = () => true
+  constructor(name, cb, factValueValidator) {
+    this.name = String(name);
+    if (!name) throw new Error("Missing decorator name");
+    if (typeof cb !== "function") throw new Error("Missing decorator callback");
+    this.cb = cb;
+    this.factValueValidator = factValueValidator;
+    if (!this.factValueValidator) this.factValueValidator = () => true;
   }
 
   /**
@@ -24,14 +24,14 @@ export default class OperatorDecorator {
    * @param   {Operator} operator - fact result
    * @returns {Operator} - whether the values pass the operator test
    */
-  decorate (operator) {
-    const next = operator.evaluate.bind(operator)
+  decorate(operator) {
+    const next = operator.evaluate.bind(operator);
     return new Operator(
-        `${this.name}:${operator.name}`,
-        (factValue, jsonValue) => {
-          return this.cb(factValue, jsonValue, next)
-        },
-        this.factValueValidator
-    )
+      `${this.name}:${operator.name}`,
+      (factValue, jsonValue) => {
+        return this.cb(factValue, jsonValue, next);
+      },
+      this.factValueValidator,
+    );
   }
 }
