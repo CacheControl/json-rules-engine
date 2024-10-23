@@ -1,4 +1,4 @@
-'use strict'
+"use strict";
 /*
  * This is an advanced example that demonstrates facts with dependencies
  * on other facts.  In addition, it demonstrates facts that load data asynchronously
@@ -11,15 +11,15 @@
  *   DEBUG=json-rules-engine node ./examples/04-fact-dependency.js
  */
 
-require('colors')
-const { Engine } = require('json-rules-engine')
-const accountClient = require('./support/account-api-client')
+require("colors");
+const { Engine } = require("json-rules-engine");
+const accountClient = require("./support/account-api-client");
 
-async function start () {
+async function start() {
   /**
    * Setup a new engine
    */
-  const engine = new Engine()
+  const engine = new Engine();
 
   /**
    * Rule for identifying microsoft employees that have been terminated.
@@ -28,21 +28,24 @@ async function start () {
    */
   const microsoftRule = {
     conditions: {
-      all: [{
-        fact: 'account-information',
-        operator: 'equal',
-        value: 'microsoft',
-        path: '$.company'
-      }, {
-        fact: 'account-information',
-        operator: 'equal',
-        value: 'terminated',
-        path: '$.status'
-      }]
+      all: [
+        {
+          fact: "account-information",
+          operator: "equal",
+          value: "microsoft",
+          path: "$.company",
+        },
+        {
+          fact: "account-information",
+          operator: "equal",
+          value: "terminated",
+          path: "$.status",
+        },
+      ],
     },
-    event: { type: 'microsoft-terminated-employees' }
-  }
-  engine.addRule(microsoftRule)
+    event: { type: "microsoft-terminated-employees" },
+  };
+  engine.addRule(microsoftRule);
 
   /**
    * Rule for identifying accounts older than 5 years
@@ -51,82 +54,97 @@ async function start () {
    */
   const tenureRule = {
     conditions: {
-      all: [{
-        fact: 'employee-tenure',
-        operator: 'greaterThanInclusive',
-        value: 5,
-        params: {
-          unit: 'years'
-        }
-      }]
+      all: [
+        {
+          fact: "employee-tenure",
+          operator: "greaterThanInclusive",
+          value: 5,
+          params: {
+            unit: "years",
+          },
+        },
+      ],
     },
-    event: { type: 'five-year-tenure' }
-  }
-  engine.addRule(tenureRule)
+    event: { type: "five-year-tenure" },
+  };
+  engine.addRule(tenureRule);
 
   /**
    * Register listeners with the engine for rule success and failure
    */
-  let facts
+  let facts;
   engine
-    .on('success', event => {
-      console.log(facts.accountId + ' DID '.green + 'meet conditions for the ' + event.type.underline + ' rule.')
+    .on("success", (event) => {
+      console.log(
+        facts.accountId +
+          " DID ".green +
+          "meet conditions for the " +
+          event.type.underline +
+          " rule.",
+      );
     })
-    .on('failure', event => {
-      console.log(facts.accountId + ' did ' + 'NOT'.red + ' meet conditions for the ' + event.type.underline + ' rule.')
-    })
+    .on("failure", (event) => {
+      console.log(
+        facts.accountId +
+          " did " +
+          "NOT".red +
+          " meet conditions for the " +
+          event.type.underline +
+          " rule.",
+      );
+    });
 
   /**
    * 'account-information' fact executes an api call and retrieves account data
    * - Demonstrates facts called only by other facts and never mentioned directly in a rule
    */
-  engine.addFact('account-information', (params, almanac) => {
-    return almanac.factValue('accountId')
-      .then(accountId => {
-        return accountClient.getAccountInformation(accountId)
-      })
-  })
+  engine.addFact("account-information", (params, almanac) => {
+    return almanac.factValue("accountId").then((accountId) => {
+      return accountClient.getAccountInformation(accountId);
+    });
+  });
 
   /**
    * 'employee-tenure' fact retrieves account-information, and computes the duration of employment
    * since the account was created using 'accountInformation.createdAt'
    */
-  engine.addFact('employee-tenure', (params, almanac) => {
-    return almanac.factValue('account-information')
-      .then(accountInformation => {
-        const created = new Date(accountInformation.createdAt)
-        const now = new Date()
+  engine.addFact("employee-tenure", (params, almanac) => {
+    return almanac
+      .factValue("account-information")
+      .then((accountInformation) => {
+        const created = new Date(accountInformation.createdAt);
+        const now = new Date();
         switch (params.unit) {
-          case 'years':
-            return now.getFullYear() - created.getFullYear()
-          case 'milliseconds':
+          case "years":
+            return now.getFullYear() - created.getFullYear();
+          case "milliseconds":
           default:
-            return now.getTime() - created.getTime()
+            return now.getTime() - created.getTime();
         }
       })
-      .catch(console.log)
-  })
+      .catch(console.log);
+  });
 
   // first run, using washington's facts
-  console.log('-- FIRST RUN --')
-  facts = { accountId: 'washington' }
-  await engine.run(facts)
+  console.log("-- FIRST RUN --");
+  facts = { accountId: "washington" };
+  await engine.run(facts);
 
-  console.log('-- SECOND RUN --')
+  console.log("-- SECOND RUN --");
   // second run, using jefferson's facts; facts & evaluation are independent of the first run
-  facts = { accountId: 'jefferson' }
-  await engine.run(facts)
+  facts = { accountId: "jefferson" };
+  await engine.run(facts);
 
   /*
-  * NOTES:
-  *
-  * - Notice that although a total of 6 conditions were evaluated using
-  *   account-information (3 rule conditions x 2 accounts), the account-information api call
-  *   is only called twice -- once for each account.  This is due to the base fact caching the results
-  *   for washington and jefferson after the initial data load.
-  */
+   * NOTES:
+   *
+   * - Notice that although a total of 6 conditions were evaluated using
+   *   account-information (3 rule conditions x 2 accounts), the account-information api call
+   *   is only called twice -- once for each account.  This is due to the base fact caching the results
+   *   for washington and jefferson after the initial data load.
+   */
 }
-start()
+start();
 
 /*
  * OUTPUT:

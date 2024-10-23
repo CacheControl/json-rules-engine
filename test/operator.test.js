@@ -1,31 +1,31 @@
-'use strict'
+"use strict";
 
-import { Operator } from '../src/index'
+import { Operator } from "../src/index";
 
-describe('Operator', () => {
-  describe('constructor()', () => {
-    function subject (...args) {
-      return new Operator(...args)
+describe("Operator", () => {
+  describe("constructor()", () => {
+    function subject(...args) {
+      return new Operator(...args);
     }
 
-    it('adds the operator', () => {
-      const operator = subject('startsWithLetter', (factValue, jsonValue) => {
-        return factValue[0] === jsonValue
-      })
-      expect(operator.name).to.equal('startsWithLetter')
-      expect(operator.cb).to.an.instanceof(Function)
-    })
+    it("adds the operator", () => {
+      const operator = subject("startsWithLetter", (factValue, jsonValue) => {
+        return factValue[0] === jsonValue;
+      });
+      expect(operator.name).to.equal("startsWithLetter");
+      expect(operator.cb).to.an.instanceof(Function);
+    });
 
-    it('operator name', () => {
+    it("operator name", () => {
       expect(() => {
-        subject()
-      }).to.throw(/Missing operator name/)
-    })
+        subject();
+      }).to.throw(/Missing operator name/);
+    });
 
-    it('operator definition', () => {
+    it("operator definition", () => {
       expect(() => {
-        subject('startsWithLetter')
-      }).to.throw(/Missing operator callback/)
-    })
-  })
-})
+        subject("startsWithLetter");
+      }).to.throw(/Missing operator callback/);
+    });
+  });
+});

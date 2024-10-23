@@ -1,13 +1,13 @@
-'use strict'
+"use strict";
 
-import Fact from './fact'
-import { UndefinedFactError } from './errors'
-import debug from './debug'
+import Fact from "./fact";
+import { UndefinedFactError } from "./errors";
+import debug from "./debug";
 
-import { JSONPath } from 'jsonpath-plus'
+import { JSONPath } from "jsonpath-plus";
 
-function defaultPathResolver (value, path) {
-  return JSONPath({ path, json: value, wrap: false })
+function defaultPathResolver(value, path) {
+  return JSONPath({ path, json: value, wrap: false });
 }
 
 /**
@@ -16,45 +16,45 @@ function defaultPathResolver (value, path) {
  * A new almanac is used for every engine run()
  */
 export default class Almanac {
-  constructor (options = {}) {
-    this.factMap = new Map()
-    this.factResultsCache = new Map() // { cacheKey:  Promise<factValu> }
-    this.allowUndefinedFacts = Boolean(options.allowUndefinedFacts)
-    this.pathResolver = options.pathResolver || defaultPathResolver
-    this.events = { success: [], failure: [] }
-    this.ruleResults = []
+  constructor(options = {}) {
+    this.factMap = new Map();
+    this.factResultsCache = new Map(); // { cacheKey:  Promise<factValu> }
+    this.allowUndefinedFacts = Boolean(options.allowUndefinedFacts);
+    this.pathResolver = options.pathResolver || defaultPathResolver;
+    this.events = { success: [], failure: [] };
+    this.ruleResults = [];
   }
 
   /**
    * Adds a success event
    * @param {Object} event
    */
-  addEvent (event, outcome) {
-    if (!outcome) throw new Error('outcome required: "success" | "failure"]')
-    this.events[outcome].push(event)
+  addEvent(event, outcome) {
+    if (!outcome) throw new Error('outcome required: "success" | "failure"]');
+    this.events[outcome].push(event);
   }
 
   /**
    * retrieve successful events
    */
-  getEvents (outcome = '') {
-    if (outcome) return this.events[outcome]
-    return this.events.success.concat(this.events.failure)
+  getEvents(outcome = "") {
+    if (outcome) return this.events[outcome];
+    return this.events.success.concat(this.events.failure);
   }
 
   /**
    * Adds a rule result
    * @param {Object} event
    */
-  addResult (ruleResult) {
-    this.ruleResults.push(ruleResult)
+  addResult(ruleResult) {
+    this.ruleResults.push(ruleResult);
   }
 
   /**
    * retrieve successful events
    */
-  getResults () {
-    return this.ruleResults
+  getResults() {
+    return this.ruleResults;
   }
 
   /**
@@ -62,17 +62,17 @@ export default class Almanac {
    * @param  {String} factId
    * @return {Fact}
    */
-  _getFact (factId) {
-    return this.factMap.get(factId)
+  _getFact(factId) {
+    return this.factMap.get(factId);
   }
 
   /**
    * Registers fact with the almanac
    * @param {[type]} fact [description]
    */
-  _addConstantFact (fact) {
-    this.factMap.set(fact.id, fact)
-    this._setFactValue(fact, {}, fact.value)
+  _addConstantFact(fact) {
+    this.factMap.set(fact.id, fact);
+    this._setFactValue(fact, {}, fact.value);
   }
 
   /**
@@ -81,13 +81,13 @@ export default class Almanac {
    * @param {Object} params - values for differentiating this fact value from others, used for cache key
    * @param {Mixed} value - computed value
    */
-  _setFactValue (fact, params, value) {
-    const cacheKey = fact.getCacheKey(params)
-    const factValue = Promise.resolve(value)
+  _setFactValue(fact, params, value) {
+    const cacheKey = fact.getCacheKey(params);
+    const factValue = Promise.resolve(value);
     if (cacheKey) {
-      this.factResultsCache.set(cacheKey, factValue)
+      this.factResultsCache.set(cacheKey, factValue);
     }
-    return factValue
+    return factValue;
   }
 
   /**
@@ -96,21 +96,21 @@ export default class Almanac {
    * @param {function} definitionFunc - function to be called when computing the fact value for a given rule
    * @param {Object} options - options to initialize the fact with. used when "id" is not a Fact instance
    */
-  addFact (id, valueOrMethod, options) {
-    let factId = id
-    let fact
+  addFact(id, valueOrMethod, options) {
+    let factId = id;
+    let fact;
     if (id instanceof Fact) {
-      factId = id.id
-      fact = id
+      factId = id.id;
+      fact = id;
     } else {
-      fact = new Fact(id, valueOrMethod, options)
+      fact = new Fact(id, valueOrMethod, options);
     }
-    debug('almanac::addFact', { id: factId })
-    this.factMap.set(factId, fact)
+    debug("almanac::addFact", { id: factId });
+    this.factMap.set(factId, fact);
     if (fact.isConstant()) {
-      this._setFactValue(fact, {}, fact.value)
+      this._setFactValue(fact, {}, fact.value);
     }
-    return this
+    return this;
   }
 
   /**
@@ -119,10 +119,10 @@ export default class Almanac {
    * @param {String} fact - fact identifier
    * @param {Mixed} value - constant value of the fact
    */
-  addRuntimeFact (factId, value) {
-    debug('almanac::addRuntimeFact', { id: factId })
-    const fact = new Fact(factId, value)
-    return this._addConstantFact(fact)
+  addRuntimeFact(factId, value) {
+    debug("almanac::addRuntimeFact", { id: factId });
+    const fact = new Fact(factId, value);
+    return this._addConstantFact(fact);
   }
 
   /**
@@ -133,54 +133,70 @@ export default class Almanac {
    * @param  {String} path - object
    * @return {Promise} a promise which will resolve with the fact computation.
    */
-  factValue (factId, params = {}, path = '') {
-    let factValuePromise
-    const fact = this._getFact(factId)
+  factValue(factId, params = {}, path = "") {
+    let factValuePromise;
+    const fact = this._getFact(factId);
     if (fact === undefined) {
       if (this.allowUndefinedFacts) {
-        return Promise.resolve(undefined)
+        return Promise.resolve(undefined);
       } else {
-        return Promise.reject(new UndefinedFactError(`Undefined fact: ${factId}`))
+        return Promise.reject(
+          new UndefinedFactError(`Undefined fact: ${factId}`),
+        );
       }
     }
     if (fact.isConstant()) {
-      factValuePromise = Promise.resolve(fact.calculate(params, this))
+      factValuePromise = Promise.resolve(fact.calculate(params, this));
     } else {
-      const cacheKey = fact.getCacheKey(params)
-      const cacheVal = cacheKey && this.factResultsCache.get(cacheKey)
+      const cacheKey = fact.getCacheKey(params);
+      const cacheVal = cacheKey && this.factResultsCache.get(cacheKey);
       if (cacheVal) {
-        factValuePromise = Promise.resolve(cacheVal)
-        debug('almanac::factValue cache hit for fact', { id: factId })
+        factValuePromise = Promise.resolve(cacheVal);
+        debug("almanac::factValue cache hit for fact", { id: factId });
       } else {
-        debug('almanac::factValue cache miss, calculating', { id: factId })
-        factValuePromise = this._setFactValue(fact, params, fact.calculate(params, this))
+        debug("almanac::factValue cache miss, calculating", { id: factId });
+        factValuePromise = this._setFactValue(
+          fact,
+          params,
+          fact.calculate(params, this),
+        );
       }
     }
     if (path) {
-      debug('condition::evaluate extracting object', { property: path })
-      return factValuePromise
-        .then(factValue => {
-          if (factValue != null && typeof factValue === 'object') {
-            const pathValue = this.pathResolver(factValue, path)
-            debug('condition::evaluate extracting object', { property: path, received: pathValue })
-            return pathValue
-          } else {
-            debug('condition::evaluate could not compute object path of non-object', { path, factValue, type: typeof factValue })
-            return factValue
-          }
-        })
+      debug("condition::evaluate extracting object", { property: path });
+      return factValuePromise.then((factValue) => {
+        if (factValue != null && typeof factValue === "object") {
+          const pathValue = this.pathResolver(factValue, path);
+          debug("condition::evaluate extracting object", {
+            property: path,
+            received: pathValue,
+          });
+          return pathValue;
+        } else {
+          debug(
+            "condition::evaluate could not compute object path of non-object",
+            { path, factValue, type: typeof factValue },
+          );
+          return factValue;
+        }
+      });
     }
 
-    return factValuePromise
+    return factValuePromise;
   }
 
   /**
    * Interprets value as either a primitive, or if a fact, retrieves the fact value
    */
-  getValue (value) {
-    if (value != null && typeof value === 'object' && Object.prototype.hasOwnProperty.call(value, 'fact')) { // value = { fact: 'xyz' }
-      return this.factValue(value.fact, value.params, value.path)
+  getValue(value) {
+    if (
+      value != null &&
+      typeof value === "object" &&
+      Object.prototype.hasOwnProperty.call(value, "fact")
+    ) {
+      // value = { fact: 'xyz' }
+      return this.factValue(value.fact, value.params, value.path);
     }
-    return Promise.resolve(value)
+    return Promise.resolve(value);
   }
 }

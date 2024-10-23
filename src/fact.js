@@ -1,6 +1,6 @@
-'use strict'
+"use strict";
 
-import hash from 'hash-it'
+import hash from "hash-it";
 
 class Fact {
   /**
@@ -11,34 +11,34 @@ class Fact {
    * @param  {primitive|function} valueOrMethod - constant primitive, or method to call when computing the fact's value
    * @return {Fact}
    */
-  constructor (id, valueOrMethod, options) {
-    this.id = id
-    const defaultOptions = { cache: true }
-    if (typeof options === 'undefined') {
-      options = defaultOptions
+  constructor(id, valueOrMethod, options) {
+    this.id = id;
+    const defaultOptions = { cache: true };
+    if (typeof options === "undefined") {
+      options = defaultOptions;
     }
-    if (typeof valueOrMethod !== 'function') {
-      this.value = valueOrMethod
-      this.type = this.constructor.CONSTANT
+    if (typeof valueOrMethod !== "function") {
+      this.value = valueOrMethod;
+      this.type = this.constructor.CONSTANT;
     } else {
-      this.calculationMethod = valueOrMethod
-      this.type = this.constructor.DYNAMIC
+      this.calculationMethod = valueOrMethod;
+      this.type = this.constructor.DYNAMIC;
     }
 
-    if (!this.id) throw new Error('factId required')
+    if (!this.id) throw new Error("factId required");
 
-    this.priority = parseInt(options.priority || 1, 10)
-    this.options = Object.assign({}, defaultOptions, options)
-    this.cacheKeyMethod = this.defaultCacheKeys
-    return this
+    this.priority = parseInt(options.priority || 1, 10);
+    this.options = Object.assign({}, defaultOptions, options);
+    this.cacheKeyMethod = this.defaultCacheKeys;
+    return this;
   }
 
-  isConstant () {
-    return this.type === this.constructor.CONSTANT
+  isConstant() {
+    return this.type === this.constructor.CONSTANT;
   }
 
-  isDynamic () {
-    return this.type === this.constructor.DYNAMIC
+  isDynamic() {
+    return this.type === this.constructor.DYNAMIC;
   }
 
   /**
@@ -47,12 +47,12 @@ class Fact {
    * @param  {Almanac} almanac
    * @return {any} calculation method results
    */
-  calculate (params, almanac) {
+  calculate(params, almanac) {
     // if constant fact w/set value, return immediately
-    if (Object.prototype.hasOwnProperty.call(this, 'value')) {
-      return this.value
+    if (Object.prototype.hasOwnProperty.call(this, "value")) {
+      return this.value;
     }
-    return this.calculationMethod(params, almanac)
+    return this.calculationMethod(params, almanac);
   }
 
   /**
@@ -60,8 +60,8 @@ class Fact {
    * @param  {object} obj - properties to generate a hash key from
    * @return {string} MD5 string based on the hash'd object
    */
-  static hashFromObject (obj) {
-    return hash(obj)
+  static hashFromObject(obj) {
+    return hash(obj);
   }
 
   /**
@@ -72,8 +72,8 @@ class Fact {
    * @param  {object} params - parameters passed to fact calcution method
    * @return {object} id + params
    */
-  defaultCacheKeys (id, params) {
-    return { params, id }
+  defaultCacheKeys(id, params) {
+    return { params, id };
   }
 
   /**
@@ -82,16 +82,16 @@ class Fact {
    * @param  {object} params - parameters that would be passed to the computation method
    * @return {string} cache key
    */
-  getCacheKey (params) {
+  getCacheKey(params) {
     if (this.options.cache === true) {
-      const cacheProperties = this.cacheKeyMethod(this.id, params)
-      const hash = Fact.hashFromObject(cacheProperties)
-      return hash
+      const cacheProperties = this.cacheKeyMethod(this.id, params);
+      const hash = Fact.hashFromObject(cacheProperties);
+      return hash;
     }
   }
 }
 
-Fact.CONSTANT = 'CONSTANT'
-Fact.DYNAMIC = 'DYNAMIC'
+Fact.CONSTANT = "CONSTANT";
+Fact.DYNAMIC = "DYNAMIC";
 
-export default Fact
+export default Fact;

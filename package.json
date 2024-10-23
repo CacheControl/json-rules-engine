@@ -7,8 +7,8 @@
   "scripts": {
     "test": "mocha && npm run lint --silent && npm run test:types",
     "test:types": "tsd",
-    "lint": "standard --verbose --env mocha | snazzy || true",
-    "lint:fix": "standard --fix --env mocha",
+    "lint": "eslint",
+    "format": "prettier -w .",
     "prepublishOnly": "npm run build",
     "build": "babel --stage 1 -d dist/ src/",
     "watch": "babel --watch --stage 1 -d dist/ src",
@@ -25,25 +25,6 @@
   ],
   "publishConfig": {
     "tag": "next"
-  },
-  "standard": {
-    "parser": "babel-eslint",
-    "ignore": [
-      "/dist",
-      "/examples/node_modules"
-    ],
-    "globals": [
-      "context",
-      "xcontext",
-      "describe",
-      "xdescribe",
-      "it",
-      "xit",
-      "before",
-      "beforeEach",
-      "expect",
-      "factories"
-    ]
   },
   "mocha": {
     "require": [
@@ -67,6 +48,7 @@
   },
   "homepage": "https://github.com/cachecontrol/json-rules-engine",
   "devDependencies": {
+    "@eslint/js": "^9.13.0",
     "babel-cli": "6.26.0",
     "babel-core": "6.26.3",
     "babel-eslint": "10.1.0",
@@ -79,14 +61,16 @@
     "chai-as-promised": "^7.1.1",
     "colors": "~1.4.0",
     "dirty-chai": "2.0.1",
+    "eslint": "^9.13.0",
+    "globals": "^15.11.0",
     "lodash": "4.17.21",
     "mocha": "^8.4.0",
     "perfy": "^1.1.5",
+    "prettier": "^3.3.3",
     "sinon": "^11.1.1",
     "sinon-chai": "^3.7.0",
-    "snazzy": "^9.0.0",
-    "standard": "^16.0.3",
-    "tsd": "^0.17.0"
+    "tsd": "^0.17.0",
+    "typescript-eslint": "^8.11.0"
   },
   "dependencies": {
     "clone": "^2.1.2",

@@ -14,17 +14,17 @@ import rulesEngine, {
   Rule,
   RuleProperties,
   RuleResult,
-  RuleSerializable
+  RuleSerializable,
 } from "../";
 
 // setup basic fixture data
 const ruleProps: RuleProperties = {
   conditions: {
-    all: []
+    all: [],
   },
   event: {
-    type: "message"
-  }
+    type: "message",
+  },
 };
 
 const complexRuleProps: RuleProperties = {
@@ -33,25 +33,25 @@ const complexRuleProps: RuleProperties = {
       {
         any: [
           {
-            all: []
+            all: [],
           },
           {
             fact: "foo",
             operator: "equal",
-            value: "bar"
-          }
-        ]
-      }
-    ]
+            value: "bar",
+          },
+        ],
+      },
+    ],
   },
   event: {
-    type: "message"
-  }
+    type: "message",
+  },
 };
 
 // path resolver
-const pathResolver = function(value: object, path: string): any {}
-expectType<PathResolver>(pathResolver)
+const pathResolver = function (value: object, path: string): any {};
+expectType<PathResolver>(pathResolver);
 
 // default export test
 expectType<Engine>(rulesEngine([ruleProps]));
@@ -74,32 +74,32 @@ expectType<RuleSerializable>(rule.toJSON(false));
 // Operator tests
 const operatorEvaluator: OperatorEvaluator<number, number> = (
   a: number,
-  b: number
+  b: number,
 ) => a === b;
-expectType<void>(
-  engine.addOperator("test", operatorEvaluator)
-);
+expectType<void>(engine.addOperator("test", operatorEvaluator));
 const operator: Operator = new Operator(
   "test",
   operatorEvaluator,
-  (num: number) => num > 0
+  (num: number) => num > 0,
 );
 expectType<void>(engine.addOperator(operator));
 expectType<boolean>(engine.removeOperator(operator));
 
 // Operator Decorator tests
-const operatorDecoratorEvaluator: OperatorDecoratorEvaluator<number[], number, number, number> = (
-  a: number[],
-  b: number,
-  next: OperatorEvaluator<number, number>
-) => next(a[0], b);
+const operatorDecoratorEvaluator: OperatorDecoratorEvaluator<
+  number[],
+  number,
+  number,
+  number
+> = (a: number[], b: number, next: OperatorEvaluator<number, number>) =>
+  next(a[0], b);
 expectType<void>(
-  engine.addOperatorDecorator("first", operatorDecoratorEvaluator)
+  engine.addOperatorDecorator("first", operatorDecoratorEvaluator),
 );
 const operatorDecorator: OperatorDecorator = new OperatorDecorator(
   "first",
   operatorDecoratorEvaluator,
-  (a: number[]) => a.length > 0
+  (a: number[]) => a.length > 0,
 );
 expectType<void>(engine.addOperatorDecorator(operatorDecorator));
 expectType<boolean>(engine.removeOperatorDecorator(operatorDecorator));
@@ -108,22 +108,22 @@ expectType<boolean>(engine.removeOperatorDecorator(operatorDecorator));
 const fact = new Fact<number>("test-fact", 3);
 const dynamicFact = new Fact<number[]>("test-fact", () => [42]);
 expectType<Engine>(
-  engine.addFact<string>("test-fact", "value", { priority: 10 })
+  engine.addFact<string>("test-fact", "value", { priority: 10 }),
 );
 expectType<Engine>(engine.addFact(fact));
 expectType<Engine>(engine.addFact(dynamicFact));
 expectType<boolean>(engine.removeFact(fact));
 expectType<Fact<string>>(engine.getFact<string>("test"));
-engine.on('success', (event, almanac, ruleResult) => {
-  expectType<Event>(event)
-  expectType<Almanac>(almanac)
-  expectType<RuleResult>(ruleResult)
-})
-engine.on<{ foo: Array<string> }>('foo', (event, almanac, ruleResult) => {
-  expectType<{ foo: Array<string> }>(event)
-  expectType<Almanac>(almanac)
-  expectType<RuleResult>(ruleResult)
-})
+engine.on("success", (event, almanac, ruleResult) => {
+  expectType<Event>(event);
+  expectType<Almanac>(almanac);
+  expectType<RuleResult>(ruleResult);
+});
+engine.on<{ foo: Array<string> }>("foo", (event, almanac, ruleResult) => {
+  expectType<{ foo: Array<string> }>(event);
+  expectType<Almanac>(almanac);
+  expectType<RuleResult>(ruleResult);
+});
 
 // Run the Engine
 expectType<Promise<EngineResult>>(engine.run({ displayMessage: true }));
