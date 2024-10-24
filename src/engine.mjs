@@ -1,14 +1,12 @@
-"use strict";
-
-import Fact from "./fact";
-import Rule from "./rule";
-import Almanac from "./almanac";
+import Fact from "./fact.mjs";
+import Rule from "./rule.mjs";
+import Almanac from "./almanac.mjs";
 import EventEmitter from "eventemitter2";
-import defaultOperators from "./engine-default-operators";
-import defaultDecorators from "./engine-default-operator-decorators";
-import debug from "./debug";
-import Condition from "./condition";
-import OperatorMap from "./operator-map";
+import defaultOperators from "./engine-default-operators.mjs";
+import defaultDecorators from "./engine-default-operator-decorators.mjs";
+import debug from "./debug.mjs";
+import Condition from "./condition.mjs";
+import OperatorMap from "./operator-map.mjs";
 
 export const READY = "READY";
 export const RUNNING = "RUNNING";

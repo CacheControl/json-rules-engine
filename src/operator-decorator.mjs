@@ -1,6 +1,4 @@
-"use strict";
-
-import Operator from "./operator";
+import Operator from "./operator.mjs";
 
 export default class OperatorDecorator {
   /**

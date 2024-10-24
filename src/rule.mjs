@@ -1,8 +1,6 @@
-"use strict";
-
-import Condition from "./condition";
-import RuleResult from "./rule-result";
-import debug from "./debug";
+import Condition from "./condition.mjs";
+import RuleResult from "./rule-result.mjs";
+import debug from "./debug.mjs";
 import deepClone from "clone";
 import EventEmitter from "eventemitter2";
 

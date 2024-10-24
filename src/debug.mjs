@@ -12,7 +12,7 @@ function createDebug() {
     ) {
       return console.debug.bind(console);
     }
-  } catch (ex) {
+  } catch (_error) {
     // Do nothing
   }
   return () => {};

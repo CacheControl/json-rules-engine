@@ -1,6 +1,4 @@
-"use strict";
-
-import debug from "./debug";
+import debug from "./debug.mjs";
 
 export default class Condition {
   constructor(properties) {

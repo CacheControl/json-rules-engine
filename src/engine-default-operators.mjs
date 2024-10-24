@@ -1,6 +1,4 @@
-"use strict";
-
-import Operator from "./operator";
+import Operator from "./operator.mjs";
 
 const Operators = [];
 Operators.push(new Operator("equal", (a, b) => a === b));

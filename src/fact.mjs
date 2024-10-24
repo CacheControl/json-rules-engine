@@ -1,5 +1,3 @@
-"use strict";
-
 import hash from "hash-it";
 
 class Fact {
