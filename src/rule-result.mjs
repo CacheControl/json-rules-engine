@@ -1,5 +1,3 @@
-"use strict";
-
 import deepClone from "clone";
 
 export default class RuleResult {

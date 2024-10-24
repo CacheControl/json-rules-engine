@@ -1,8 +1,6 @@
-"use strict";
-
-import Operator from "./operator";
-import OperatorDecorator from "./operator-decorator";
-import debug from "./debug";
+import Operator from "./operator.mjs";
+import OperatorDecorator from "./operator-decorator.mjs";
+import debug from "./debug.mjs";
 
 export default class OperatorMap {
   constructor() {

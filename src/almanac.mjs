@@ -1,8 +1,6 @@
-"use strict";
-
-import Fact from "./fact";
-import { UndefinedFactError } from "./errors";
-import debug from "./debug";
+import Fact from "./fact.mjs";
+import { UndefinedFactError } from "./errors.mjs";
+import debug from "./debug.mjs";
 
 import { JSONPath } from "jsonpath-plus";
 

@@ -1,6 +1,4 @@
-"use strict";
-
-import OperatorDecorator from "./operator-decorator";
+import OperatorDecorator from "./operator-decorator.mjs";
 
 const OperatorDecorators = [];
 
