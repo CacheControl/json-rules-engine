@@ -6,6 +6,9 @@
   "module": "dist/index.js",
   "types": "types/index.d.ts",
   "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "test": "vitest --typecheck",
     "lint": "eslint",
