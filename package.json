@@ -1,6 +1,6 @@
 {
   "name": "json-rules-engine",
-  "version": "7.0.0-alpha.1",
+  "version": "7.0.0",
   "description": "Rules Engine expressed in simple json",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -26,9 +26,6 @@
     "engine",
     "rules engine"
   ],
-  "publishConfig": {
-    "tag": "next"
-  },
   "standard": {
     "parser": "babel-eslint",
     "ignore": [

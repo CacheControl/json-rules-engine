@@ -5,7 +5,7 @@ name: Deploy Package
 
 on:
   push:
-    branches: [ master, v7 ]
+    branches: [ master, v6 ]
 
 jobs:
   build:
