@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 export interface AlmanacOptions {
   allowUndefinedFacts?: boolean;
   pathResolver?: PathResolver;
@@ -22,7 +24,7 @@ export interface EngineResult {
 
 export default function engineFactory(
   rules: Array<RuleProperties>,
-  options?: EngineOptions
+  options?: EngineOptions,
 ): Engine;
 
 export class Engine {
@@ -38,26 +40,32 @@ export class Engine {
   addOperator(operator: Operator): void;
   addOperator<A, B>(
     operatorName: string,
-    callback: OperatorEvaluator<A, B>
+    callback: OperatorEvaluator<A, B>,
   ): void;
   removeOperator(operator: Operator | string): boolean;
 
   addOperatorDecorator(decorator: OperatorDecorator): void;
-  addOperatorDecorator<A, B, NextA, NextB>(decoratorName: string, callback: OperatorDecoratorEvaluator<A, B, NextA, NextB>): void;
+  addOperatorDecorator<A, B, NextA, NextB>(
+    decoratorName: string,
+    callback: OperatorDecoratorEvaluator<A, B, NextA, NextB>,
+  ): void;
   removeOperatorDecorator(decorator: OperatorDecorator | string): boolean;
 
   addFact<T>(fact: Fact<T>): this;
   addFact<T>(
     id: string,
     valueCallback: DynamicFactCallback<T> | T,
-    options?: FactOptions
+    options?: FactOptions,
   ): this;
   removeFact(factOrId: string | Fact): boolean;
   getFact<T>(factId: string): Fact<T>;
 
   on<T = Event>(eventName: string, handler: EventHandler<T>): this;
 
-  run(facts?: Record<string, any>, runOptions?: RunOptions): Promise<EngineResult>;
+  run(
+    facts?: Record<string, any>,
+    runOptions?: RunOptions,
+  ): Promise<EngineResult>;
   stop(): this;
 }
 
@@ -70,21 +78,30 @@ export class Operator<A = unknown, B = unknown> {
   constructor(
     name: string,
     evaluator: OperatorEvaluator<A, B>,
-    validator?: (factValue: A) => boolean
+    validator?: (factValue: A) => boolean,
   );
 }
 
 export interface OperatorDecoratorEvaluator<A, B, NextA, NextB> {
-  (factValue: A, compareToValue: B, next: OperatorEvaluator<NextA, NextB>): boolean
+  (
+    factValue: A,
+    compareToValue: B,
+    next: OperatorEvaluator<NextA, NextB>,
+  ): boolean;
 }
 
-export class OperatorDecorator<A = unknown, B = unknown, NextA = unknown, NextB = unknown> {
+export class OperatorDecorator<
+  A = unknown,
+  B = unknown,
+  NextA = unknown,
+  NextB = unknown,
+> {
   public name: string;
   constructor(
     name: string,
     evaluator: OperatorDecoratorEvaluator<A, B, NextA, NextB>,
-    validator?: (factValue: A) => boolean
-  )
+    validator?: (factValue: A) => boolean,
+  );
 }
 
 export class Almanac {
@@ -92,13 +109,13 @@ export class Almanac {
   factValue<T>(
     factId: string,
     params?: Record<string, any>,
-    path?: string
+    path?: string,
   ): Promise<T>;
   addFact<T>(fact: Fact<T>): this;
   addFact<T>(
     id: string,
     valueCallback: DynamicFactCallback<T> | T,
-    options?: FactOptions
+    options?: FactOptions,
   ): this;
   addRuntimeFact(factId: string, value: any): void;
 }
@@ -110,7 +127,7 @@ export type FactOptions = {
 
 export type DynamicFactCallback<T = unknown> = (
   params: Record<string, any>,
-  almanac: Almanac
+  almanac: Almanac,
 ) => T;
 
 export class Fact<T = unknown> {
@@ -123,7 +140,7 @@ export class Fact<T = unknown> {
   constructor(
     id: string,
     value: T | DynamicFactCallback<T>,
-    options?: FactOptions
+    options?: FactOptions,
   );
 }
 
@@ -137,7 +154,7 @@ export type PathResolver = (value: object, path: string) => any;
 export type EventHandler<T = Event> = (
   event: T,
   almanac: Almanac,
-  ruleResult: RuleResult
+  ruleResult: RuleResult,
 ) => void;
 
 export interface RuleProperties {
@@ -172,7 +189,7 @@ export class Rule implements RuleProperties {
   setPriority(priority: number): this;
   toJSON(): string;
   toJSON<T extends boolean>(
-    stringify: T
+    stringify: T,
   ): T extends true ? string : RuleSerializable;
 }
 

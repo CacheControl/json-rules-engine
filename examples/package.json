@@ -5,11 +5,13 @@
   "main": "",
   "private": true,
   "scripts": {
-    "all": "for i in *.js; do node $i; done;"
+    "all": "for i in *.mts; do tsx $i; done;"
   },
   "author": "Cache Hamm <cache.hamm@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "json-rules-engine": "../"
+    "colors": "^1.4.0",
+    "json-rules-engine": "../",
+    "tsx": "^4.19.1"
   }
 }

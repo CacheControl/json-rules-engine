@@ -1,0 +1,70 @@
+import engineFactory, { Fact, Rule } from "../src/index.mjs";
+import { describe, it, expect } from "vitest";
+import ruleFactory from "./support/rule-factory.mjs";
+
+describe("Engine: custom properties", () => {
+  let engine;
+  const event = { type: "generic" };
+
+  describe("all conditions", () => {
+    it("preserves custom properties set on fact", () => {
+      engine = engineFactory();
+      const fact = new Fact("age", 12);
+      fact.customId = "uuid";
+      engine.addFact(fact);
+      expect(engine.facts.get("age")).toHaveProperty("customId");
+      expect(engine.facts.get("age").customId).toBe(fact.customId);
+    });
+
+    describe("conditions", () => {
+      it("preserves custom properties set on boolean conditions", () => {
+        engine = engineFactory();
+        const conditions = {
+          customId: "uuid1",
+          all: [
+            {
+              fact: "age",
+              operator: "greaterThanInclusive",
+              value: 18,
+            },
+          ],
+        };
+        const rule = ruleFactory({ conditions, event });
+        engine.addRule(rule);
+        expect(engine.rules[0].conditions).toHaveProperty("customId");
+      });
+
+      it("preserves custom properties set on regular conditions", () => {
+        engine = engineFactory();
+        const conditions = {
+          all: [
+            {
+              customId: "uuid",
+              fact: "age",
+              operator: "greaterThanInclusive",
+              value: 18,
+            },
+          ],
+        };
+        const rule = ruleFactory({ conditions, event });
+        engine.addRule(rule);
+        expect(engine.rules[0].conditions.all[0]).toHaveProperty("customId");
+        expect(engine.rules[0].conditions.all[0].customId).equal("uuid");
+      });
+    });
+
+    it("preserves custom properties set on regular conditions", () => {
+      engine = engineFactory();
+      const rule = new Rule();
+      const ruleProperties = ruleFactory();
+      rule
+        .setPriority(ruleProperties.priority)
+        .setConditions(ruleProperties.conditions)
+        .setEvent(ruleProperties.event);
+      rule.customId = "uuid";
+      engine.addRule(rule);
+      expect(engine.rules[0]).toHaveProperty("customId");
+      expect(engine.rules[0].customId).equal("uuid");
+    });
+  });
+});

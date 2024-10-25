@@ -1,20 +1,20 @@
 {
   "name": "json-rules-engine",
-  "version": "7.0.0",
+  "version": "8.0.0-alpha.1",
   "description": "Rules Engine expressed in simple json",
-  "main": "dist/index.js",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
   "types": "types/index.d.ts",
+  "type": "module",
   "engines": {
     "node": ">=18.0.0"
   },
   "scripts": {
-    "test": "mocha && npm run lint --silent && npm run test:types",
-    "test:types": "tsd",
-    "lint": "standard --verbose --env mocha | snazzy || true",
-    "lint:fix": "standard --fix --env mocha",
-    "prepublishOnly": "npm run build",
-    "build": "babel --stage 1 -d dist/ src/",
-    "watch": "babel --watch --stage 1 -d dist/ src",
+    "test": "vitest --typecheck",
+    "lint": "eslint",
+    "format": "prettier -w .",
+    "build": "tsup",
+    "watch": "tsup --watch",
     "examples": "./test/support/example_runner.sh"
   },
   "repository": {
@@ -26,36 +26,8 @@
     "engine",
     "rules engine"
   ],
-  "standard": {
-    "parser": "babel-eslint",
-    "ignore": [
-      "/dist",
-      "/examples/node_modules"
-    ],
-    "globals": [
-      "context",
-      "xcontext",
-      "describe",
-      "xdescribe",
-      "it",
-      "xit",
-      "before",
-      "beforeEach",
-      "expect",
-      "factories"
-    ]
-  },
-  "mocha": {
-    "require": [
-      "babel-core/register",
-      "babel-polyfill"
-    ],
-    "file": "./test/support/bootstrap.js",
-    "checkLeaks": true,
-    "recursive": true,
-    "globals": [
-      "expect"
-    ]
+  "publishConfig": {
+    "tag": "next"
   },
   "author": "Cache Hamm <cache.hamm@gmail.com>",
   "contributors": [
@@ -67,26 +39,17 @@
   },
   "homepage": "https://github.com/cachecontrol/json-rules-engine",
   "devDependencies": {
-    "babel-cli": "6.26.0",
-    "babel-core": "6.26.3",
-    "babel-eslint": "10.1.0",
-    "babel-loader": "8.2.2",
-    "babel-polyfill": "6.26.0",
-    "babel-preset-es2015": "~6.24.1",
-    "babel-preset-stage-0": "~6.24.1",
-    "babel-register": "6.26.0",
-    "chai": "^4.3.4",
-    "chai-as-promised": "^7.1.1",
-    "colors": "~1.4.0",
-    "dirty-chai": "2.0.1",
+    "@eslint/js": "^9.13.0",
+    "eslint": "^9.13.0",
+    "globals": "^15.11.0",
     "lodash": "4.17.21",
-    "mocha": "^8.4.0",
     "perfy": "^1.1.5",
-    "sinon": "^11.1.1",
-    "sinon-chai": "^3.7.0",
-    "snazzy": "^9.0.0",
-    "standard": "^16.0.3",
-    "tsd": "^0.17.0"
+    "prettier": "^3.3.3",
+    "tsd": "^0.17.0",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.11.0",
+    "vitest": "^2.1.3"
   },
   "dependencies": {
     "clone": "^2.1.2",
