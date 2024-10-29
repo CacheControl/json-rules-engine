@@ -76,7 +76,7 @@ async function start() {
 
   const { events } = await engine.run(facts);
 
-  events.map((event) => console.log(event.params!.message.red));
+  events.map((event) => console.log(`${event.params!.message}`.red));
 }
 start();
 /*

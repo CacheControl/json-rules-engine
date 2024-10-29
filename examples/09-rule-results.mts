@@ -8,7 +8,12 @@
  *   DEBUG=json-rules-engine node ./examples/09-rule-results.js
  */
 import "colors";
-import { Engine, NestedCondition, RuleResult } from "json-rules-engine";
+import {
+  Engine,
+  NestedCondition,
+  NestedConditionResult,
+  RuleResult,
+} from "json-rules-engine";
 
 async function start() {
   /**
@@ -48,14 +53,16 @@ async function start() {
       return console.log(`${message}`.green);
     }
     // if rule failed, iterate over each failed condition to determine why the student didn't qualify for athletics honor roll
-    const detail = (ruleResult.conditions as { all: NestedCondition[] }).all
-      .filter((condition) => !(condition as { result?: boolean }).result)
+    const detail = (
+      ruleResult.conditions as { all: NestedConditionResult[] }
+    ).all
+      .filter(({ result }) => !result)
       .map((condition) => {
-        switch ((condition as { operator?: string }).operator) {
+        switch (condition.operator) {
           case "equal":
-            return `was not an ${(condition as { fact?: string }).fact}`;
+            return `was not an ${condition.fact}`;
           case "greaterThanInclusive":
-            return `${(condition as { fact: string }).fact} of ${(condition as { factResult?: unknown }).factResult} was too low`;
+            return `${condition.fact} of ${condition.factResult} was too low`;
           default:
             return "";
         }
