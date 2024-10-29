@@ -50,7 +50,7 @@ async function start() {
   // engine.run() evaluates the rule using the facts provided
   const { events } = await engine.run(facts);
 
-  events.map((event) => console.log(event.params!.data.green));
+  events.map((event) => console.log(`${event.params!.data}`.green));
 }
 
 start();

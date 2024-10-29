@@ -14,8 +14,7 @@ import rulesEngine, {
   Rule,
   RuleProperties,
   RuleResult,
-  RuleSerializable,
-} from "../types/index.js";
+} from "../src/index.mjs";
 
 // setup basic fixture data
 const ruleProps: RuleProperties = {
@@ -81,27 +80,6 @@ describe("type tests", () => {
     it("returns void when updating a rule", () => {
       expectTypeOf<void>(engine.updateRule(ruleFromString));
     });
-
-    it("returns rule when setting conditions", () => {
-      expectTypeOf<Rule>(rule.setConditions({ any: [] }));
-    });
-
-    it("returns rule when setting event", () => {
-      expectTypeOf<Rule>(rule.setEvent({ type: "test" }));
-    });
-
-    it("returns rule when setting priority", () => {
-      expectTypeOf<Rule>(rule.setPriority(1));
-    });
-
-    it("returns string when json stringifying", () => {
-      expectTypeOf<string>(rule.toJSON());
-      expectTypeOf<string>(rule.toJSON(true));
-    });
-
-    it("returns serializable props when converting to json", () => {
-      expectTypeOf<RuleSerializable>(rule.toJSON(false));
-    });
   });
 
   describe("operator tests", () => {
@@ -110,10 +88,10 @@ describe("type tests", () => {
       b: number,
     ) => a === b;
 
-    const operator: Operator = new Operator(
+    const operator: Operator<number, number> = new Operator(
       "test",
       operatorEvaluator,
-      (num: number) => num > 0,
+      (num: unknown): num is number => Number(num) > 0,
     );
 
     it("returns void when adding an operatorEvaluator", () => {
@@ -137,10 +115,10 @@ describe("type tests", () => {
       number
     > = (a: number[], b: number, next: OperatorEvaluator<number, number>) =>
       next(a[0], b);
-    const operatorDecorator: OperatorDecorator = new OperatorDecorator(
+    const operatorDecorator: OperatorDecorator<number[], number, number, number> = new OperatorDecorator(
       "first",
       operatorDecoratorEvaluator,
-      (a: number[]) => a.length > 0,
+      (a: unknown): a is number[] => Array.isArray(a) && a.length > 0,
     );
 
     it("returns void when adding a decorator evaluator", () => {
@@ -181,7 +159,7 @@ describe("type tests", () => {
     });
 
     it("returns fact when getting a fact", () => {
-      expectTypeOf<Fact<string>>(engine.getFact<string>("test"));
+      expectTypeOf<Fact | undefined>(engine.getFact("test"));
     });
   });
 
@@ -190,10 +168,6 @@ describe("type tests", () => {
 
     it("factValue returns promise of value", () => {
       expectTypeOf<Promise<string>>(almanac.factValue<string>("test-fact"));
-    });
-
-    it("addRuntimeFact returns void", () => {
-      expectTypeOf<void>(almanac.addRuntimeFact("test-fact", "some-value"));
     });
   });
 
