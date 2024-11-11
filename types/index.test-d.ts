@@ -14,7 +14,11 @@ import rulesEngine, {
   Rule,
   RuleProperties,
   RuleResult,
-  RuleSerializable
+  RuleSerializable,
+  TopLevelConditionResult,
+  AnyConditionsResult,
+  AllConditionsResult,
+  NotConditionsResult
 } from "../";
 
 // setup basic fixture data
@@ -126,7 +130,20 @@ engine.on<{ foo: Array<string> }>('foo', (event, almanac, ruleResult) => {
 })
 
 // Run the Engine
-expectType<Promise<EngineResult>>(engine.run({ displayMessage: true }));
+const result = engine.run({ displayMessage: true })
+expectType<Promise<EngineResult>>(result);
+
+const topLevelConditionResult = result.then(r => r.results[0].conditions);
+expectType<Promise<TopLevelConditionResult>>(topLevelConditionResult)
+
+const topLevelAnyConditionsResult = topLevelConditionResult.then(r => (r as AnyConditionsResult).result);
+expectType<Promise<boolean | undefined>>(topLevelAnyConditionsResult)
+
+const topLevelAllConditionsResult = topLevelConditionResult.then(r => (r as AllConditionsResult).result);
+expectType<Promise<boolean | undefined>>(topLevelAllConditionsResult)
+
+const topLevelNotConditionsResult = topLevelConditionResult.then(r => (r as NotConditionsResult).result);
+expectType<Promise<boolean | undefined>>(topLevelNotConditionsResult)
 
 // Alamanac tests
 const almanac: Almanac = (await engine.run()).almanac;
