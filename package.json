@@ -1,6 +1,6 @@
 {
   "name": "json-rules-engine",
-  "version": "7.0.0",
+  "version": "7.1.0",
   "description": "Rules Engine expressed in simple json",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -59,7 +59,7 @@
   },
   "author": "Cache Hamm <cache.hamm@gmail.com>",
   "contributors": [
-    "Chris Pardy <chris.pardy@ownup.com>"
+    "Chris Pardy <chris.pardy@gmail.com>"
   ],
   "license": "ISC",
   "bugs": {
