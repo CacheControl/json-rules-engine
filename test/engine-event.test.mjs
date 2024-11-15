@@ -13,6 +13,10 @@ describe("Engine: event", () => {
       canOrderDrinks: true,
     },
   };
+
+  const awesomeEvent = {
+    type: 'awesome'
+  }
   /**
    * sets up a simple 'any' rule with 2 conditions
    */
@@ -83,6 +87,46 @@ describe("Engine: event", () => {
     engine.addFact("qualified", false); // qualified fails.
     engine.addFact("zipCode", 80403); // zipCode succeeds
     engine.addFact("gender", "male"); // gender succeeds
+  }
+
+  function setupWithConditionReference () {
+    const conditionName = 'awesomeCondition'
+    const conditions = {
+      any: [{ condition: conditionName }]
+    }
+    engine = engineFactory()
+    const ruleOptions = { conditions, event: awesomeEvent, priority: 100 }
+    const rule = ruleFactory(ruleOptions)
+    engine.addRule(rule)
+    engine.setCondition(conditionName, {
+      all: [{
+        name: 'over 21',
+        fact: 'age',
+        operator: 'greaterThanInclusive',
+        value: 21
+      }]
+    })
+    engine.addFact('age', 21)
+  }
+
+  function setupWithUndefinedCondition () {
+    const conditionName = 'conditionThatIsNotDefined'
+    const conditions = {
+      any: [
+        { condition: conditionName, name: 'nameOfTheUndefinedConditionReference' },
+        {
+          name: 'over 21',
+          fact: 'age',
+          operator: 'greaterThanInclusive',
+          value: 21
+        }
+      ]
+    }
+    engine = engineFactory([], { allowUndefinedConditions: true })
+    const ruleOptions = { conditions, event: awesomeEvent, priority: 100 }
+    const rule = ruleFactory(ruleOptions)
+    engine.addRule(rule)
+    engine.addFact('age', 21)
   }
 
   describe("engine events: simple", () => {
@@ -647,4 +691,24 @@ describe("Engine: event", () => {
       expect(JSON.stringify(ruleResult)).toBe(expected);
     });
   });
+
+  describe('rule events: json serializing with condition reference', () => {
+    beforeEach(() => setupWithConditionReference())
+    it('serializes properties', async () => {
+      const { results: [ruleResult] } = await engine.run()
+      const expected = '{"conditions":{"priority":1,"any":[{"priority":1,"all":[{"name":"over 21","operator":"greaterThanInclusive","value":21,"fact":"age","factResult":21,"result":true}]}]},"event":{"type":"awesome"},"priority":100,"result":true}'
+      expect(JSON.stringify(ruleResult)).toEqual(expected)
+    })
+  })
+
+  describe('rule events: json serializing with condition reference that is undefined', () => {
+    beforeEach(() => setupWithUndefinedCondition())
+    it('serializes properties', async () => {
+      const { results: [ruleResult] } = await engine.run()
+      const { conditions: { any: [conditionReference] } } = ruleResult
+      expect(conditionReference.result).toEqual(false)
+      const expected = '{"conditions":{"priority":1,"any":[{"name":"nameOfTheUndefinedConditionReference","condition":"conditionThatIsNotDefined"},{"name":"over 21","operator":"greaterThanInclusive","value":21,"fact":"age","factResult":21,"result":true}]},"event":{"type":"awesome"},"priority":100,"result":true}'
+      expect(JSON.stringify(ruleResult)).toEqual(expected)
+    })
+  })
 });
