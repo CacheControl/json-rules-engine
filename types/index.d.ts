@@ -170,12 +170,22 @@ export type RuleSerializable = Pick<
   "conditions" | "event" | "name" | "priority"
 >;
 
+export type RuleResultSerializable = Pick<
+  Required<RuleResult>,
+  "name" | "event" | "priority" | "result"> & {
+    conditions: TopLevelConditionResultSerializable
+  }
+
 export interface RuleResult {
   name: string;
-  conditions: TopLevelCondition;
+  conditions: TopLevelConditionResult;
   event?: Event;
   priority?: number;
   result: any;
+  toJSON(): string;
+  toJSON<T extends boolean>(
+    stringify: T
+  ): T extends true ? string : RuleResultSerializable;
 }
 
 export class Rule implements RuleProperties {
@@ -193,6 +203,14 @@ export class Rule implements RuleProperties {
   ): T extends true ? string : RuleSerializable;
 }
 
+interface BooleanConditionResultProperties {
+  result?: boolean
+}
+
+interface ConditionResultProperties extends BooleanConditionResultProperties {
+  factResult?: unknown
+}
+
 interface ConditionProperties {
   fact: string;
   operator: string;
@@ -203,25 +221,46 @@ interface ConditionProperties {
   name?: string;
 }
 
+type ConditionPropertiesResult = ConditionProperties & ConditionResultProperties
+
 type NestedCondition = ConditionProperties | TopLevelCondition;
+type NestedConditionResult = ConditionPropertiesResult | TopLevelConditionResult;
 type AllConditions = {
   all: NestedCondition[];
   name?: string;
   priority?: number;
 };
+type AllConditionsResult = AllConditions & {
+  all: NestedConditionResult[]
+} & BooleanConditionResultProperties
 type AnyConditions = {
   any: NestedCondition[];
   name?: string;
   priority?: number;
 };
+type AnyConditionsResult = AnyConditions & {
+  any: NestedConditionResult[]
+} & BooleanConditionResultProperties
 type NotConditions = { not: NestedCondition; name?: string; priority?: number };
+type NotConditionsResult = NotConditions & {not: NestedConditionResult} & BooleanConditionResultProperties;
 type ConditionReference = {
   condition: string;
   name?: string;
   priority?: number;
 };
+type ConditionReferenceResult = ConditionReference & BooleanConditionResultProperties
 export type TopLevelCondition =
   | AllConditions
   | AnyConditions
   | NotConditions
   | ConditionReference;
+export type TopLevelConditionResult = 
+  | AllConditionsResult
+  | AnyConditionsResult
+  | NotConditionsResult
+  | ConditionReferenceResult
+export type TopLevelConditionResultSerializable =
+  | AllConditionsResult
+  | AnyConditionsResult
+  | NotConditionsResult
+  | ConditionReference

@@ -15,6 +15,10 @@ import rulesEngine, {
   RuleProperties,
   RuleResult,
   RuleSerializable,
+  TopLevelConditionResult,
+  AnyConditionsResult,
+  AllConditionsResult,
+  NotConditionsResult
 } from "../types/index.js";
 
 // setup basic fixture data
@@ -63,7 +67,20 @@ describe("type tests", () => {
   const engine = rulesEngine([complexRuleProps]);
 
   it("engine run returns a promise of the result", () => {
-    expectTypeOf<Promise<EngineResult>>(engine.run({ displayMessage: true }));
+    const result = engine.run({ displayMessage: true })
+    expectTypeOf<Promise<EngineResult>>(result);
+
+    const topLevelConditionResult = result.then(r => r.results[0].conditions);
+    expectTypeOf<Promise<TopLevelConditionResult>>(topLevelConditionResult)
+
+    const topLevelAnyConditionsResult = topLevelConditionResult.then(r => (r as AnyConditionsResult).result);
+    expectTypeOf<Promise<boolean | undefined>>(topLevelAnyConditionsResult)
+
+    const topLevelAllConditionsResult = topLevelConditionResult.then(r => (r as AllConditionsResult).result);
+    expectTypeOf<Promise<boolean | undefined>>(topLevelAllConditionsResult)
+
+    const topLevelNotConditionsResult = topLevelConditionResult.then(r => (r as NotConditionsResult).result);
+    expectTypeOf<Promise<boolean | undefined>>(topLevelNotConditionsResult)
   });
 
   describe("rule tests", () => {
