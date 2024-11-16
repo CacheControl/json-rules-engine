@@ -210,6 +210,7 @@ describe('Acceptance', () => {
             result: true,
             value: {
               fact: 'rule-created-fact',
+              factResult: 2,
               path: '$.array'
             }
           }
