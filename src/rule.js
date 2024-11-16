@@ -231,6 +231,9 @@ class Rule extends EventEmitter {
           .then((evaluationResult) => {
             const passes = evaluationResult.result
             condition.factResult = evaluationResult.leftHandSideValue
+            if(typeof condition.value === 'object' && condition.value !== null){
+              condition.value.factResult = evaluationResult.rightHandSideValue;
+            }
             condition.result = passes
             return passes
           })
