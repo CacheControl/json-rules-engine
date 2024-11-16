@@ -189,8 +189,8 @@ export interface RuleResult {
 }
 
 export class Rule implements RuleProperties {
-  constructor(ruleProps: RuleProperties | string);
-  name: string;
+  constructor(ruleProps?: RuleProperties | string);
+  name?: string;
   conditions: TopLevelCondition;
   event: Event;
   priority: number;
