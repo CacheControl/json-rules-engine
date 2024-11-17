@@ -36,6 +36,7 @@ describe('Acceptance', () => {
       path: '$.values',
       value: 2,
       factResult: [2],
+      valueResult: 2,
       result: true
     },
     {
@@ -43,6 +44,7 @@ describe('Acceptance', () => {
       operator: 'in',
       value: [2],
       factResult: 2,
+      valueResult: [2],
       result: true
     }
     ],
@@ -169,7 +171,8 @@ describe('Acceptance', () => {
             },
             path: '$.values',
             result: true,
-            value: 2
+            value: 2,
+            valueResult: 2
           },
           {
             fact: 'low-priority',
@@ -177,6 +180,9 @@ describe('Acceptance', () => {
             operator: 'in',
             result: true,
             value: [
+              2
+            ],
+            valueResult: [
               2
             ]
           }
@@ -202,6 +208,7 @@ describe('Acceptance', () => {
             factResult: [
               2
             ],
+            valueResult: 2,
             operator: 'containsDivisibleValuesOf',
             params: {
               factParam: 1
@@ -210,7 +217,6 @@ describe('Acceptance', () => {
             result: true,
             value: {
               fact: 'rule-created-fact',
-              factResult: 2,
               path: '$.array'
             }
           }
