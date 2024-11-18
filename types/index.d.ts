@@ -192,6 +192,7 @@ interface BooleanConditionResultProperties {
 
 interface ConditionResultProperties extends BooleanConditionResultProperties {
   factResult?: unknown
+  valueResult?: unknown
 }
 
 interface ConditionProperties {

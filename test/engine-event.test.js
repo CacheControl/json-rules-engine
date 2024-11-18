@@ -642,7 +642,7 @@ describe('Engine: event', () => {
       await engine.run()
       const ruleResult = successSpy.getCall(0).args[2]
       const expected =
-        '{"conditions":{"priority":1,"any":[{"name":"over 21","operator":"greaterThanInclusive","value":21,"fact":"age","factResult":21,"result":true},{"operator":"equal","value":true,"fact":"qualified","factResult":false,"result":false}]},"event":{"type":"setDrinkingFlag","params":{"canOrderDrinks":true}},"priority":100,"result":true}'
+        '{"conditions":{"priority":1,"any":[{"name":"over 21","operator":"greaterThanInclusive","value":21,"fact":"age","factResult":21,"valueResult":21,"result":true},{"operator":"equal","value":true,"fact":"qualified","factResult":false,"valueResult":true,"result":false}]},"event":{"type":"setDrinkingFlag","params":{"canOrderDrinks":true}},"priority":100,"result":true}'
       expect(JSON.stringify(ruleResult)).to.equal(expected)
     })
   })
@@ -651,7 +651,7 @@ describe('Engine: event', () => {
     beforeEach(() => setupWithConditionReference())
     it('serializes properties', async () => {
       const { results: [ruleResult] } = await engine.run()
-      const expected = '{"conditions":{"priority":1,"any":[{"priority":1,"all":[{"name":"over 21","operator":"greaterThanInclusive","value":21,"fact":"age","factResult":21,"result":true}]}]},"event":{"type":"awesome"},"priority":100,"result":true}'
+      const expected = '{"conditions":{"priority":1,"any":[{"priority":1,"all":[{"name":"over 21","operator":"greaterThanInclusive","value":21,"fact":"age","factResult":21,"valueResult":21,"result":true}]}]},"event":{"type":"awesome"},"priority":100,"result":true}'
       expect(JSON.stringify(ruleResult)).to.equal(expected)
     })
   })
@@ -662,7 +662,7 @@ describe('Engine: event', () => {
       const { results: [ruleResult] } = await engine.run()
       const { conditions: { any: [conditionReference] } } = ruleResult
       expect(conditionReference.result).to.equal(false)
-      const expected = '{"conditions":{"priority":1,"any":[{"name":"nameOfTheUndefinedConditionReference","condition":"conditionThatIsNotDefined"},{"name":"over 21","operator":"greaterThanInclusive","value":21,"fact":"age","factResult":21,"result":true}]},"event":{"type":"awesome"},"priority":100,"result":true}'
+      const expected = '{"conditions":{"priority":1,"any":[{"name":"nameOfTheUndefinedConditionReference","condition":"conditionThatIsNotDefined"},{"name":"over 21","operator":"greaterThanInclusive","value":21,"fact":"age","factResult":21,"valueResult":21,"result":true}]},"event":{"type":"awesome"},"priority":100,"result":true}'
       expect(JSON.stringify(ruleResult)).to.equal(expected)
     })
   })

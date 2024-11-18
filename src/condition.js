@@ -62,6 +62,9 @@ export default class Condition {
       if (this.factResult !== undefined) {
         props.factResult = this.factResult
       }
+      if (this.valueResult !== undefined) {
+        props.valueResult = this.valueResult
+      }
       if (this.result !== undefined) {
         props.result = this.result
       }

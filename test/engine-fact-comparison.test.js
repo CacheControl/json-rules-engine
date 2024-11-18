@@ -118,4 +118,23 @@ describe('Engine: fact to fact comparison', () => {
       expect(eventSpy.callCount).to.equal(0)
     })
   })
+
+  context('constant facts: checking valueResult and factResult', () => {
+    const constantCondition = {
+      all: [{
+        fact: 'height',
+        operator: 'lessThanInclusive',
+        value: {
+          fact: 'width'
+        }
+      }]
+    }
+    it('result has the correct valueResult and factResult properties', async () => {
+      setup(constantCondition)
+      const result = await engine.run({ height: 1, width: 2 })
+
+      expect(result.results[0].conditions.all[0].factResult).to.equal(1)
+      expect(result.results[0].conditions.all[0].valueResult).to.equal(2)
+    })
+  })
 })
