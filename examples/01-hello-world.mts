@@ -53,7 +53,8 @@ async function start() {
   events.map((event) => console.log(event.params!.data.green));
 }
 
-start();
+export default start();
+
 /*
  * OUTPUT:
  *

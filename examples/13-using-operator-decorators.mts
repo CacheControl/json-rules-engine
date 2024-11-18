@@ -93,7 +93,7 @@ async function start() {
   facts = { tags: ["dev", "PROD"] };
   await engine.run(facts);
 }
-start();
+export default start();
 
 /*
  * OUTPUT:

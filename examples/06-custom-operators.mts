@@ -101,7 +101,7 @@ async function start() {
   facts = { word: "antelope" };
   await engine.run(facts);
 }
-start();
+export default start();
 
 /*
  * OUTPUT:

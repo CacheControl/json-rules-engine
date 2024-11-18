@@ -105,7 +105,7 @@ async function start() {
   // define fact(s) known at runtime
   await engine.run();
 }
-start();
+export default start();
 
 /*
  * OUTPUT:

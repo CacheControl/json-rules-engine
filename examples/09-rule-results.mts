@@ -94,7 +94,7 @@ async function start() {
     engine.run({ athlete: true, GPA: 1.1, username: "sarah" }),
   ]);
 }
-start();
+export default start();
 /*
  * OUTPUT:
  *
