@@ -25,6 +25,8 @@ jobs:
         with:
           version: 9
       - run: pnpm install
+      - run: pnpm install
+        working-directory: examples
       - run: pnpm run build
       - run: pnpm run lint
       - run: pnpm run test
