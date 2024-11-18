@@ -2,7 +2,7 @@
   "name": "json-rules-engine-examples",
   "version": "1.0.0",
   "description": "examples for json-rule-engine",
-  "main": "",
+  "type": "module",
   "private": true,
   "scripts": {
     "all": "for i in *.mts; do tsx $i; done;"

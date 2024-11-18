@@ -2,10 +2,13 @@
   "name": "json-rules-engine",
   "version": "8.0.0-alpha.1",
   "description": "Rules Engine expressed in simple json",
-  "main": "dist/index.cjs",
-  "module": "dist/index.js",
   "types": "types/index.d.ts",
   "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js"
+    }
+  },
   "engines": {
     "node": ">=18.0.0"
   },
