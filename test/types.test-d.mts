@@ -87,6 +87,11 @@ describe("type tests", () => {
     const rule = new Rule(ruleProps);
     const ruleFromString: Rule = new Rule(JSON.stringify(ruleProps));
 
+    it("name of rule is possibly undefined", () => {
+      const ruleWithoutInit = new Rule();
+      expectTypeOf<string | undefined>(ruleWithoutInit.name);
+    })
+
     it("returns the engine when adding a rule", () => {
       expectTypeOf<Engine>(engine.addRule(rule));
     });

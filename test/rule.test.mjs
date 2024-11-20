@@ -12,6 +12,11 @@ describe("Rule", () => {
   });
 
   describe("constructor()", () => {
+    it("can be initialized without anything", () => {
+      const rule = new Rule();
+      expect(rule.name).toBeUndefined();
+    })
+
     it("can be initialized with priority, conditions, event, and name", () => {
       const condition = {
         all: [Object.assign({}, conditionBase)],
