@@ -145,7 +145,7 @@ async function start() {
    *   for washington and jefferson after the initial data load.
    */
 }
-start();
+export default start();
 
 /*
  * OUTPUT:

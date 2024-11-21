@@ -126,7 +126,7 @@ async function start() {
   await engine.run(facts);
 }
 
-start();
+export default start();
 
 /*
  * OUTPUT:

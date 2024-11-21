@@ -1,0 +1,230 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`examples > example 01-hello-world.mts > expected consistent console errors 1`] = `[]`;
+
+exports[`examples > example 01-hello-world.mts > expected consistent console logs 1`] = `
+[
+  [
+    "[32mhello-world![39m",
+  ],
+]
+`;
+
+exports[`examples > example 02-nested-boolean-logic.mts > expected consistent console errors 1`] = `[]`;
+
+exports[`examples > example 02-nested-boolean-logic.mts > expected consistent console logs 1`] = `
+[
+  [
+    "[31mPlayer has fouled out![39m",
+  ],
+]
+`;
+
+exports[`examples > example 03-dynamic-facts.mts > expected consistent console errors 1`] = `[]`;
+
+exports[`examples > example 03-dynamic-facts.mts > expected consistent console logs 1`] = `
+[
+  [
+    "[2mloading account information for "lincoln"[22m",
+  ],
+  [
+    "lincoln is a current microsoft employee taking christmas day off",
+  ],
+]
+`;
+
+exports[`examples > example 04-fact-dependency.mts > expected consistent console errors 1`] = `[]`;
+
+exports[`examples > example 04-fact-dependency.mts > expected consistent console logs 1`] = `
+[
+  [
+    "-- FIRST RUN --",
+  ],
+  [
+    "[2mloading account information for "washington"[22m",
+  ],
+  [
+    "washington[32m DID [39mmeet conditions for the [4mfive-year-tenure[24m rule.",
+  ],
+  [
+    "washington[32m DID [39mmeet conditions for the [4mmicrosoft-terminated-employees[24m rule.",
+  ],
+  [
+    "-- SECOND RUN --",
+  ],
+  [
+    "[2mloading account information for "jefferson"[22m",
+  ],
+  [
+    "jefferson[32m DID [39mmeet conditions for the [4mfive-year-tenure[24m rule.",
+  ],
+  [
+    "jefferson did [31mNOT[39m meet conditions for the [4mmicrosoft-terminated-employees[24m rule.",
+  ],
+]
+`;
+
+exports[`examples > example 05-optimizing-runtime-with-fact-priorities.mts > expected consistent console errors 1`] = `[]`;
+
+exports[`examples > example 05-optimizing-runtime-with-fact-priorities.mts > expected consistent console logs 1`] = `
+[
+  [
+    "Checking the "date" fact...",
+  ],
+  [
+    "washington did [31mNOT[39m meet conditions for the [4mmicrosoft-employees[24m rule.",
+  ],
+]
+`;
+
+exports[`examples > example 06-custom-operators.mts > expected consistent console errors 1`] = `[]`;
+
+exports[`examples > example 06-custom-operators.mts > expected consistent console logs 1`] = `
+[
+  [
+    "bacon did [31mNOT[39m start with "a"",
+  ],
+  [
+    "bacon[32m DID [39mstart with "b"",
+  ],
+  [
+    "antelope[32m DID [39mstart with "a"",
+  ],
+  [
+    "antelope did [31mNOT[39m start with "b"",
+  ],
+]
+`;
+
+exports[`examples > example 07-rule-chaining.mts > expected consistent console errors 1`] = `[]`;
+
+exports[`examples > example 07-rule-chaining.mts > expected consistent console logs 1`] = `
+[
+  [
+    "[2mloading account information for "washington"[22m",
+  ],
+  [
+    "washington(microsoft) [32mDID[39m meet conditions for the [4mdrinks-screwdrivers[24m rule.",
+  ],
+  [
+    "washington(microsoft) [32mDID[39m meet conditions for the [4minvite-to-screwdriver-social[24m rule.",
+  ],
+  [
+    "washington [32mIS[39m a screwdriver aficionado",
+  ],
+  [
+    "jefferson did [31mNOT[39m meet conditions for the [4mdrinks-screwdrivers[24m rule.",
+  ],
+  [
+    "jefferson did [31mNOT[39m meet conditions for the [4minvite-to-screwdriver-social[24m rule.",
+  ],
+  [
+    "jefferson [31mIS NOT[39m a screwdriver aficionado",
+  ],
+]
+`;
+
+exports[`examples > example 08-fact-comparison.mts > expected consistent console errors 1`] = `[]`;
+
+exports[`examples > example 08-fact-comparison.mts > expected consistent console logs 1`] = `
+[
+  [
+    "washington[32m DID [39mmeet conditions for the [4mcustomer-can-afford-gift-card[24m rule.",
+  ],
+  [
+    "jefferson did [31mNOT[39m meet conditions for the [4mcustomer-can-afford-gift-card[24m rule.",
+  ],
+]
+`;
+
+exports[`examples > example 09-rule-results.mts > expected consistent console errors 1`] = `[]`;
+
+exports[`examples > example 09-rule-results.mts > expected consistent console logs 1`] = `
+[
+  [
+    "[31m[1mjoe[22m failed Athlete GPA Rule -  was not an athlete[39m",
+  ],
+  [
+    "[32m[1mlarry[22m succeeded Athlete GPA Rule! Student made the athletics honor-roll[39m",
+  ],
+  [
+    "[31m[1mjane[22m failed Athlete GPA Rule -  was not an athlete and GPA of 3.1 was too low[39m",
+  ],
+  [
+    "[32m[1mjanet[22m succeeded Athlete GPA Rule! Student made the athletics honor-roll[39m",
+  ],
+  [
+    "[31m[1msarah[22m failed Athlete GPA Rule -  GPA of 1.1 was too low[39m",
+  ],
+]
+`;
+
+exports[`examples > example 10-condition-sharing.mts > expected consistent console errors 1`] = `[]`;
+
+exports[`examples > example 10-condition-sharing.mts > expected consistent console logs 1`] = `
+[
+  [
+    "washington[32mDID[39m meet conditions for the [4minvite-to-screwdriver-social[24m rule.",
+  ],
+  [
+    "washington did [31mNOT[39m meet conditions for the [4minvite-to-other-social[24m rule.",
+  ],
+  [
+    "jefferson did [31mNOT[39m meet conditions for the [4minvite-to-screwdriver-social[24m rule.",
+  ],
+  [
+    "jefferson[32mDID[39m meet conditions for the [4minvite-to-other-social[24m rule.",
+  ],
+]
+`;
+
+exports[`examples > example 11-using-facts-in-events.mts > expected consistent console errors 1`] = `[]`;
+
+exports[`examples > example 11-using-facts-in-events.mts > expected consistent console logs 1`] = `[]`;
+
+exports[`examples > example 12-using-custom-almanac.mts > expected consistent console errors 1`] = `[]`;
+
+exports[`examples > example 12-using-custom-almanac.mts > expected consistent console logs 1`] = `
+[
+  [
+    "HIGH SCORE
+DOG - 968",
+  ],
+  [
+    "
+",
+  ],
+  [
+    "HIGH SCORE
+AAA - 1000",
+  ],
+  [
+    "Bob is 19 years old and [31mis not[39m Over 21(ish)",
+  ],
+  [
+    "Alice is 21 years old and [32mis[39m Over 21(ish)",
+  ],
+  [
+    "Chad is 20 years old and [32mis[39m Over 21(ish)",
+  ],
+]
+`;
+
+exports[`examples > example 13-using-operator-decorators.mts > expected consistent console errors 1`] = `[]`;
+
+exports[`examples > example 13-using-operator-decorators.mts > expected consistent console logs 1`] = `
+[
+  [
+    "dev, prod[32m WERE[39m all valid tags",
+  ],
+  [
+    "dev, deleted[31m WERE NOT[39m all valid tags",
+  ],
+  [
+    "dev, PROD[31m WERE NOT[39m all valid tags",
+  ],
+  [
+    "dev, PROD[32m WERE[39m all valid tags (case insensitive)",
+  ],
+]
+`;

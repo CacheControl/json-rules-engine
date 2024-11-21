@@ -77,7 +77,7 @@ async function start() {
     facts.accountId + " is a " + events.map((event) => event.params!.message),
   );
 }
-start();
+export default start();
 
 /*
  * OUTPUT:

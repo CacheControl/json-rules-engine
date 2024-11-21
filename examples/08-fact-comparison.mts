@@ -150,7 +150,7 @@ async function start() {
   facts = Object.assign({}, userFacts, productList);
   await engine.run(facts);
 }
-start();
+export default start();
 /*
  * OUTPUT:
  *

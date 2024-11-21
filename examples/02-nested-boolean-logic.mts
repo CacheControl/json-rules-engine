@@ -78,7 +78,7 @@ async function start() {
 
   events.map((event) => console.log(event.params!.message.red));
 }
-start();
+export default start();
 /*
  * OUTPUT:
  *
