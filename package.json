@@ -1,6 +1,6 @@
 {
   "name": "json-rules-engine",
-  "version": "7.1.0",
+  "version": "7.2.1",
   "description": "Rules Engine expressed in simple json",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -92,6 +92,6 @@
     "clone": "^2.1.2",
     "eventemitter2": "^6.4.4",
     "hash-it": "^6.0.0",
-    "jsonpath-plus": "^10.1.0"
+    "jsonpath-plus": "^10.2.0"
   }
 }
