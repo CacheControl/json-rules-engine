@@ -28,7 +28,7 @@ export default function engineFactory(
 export class Engine {
   constructor(rules?: Array<RuleProperties>, options?: EngineOptions);
 
-  addRule(rule: RuleProperties): this;
+  addRule(rule: RuleProperties | Rule): this;
   removeRule(ruleOrName: Rule | string): boolean;
   updateRule(rule: Rule): void;
 
@@ -171,11 +171,11 @@ export interface RuleResult {
   ): T extends true ? string : RuleResultSerializable;
 }
 
-export class Rule implements RuleProperties {
+export class Rule {
   constructor(ruleProps: RuleProperties | string);
   name: string;
   conditions: TopLevelCondition;
-  event: Event;
+  ruleEvent: Event;
   priority: number;
   setConditions(conditions: TopLevelCondition): this;
   setEvent(event: Event): this;
