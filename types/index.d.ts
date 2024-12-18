@@ -175,6 +175,9 @@ export class Rule implements RuleProperties {
   constructor(ruleProps: RuleProperties | string);
   name: string;
   conditions: TopLevelCondition;
+  /**
+   * @deprecated Use {@link Rule.event} instead.
+   */
   ruleEvent: Event;
   event: Event
   priority: number;
