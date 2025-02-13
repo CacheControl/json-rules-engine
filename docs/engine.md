@@ -236,7 +236,7 @@ engine.addOperatorDecorator('caseInsensitive', (factValue, jsonValue, next) => {
   return next(factValue.toLowerCase(), jsonValue.toLowerCase())
 })
 
-engine.removeOperator('first');
+engine.removeOperatorDecorator('first');
 ```
 
 ### engine.setCondition(String name, Object conditions)
