@@ -30,6 +30,7 @@ describe('Rule', () => {
       expect(rule.priority).to.eql(opts.priority)
       expect(rule.conditions).to.eql(opts.conditions)
       expect(rule.ruleEvent).to.eql(opts.event)
+      expect(rule.event).to.eql(opts.event)
       expect(rule.name).to.eql(opts.name)
     })
 
@@ -52,6 +53,7 @@ describe('Rule', () => {
       expect(rule.priority).to.eql(opts.priority)
       expect(rule.conditions).to.eql(opts.conditions)
       expect(rule.ruleEvent).to.eql(opts.event)
+      expect(rule.event).to.eql(opts.event)
       expect(rule.name).to.eql(opts.name)
     })
   })
@@ -322,6 +324,7 @@ describe('Rule', () => {
       expect(hydratedRule.conditions).to.eql(rule.conditions)
       expect(hydratedRule.priority).to.eql(rule.priority)
       expect(hydratedRule.ruleEvent).to.eql(rule.ruleEvent)
+      expect(hydratedRule.event).to.eql(rule.event)
       expect(hydratedRule.name).to.eql(rule.name)
     })
 
@@ -333,6 +336,7 @@ describe('Rule', () => {
       expect(hydratedRule.conditions).to.eql(rule.conditions)
       expect(hydratedRule.priority).to.eql(rule.priority)
       expect(hydratedRule.ruleEvent).to.eql(rule.ruleEvent)
+      expect(hydratedRule.event).to.eql(rule.event)
       expect(hydratedRule.name).to.eql(rule.name)
     })
   })
