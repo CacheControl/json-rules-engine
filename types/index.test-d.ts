@@ -90,6 +90,7 @@ const operator: Operator = new Operator(
 );
 expectType<void>(engine.addOperator(operator));
 expectType<boolean>(engine.removeOperator(operator));
+expectType<boolean>(operator.evaluate(1, 1));
 
 // Operator Decorator tests
 const operatorDecoratorEvaluator: OperatorDecoratorEvaluator<number[], number, number, number> = (
