@@ -72,6 +72,7 @@ export class Operator<A = unknown, B = unknown> {
     evaluator: OperatorEvaluator<A, B>,
     validator?: (factValue: A) => boolean
   );
+  evaluate(factValue: A, compareToValue: B): boolean;
 }
 
 export interface OperatorDecoratorEvaluator<A, B, NextA, NextB> {
