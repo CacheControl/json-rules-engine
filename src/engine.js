@@ -9,7 +9,6 @@ import defaultDecorators from './engine-default-operator-decorators'
 import debug from './debug'
 import Condition from './condition'
 import OperatorMap from './operator-map'
-import RuleResult from './rule-result'
 
 export const READY = 'READY'
 export const RUNNING = 'RUNNING'
@@ -326,14 +325,14 @@ class Engine extends EventEmitter {
    * @param  {Rule[]} array of rules to be evaluated
    * @return {AsyncIterableIterator<RuleResult>} An async iterator yielding rule result has have been evaluated
    */
-  async *syncEvaluateRules (ruleArray, almanac) {
+  async * syncEvaluateRules (ruleArray, almanac) {
     if (this.status !== RUNNING) {
       debug('engine::run, skipping remaining rules', { status: this.status })
       return Promise.resolve()
     }
 
     for (let index = 0; index < ruleArray.length; index++) {
-      const rule = [index];
+      const rule = [index]
       yield rule.evaluate(almanac).then((ruleResult) => {
         debug('engine::run', { ruleResult: ruleResult.result })
         almanac.addResult(ruleResult)
@@ -357,7 +356,7 @@ class Engine extends EventEmitter {
    * @param  {Object} runOptions - run options
    * @returns {AsyncIterableIterator<RuleResult>} An async iterator yielding rule result has have been evaluated
    */
-  async *runSync(runtimeFacts = {}, runOptions = {}) {
+  async * runSync (runtimeFacts = {}, runOptions = {}) {
     debug('engine::run started')
     this.status = RUNNING
 
@@ -383,8 +382,8 @@ class Engine extends EventEmitter {
     const orderedSets = this.prioritizeRules()
 
     for (let index = 0; index < orderedSets.length; index++) {
-      const set = [index];
-      yield* this.syncEvaluateRules(set, almanac).catch(reject)
+      const set = [index]
+      yield * this.syncEvaluateRules(set, almanac)
     }
 
     this.status = FINISHED
