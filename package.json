@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/cachecontrol/json-rules-engine"
+    "url": "https://github.com/truongnd98/json-rules-engine"
   },
   "keywords": [
     "rules",
@@ -63,9 +63,9 @@
   ],
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/cachecontrol/json-rules-engine/issues"
+    "url": "https://github.com/truongnd98/json-rules-engine/issues"
   },
-  "homepage": "https://github.com/cachecontrol/json-rules-engine",
+  "homepage": "https://github.com/truongnd98/json-rules-engine",
   "devDependencies": {
     "babel-cli": "6.26.0",
     "babel-core": "6.26.3",
