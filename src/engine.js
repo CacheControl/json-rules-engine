@@ -9,6 +9,7 @@ import defaultDecorators from './engine-default-operator-decorators'
 import debug from './debug'
 import Condition from './condition'
 import OperatorMap from './operator-map'
+import RuleResult from './rule-result'
 
 export const READY = 'READY'
 export const RUNNING = 'RUNNING'
@@ -318,6 +319,76 @@ class Engine extends EventEmitter {
         })
       }).catch(reject)
     })
+  }
+
+  /**
+   * Runs an array of rules synchronous
+   * @param  {Rule[]} array of rules to be evaluated
+   * @return {AsyncIterableIterator<RuleResult>} An async iterator yielding rule result has have been evaluated
+   */
+  async *syncEvaluateRules (ruleArray, almanac) {
+    if (this.status !== RUNNING) {
+      debug('engine::run, skipping remaining rules', { status: this.status })
+      return Promise.resolve()
+    }
+
+    for (let index = 0; index < ruleArray.length; index++) {
+      const rule = [index];
+      yield rule.evaluate(almanac).then((ruleResult) => {
+        debug('engine::run', { ruleResult: ruleResult.result })
+        almanac.addResult(ruleResult)
+        if (ruleResult.result) {
+          almanac.addEvent(ruleResult.event, 'success')
+          this.emitAsync('success', ruleResult.event, almanac, ruleResult)
+            .then(() => this.emitAsync(ruleResult.event.type, ruleResult.event.params, almanac, ruleResult))
+        } else {
+          almanac.addEvent(ruleResult.event, 'failure')
+          this.emitAsync('failure', ruleResult.event, almanac, ruleResult)
+        }
+
+        return ruleResult
+      })
+    }
+  }
+
+  /**
+   * Runs the rules engine synchronous
+   * @param  {Object} runtimeFacts - fact values known at runtime
+   * @param  {Object} runOptions - run options
+   * @returns {AsyncIterableIterator<RuleResult>} An async iterator yielding rule result has have been evaluated
+   */
+  async *runSync(runtimeFacts = {}, runOptions = {}) {
+    debug('engine::run started')
+    this.status = RUNNING
+
+    const almanac = runOptions.almanac || new Almanac({
+      allowUndefinedFacts: this.allowUndefinedFacts,
+      pathResolver: this.pathResolver
+    })
+
+    this.facts.forEach(fact => {
+      almanac.addFact(fact)
+    })
+    for (const factId in runtimeFacts) {
+      let fact
+      if (runtimeFacts[factId] instanceof Fact) {
+        fact = runtimeFacts[factId]
+      } else {
+        fact = new Fact(factId, runtimeFacts[factId])
+      }
+
+      almanac.addFact(fact)
+      debug('engine::run initialized runtime fact', { id: fact.id, value: fact.value, type: typeof fact.value })
+    }
+    const orderedSets = this.prioritizeRules()
+
+    for (let index = 0; index < orderedSets.length; index++) {
+      const set = [index];
+      yield* this.syncEvaluateRules(set, almanac).catch(reject)
+    }
+
+    this.status = FINISHED
+    debug('engine::run completed')
   }
 }
 

@@ -59,6 +59,8 @@ export class Engine {
 
   run(facts?: Record<string, any>, runOptions?: RunOptions): Promise<EngineResult>;
   stop(): this;
+
+  runSync(facts?: Record<string, any>, runOptions?: RunOptions): AsyncIterableIterator<RuleResult>;
 }
 
 export interface OperatorEvaluator<A, B> {
