@@ -6,6 +6,10 @@
 [![install size](https://packagephobia.com/badge?p=@truong8864/json-rules-engine)](https://packagephobia.com/result?p=@truong8864/json-rules-engine)
 [![npm downloads](https://img.shields.io/npm/dm/%40truong8864%2Fjson-rules-engine)](https://www.npmjs.com/package/@truong8864/json-rules-engine)
 
+## Why does this fork exist?
+
+```json-rules-engine``` Currently, rules are run in parallel. I would like a feature that allows the rules to run synchronously.
+
 A rules engine expressed in JSON
 
 * [Synopsis](#synopsis)
