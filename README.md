@@ -2,9 +2,9 @@
 [![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
 [![Build Status](https://github.com/cachecontrol/json-rules-engine/workflows/Node.js%20CI/badge.svg?branch=master)](https://github.com/cachecontrol/json-rules-engine/workflows/Node.js%20CI/badge.svg?branch=master)
 
-[![npm version](https://badge.fury.io/js/json-rules-engine.svg)](https://badge.fury.io/js/@truong886/json-rules-engine)
-[![install size](https://packagephobia.now.sh/badge?p=json-rules-engine)](https://packagephobia.now.sh/result?p=@truong8864/json-rules-engine)
-[![npm downloads](https://img.shields.io/npm/dm/json-rules-engine.svg)](https://www.npmjs.com/package/@truong8864/json-rules-engine)
+[![npm version](https://badge.fury.io/js/@truong8864%2Fjson-rules-engine.svg)](https://badge.fury.io/js/@truong8864%2Fjson-rules-engine)
+[![install size](https://packagephobia.com/badge?p=@truong8864/json-rules-engine)](https://packagephobia.com/result?p=@truong8864/json-rules-engine)
+[![npm downloads](https://img.shields.io/npm/dm/%40truong8864%2Fjson-rules-engine)](https://www.npmjs.com/package/@truong8864/json-rules-engine)
 
 A rules engine expressed in JSON
 
