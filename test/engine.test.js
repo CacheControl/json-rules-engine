@@ -102,6 +102,20 @@ describe('Engine', () => {
       expect(rule2.conditions.all.length).to.equal(2)
     })
 
+    it('updates rule incorrectly', async () => {
+      const rule1 = new Rule(factories.rule({ name: 'rule1' }))
+      engine.addRule(rule1)
+
+      rule1.conditions = { all: [] } // Rule.conditions should not be set to a value that is not an instance of Condition
+      engine.updateRule(rule1)
+
+      const successSpy = sandbox.spy()
+      rule1.on('success', successSpy)
+      await engine.run()
+      const ruleResult = successSpy.getCall(0).args[2]
+      expect(() => JSON.stringify(ruleResult)).to.throw(/toJSON is not a function/)
+    })
+
     it('should throw error if rule not found', () => {
       const rule1 = new Rule(factories.rule({ name: 'rule1' }))
       engine.addRule(rule1)
