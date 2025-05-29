@@ -93,7 +93,7 @@ describe('Engine', () => {
       expect(engine.rules[0].conditions.all.length).to.equal(2)
       expect(engine.rules[1].conditions.all.length).to.equal(2)
 
-      rule1.conditions = { all: [] }
+      rule1.setConditions({ all: [] })
       engine.updateRule(rule1)
 
       rule1 = engine.rules.find(rule => rule.name === 'rule1')
