@@ -23,7 +23,14 @@ export default class Condition {
     } else if (!Object.prototype.hasOwnProperty.call(properties, 'condition')) {
       if (!Object.prototype.hasOwnProperty.call(properties, 'fact')) { throw new Error('Condition: constructor "fact" property required') }
       if (!Object.prototype.hasOwnProperty.call(properties, 'operator')) { throw new Error('Condition: constructor "operator" property required') }
-      if (!Object.prototype.hasOwnProperty.call(properties, 'value')) { throw new Error('Condition: constructor "value" property required') }
+
+      // Check if this is a nested condition (operator: 'some' with conditions property)
+      if (this.isNestedCondition()) {
+        // Parse the nested conditions tree
+        this.conditions = new Condition(properties.conditions)
+      } else if (!Object.prototype.hasOwnProperty.call(properties, 'value')) {
+        throw new Error('Condition: constructor "value" property required')
+      }
 
       // a non-boolean condition does not have a priority by default. this allows
       // priority to be dictated by the fact definition
@@ -55,6 +62,22 @@ export default class Condition {
       }
     } else if (this.isConditionReference()) {
       props.condition = this.condition
+    } else if (this.isNestedCondition()) {
+      props.operator = this.operator
+      props.fact = this.fact
+      props.conditions = this.conditions.toJSON(false)
+      if (this.factResult !== undefined) {
+        props.factResult = this.factResult
+      }
+      if (this.result !== undefined) {
+        props.result = this.result
+      }
+      if (this.params) {
+        props.params = this.params
+      }
+      if (this.path) {
+        props.path = this.path
+      }
     } else {
       props.operator = this.operator
       props.value = this.value
@@ -158,5 +181,14 @@ export default class Condition {
    */
   isConditionReference () {
     return Object.prototype.hasOwnProperty.call(this, 'condition')
+  }
+
+  /**
+   * Whether the condition is a nested condition (operator: 'some' with 'conditions' property)
+   * @returns {Boolean}
+   */
+  isNestedCondition () {
+    return this.operator === 'some' &&
+           Object.prototype.hasOwnProperty.call(this, 'conditions')
   }
 }

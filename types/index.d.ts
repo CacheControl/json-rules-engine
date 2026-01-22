@@ -103,6 +103,20 @@ export class Almanac {
   addRuntimeFact(factId: string, value: any): void;
 }
 
+/**
+ * Scoped Almanac for nested condition evaluation
+ * Wraps a parent almanac but prioritizes item properties for fact resolution
+ */
+export class ScopedAlmanac {
+  constructor(parentAlmanac: Almanac, item: any);
+  factValue<T>(
+    factId: string,
+    params?: Record<string, any>,
+    path?: string
+  ): Promise<T>;
+  getValue<T>(value: any): Promise<T>;
+}
+
 export type FactOptions = {
   cache?: boolean;
   priority?: number;
@@ -209,10 +223,28 @@ interface ConditionProperties {
   name?: string;
 }
 
+/**
+ * Nested condition that evaluates conditions against array items
+ * Uses the 'some' operator to check if at least one array item matches
+ */
+interface NestedConditionProperties {
+  fact: string;
+  operator: 'some';
+  conditions: TopLevelCondition;
+  path?: string;
+  priority?: number;
+  params?: Record<string, any>;
+  name?: string;
+}
+
+interface NestedConditionPropertiesResult extends NestedConditionProperties, ConditionResultProperties {
+  conditions: TopLevelConditionResult;
+}
+
 type ConditionPropertiesResult = ConditionProperties & ConditionResultProperties
 
-type NestedCondition = ConditionProperties | TopLevelCondition;
-type NestedConditionResult = ConditionPropertiesResult | TopLevelConditionResult;
+type NestedCondition = ConditionProperties | NestedConditionProperties | TopLevelCondition;
+type NestedConditionResult = ConditionPropertiesResult | NestedConditionPropertiesResult | TopLevelConditionResult;
 type AllConditions = {
   all: NestedCondition[];
   name?: string;
