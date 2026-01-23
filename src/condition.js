@@ -21,15 +21,39 @@ export default class Condition {
         this[booleanOperator] = new Condition(subConditions)
       }
     } else if (!Object.prototype.hasOwnProperty.call(properties, 'condition')) {
-      if (!Object.prototype.hasOwnProperty.call(properties, 'fact')) { throw new Error('Condition: constructor "fact" property required') }
-      if (!Object.prototype.hasOwnProperty.call(properties, 'operator')) { throw new Error('Condition: constructor "operator" property required') }
+      const hasFact = Object.prototype.hasOwnProperty.call(properties, 'fact')
+      const hasOperator = Object.prototype.hasOwnProperty.call(properties, 'operator')
+      const hasValue = Object.prototype.hasOwnProperty.call(properties, 'value')
 
       // Check if this is a nested condition (operator: 'some' with conditions property)
       if (this.isNestedCondition()) {
+        // Nested array conditions require fact (to get the array)
+        if (!hasFact) {
+          throw new Error('Condition: constructor "fact" property required for nested conditions')
+        }
         // Parse the nested conditions tree
         this.conditions = new Condition(properties.conditions)
-      } else if (!Object.prototype.hasOwnProperty.call(properties, 'value')) {
-        throw new Error('Condition: constructor "value" property required')
+      } else if (this.isScopedCondition()) {
+        // Scoped conditions (path only, no fact) - used inside nested conditions
+        // where the "fact" is implicitly the current array item
+        if (!hasOperator) {
+          throw new Error('Condition: constructor "operator" property required')
+        }
+        if (!hasValue) {
+          throw new Error('Condition: constructor "value" property required')
+        }
+        // path is already validated by isScopedCondition()
+      } else {
+        // Regular fact-based condition
+        if (!hasFact) {
+          throw new Error('Condition: constructor "fact" property required')
+        }
+        if (!hasOperator) {
+          throw new Error('Condition: constructor "operator" property required')
+        }
+        if (!hasValue) {
+          throw new Error('Condition: constructor "value" property required')
+        }
       }
 
       // a non-boolean condition does not have a priority by default. this allows
@@ -78,6 +102,23 @@ export default class Condition {
       if (this.path) {
         props.path = this.path
       }
+    } else if (this.isScopedCondition()) {
+      // Scoped condition (path only, no fact)
+      props.operator = this.operator
+      props.value = this.value
+      props.path = this.path
+      if (this.factResult !== undefined) {
+        props.factResult = this.factResult
+      }
+      if (this.valueResult !== undefined) {
+        props.valueResult = this.valueResult
+      }
+      if (this.result !== undefined) {
+        props.result = this.result
+      }
+      if (this.params) {
+        props.params = this.params
+      }
     } else {
       props.operator = this.operator
       props.value = this.value
@@ -121,6 +162,33 @@ export default class Condition {
     const op = operatorMap.get(this.operator)
     if (!op) { return Promise.reject(new Error(`Unknown operator: ${this.operator}`)) }
 
+    // Handle scoped conditions (path only, no fact)
+    // These are used inside nested conditions where the almanac is a ScopedAlmanac
+    if (this.isScopedCondition()) {
+      return Promise.all([
+        almanac.getValue(this.value),
+        almanac.resolvePath(this.path)
+      ]).then(([rightHandSideValue, leftHandSideValue]) => {
+        const result = op.evaluate(leftHandSideValue, rightHandSideValue)
+        debug(
+          'condition::evaluate (scoped)', {
+            path: this.path,
+            leftHandSideValue,
+            operator: this.operator,
+            rightHandSideValue,
+            result
+          }
+        )
+        return {
+          result,
+          leftHandSideValue,
+          rightHandSideValue,
+          operator: this.operator
+        }
+      })
+    }
+
+    // Regular fact-based condition
     return Promise.all([
       almanac.getValue(this.value),
       almanac.factValue(this.fact, this.params, this.path)
@@ -190,5 +258,18 @@ export default class Condition {
   isNestedCondition () {
     return this.operator === 'some' &&
            Object.prototype.hasOwnProperty.call(this, 'conditions')
+  }
+
+  /**
+   * Whether this is a scoped condition (path only, no fact)
+   * Used inside nested conditions where the "fact" is the current array item
+   * The path is resolved directly against the scoped item
+   * @returns {Boolean}
+   */
+  isScopedCondition () {
+    return !Object.prototype.hasOwnProperty.call(this, 'fact') &&
+           Object.prototype.hasOwnProperty.call(this, 'path') &&
+           Object.prototype.hasOwnProperty.call(this, 'operator') &&
+           !this.isBooleanOperator()
   }
 }

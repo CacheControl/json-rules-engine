@@ -323,10 +323,18 @@ describe('Condition', () => {
       expect(() => new Condition(conditions)).to.throw(/Condition: constructor "operator" property required/)
     })
 
-    it('throws for a missing "fact"', () => {
+    it('throws for a missing "fact" when no path provided', () => {
       const conditions = condition()
       delete conditions.all[0].fact
+      delete conditions.all[0].path
       expect(() => new Condition(conditions)).to.throw(/Condition: constructor "fact" property required/)
+    })
+
+    it('allows path-only condition (scoped condition)', () => {
+      const conditions = condition()
+      delete conditions.all[0].fact
+      // path, operator, and value are present - this is a valid scoped condition
+      expect(() => new Condition(conditions)).to.not.throw()
     })
 
     it('throws for a missing "value"', () => {

@@ -815,4 +815,324 @@ describe('Engine: nested conditions', () => {
       expect(nestedCondition.factResult).to.deep.equal(items)
     })
   })
+
+  describe('path-only scoped conditions', () => {
+    const event = { type: 'path-only-scoped-test' }
+
+    beforeEach(() => {
+      engine = engineFactory()
+    })
+
+    describe('basic path-only conditions inside nested block', () => {
+      it('matches when path-only conditions evaluate true on at least one array item', async () => {
+        const conditions = {
+          all: [{
+            fact: 'workersCompData',
+            path: '$.payrollData',
+            operator: 'some',
+            conditions: {
+              all: [
+                { path: '$.state', operator: 'equal', value: 'CA' },
+                { path: '$.ncciCode', operator: 'equal', value: '8810' }
+              ]
+            }
+          }]
+        }
+
+        const rule = factories.rule({ conditions, event })
+        engine.addRule(rule)
+
+        engine.addFact('workersCompData', {
+          payrollData: [
+            { state: 'NY', ncciCode: '8810', payroll: 50000 },
+            { state: 'CA', ncciCode: '8810', payroll: 75000 },
+            { state: 'TX', ncciCode: '9999', payroll: 30000 }
+          ]
+        })
+
+        const eventSpy = sandbox.spy()
+        engine.on('success', eventSpy)
+
+        await engine.run()
+        expect(eventSpy).to.have.been.calledWith(event)
+      })
+
+      it('does not match when no array item satisfies all path-only conditions', async () => {
+        const conditions = {
+          all: [{
+            fact: 'workersCompData',
+            path: '$.payrollData',
+            operator: 'some',
+            conditions: {
+              all: [
+                { path: '$.state', operator: 'equal', value: 'CA' },
+                { path: '$.ncciCode', operator: 'equal', value: '8810' }
+              ]
+            }
+          }]
+        }
+
+        const rule = factories.rule({ conditions, event })
+        engine.addRule(rule)
+
+        engine.addFact('workersCompData', {
+          payrollData: [
+            { state: 'NY', ncciCode: '8810', payroll: 50000 },
+            { state: 'CA', ncciCode: '9999', payroll: 75000 },
+            { state: 'TX', ncciCode: '5555', payroll: 30000 }
+          ]
+        })
+
+        const eventSpy = sandbox.spy()
+        engine.on('success', eventSpy)
+
+        await engine.run()
+        expect(eventSpy).to.not.have.been.called()
+      })
+    })
+
+    describe('path-only with "any" boolean operator', () => {
+      it('matches when at least one path-only condition matches on an item', async () => {
+        const conditions = {
+          all: [{
+            fact: 'payrollItems',
+            operator: 'some',
+            conditions: {
+              any: [
+                { path: '$.state', operator: 'equal', value: 'CA' },
+                { path: '$.payroll', operator: 'greaterThan', value: 100000 }
+              ]
+            }
+          }]
+        }
+
+        const rule = factories.rule({ conditions, event })
+        engine.addRule(rule)
+
+        engine.addFact('payrollItems', [
+          { state: 'NY', payroll: 50000 },
+          { state: 'TX', payroll: 150000 }
+        ])
+
+        const eventSpy = sandbox.spy()
+        engine.on('success', eventSpy)
+
+        await engine.run()
+        expect(eventSpy).to.have.been.calledWith(event)
+      })
+    })
+
+    describe('path-only with nested object paths', () => {
+      it('resolves deeply nested paths on array items', async () => {
+        const conditions = {
+          all: [{
+            fact: 'employees',
+            operator: 'some',
+            conditions: {
+              all: [
+                { path: '$.department.name', operator: 'equal', value: 'Engineering' },
+                { path: '$.department.budget', operator: 'greaterThan', value: 50000 }
+              ]
+            }
+          }]
+        }
+
+        const rule = factories.rule({ conditions, event })
+        engine.addRule(rule)
+
+        engine.addFact('employees', [
+          { name: 'Alice', department: { name: 'Sales', budget: 30000 } },
+          { name: 'Bob', department: { name: 'Engineering', budget: 100000 } }
+        ])
+
+        const eventSpy = sandbox.spy()
+        engine.on('success', eventSpy)
+
+        await engine.run()
+        expect(eventSpy).to.have.been.calledWith(event)
+      })
+    })
+
+    describe('path-only with dynamic value comparison', () => {
+      it('compares path-only left side to path-only right side (same row)', async () => {
+        const conditions = {
+          all: [{
+            fact: 'items',
+            operator: 'some',
+            conditions: {
+              all: [
+                { path: '$.actual', operator: 'greaterThan', value: { path: '$.expected' } }
+              ]
+            }
+          }]
+        }
+
+        const rule = factories.rule({ conditions, event })
+        engine.addRule(rule)
+
+        engine.addFact('items', [
+          { actual: 50, expected: 100 },
+          { actual: 150, expected: 100 }
+        ])
+
+        const eventSpy = sandbox.spy()
+        engine.on('success', eventSpy)
+
+        await engine.run()
+        expect(eventSpy).to.have.been.calledWith(event)
+      })
+
+      it('fails when no row satisfies the path comparison', async () => {
+        const conditions = {
+          all: [{
+            fact: 'items',
+            operator: 'some',
+            conditions: {
+              all: [
+                { path: '$.actual', operator: 'greaterThan', value: { path: '$.expected' } }
+              ]
+            }
+          }]
+        }
+
+        const rule = factories.rule({ conditions, event })
+        engine.addRule(rule)
+
+        engine.addFact('items', [
+          { actual: 50, expected: 100 },
+          { actual: 80, expected: 100 }
+        ])
+
+        const eventSpy = sandbox.spy()
+        engine.on('success', eventSpy)
+
+        await engine.run()
+        expect(eventSpy).to.not.have.been.called()
+      })
+    })
+
+    describe('mixing path-only and fact-based conditions in nested block', () => {
+      it('supports both path-only and fact-based conditions together', async () => {
+        const conditions = {
+          all: [{
+            fact: 'items',
+            operator: 'some',
+            conditions: {
+              all: [
+                { path: '$.status', operator: 'equal', value: 'active' },
+                { fact: 'minThreshold', operator: 'lessThan', value: { path: '$.count' } }
+              ]
+            }
+          }]
+        }
+
+        const rule = factories.rule({ conditions, event })
+        engine.addRule(rule)
+
+        engine.addFact('items', [
+          { status: 'inactive', count: 20 },
+          { status: 'active', count: 15 }
+        ])
+        engine.addFact('minThreshold', 10)
+
+        const eventSpy = sandbox.spy()
+        engine.on('success', eventSpy)
+
+        await engine.run()
+        expect(eventSpy).to.have.been.calledWith(event)
+      })
+    })
+
+    describe('toJSON serialization for path-only conditions', () => {
+      it('correctly serializes path-only scoped conditions', () => {
+        engine = engineFactory()
+
+        const conditions = {
+          all: [{
+            fact: 'data',
+            path: '$.items',
+            operator: 'some',
+            conditions: {
+              all: [
+                { path: '$.state', operator: 'equal', value: 'CA' },
+                { path: '$.code', operator: 'equal', value: '123' }
+              ]
+            }
+          }]
+        }
+
+        const rule = factories.rule({ conditions, event: { type: 'test' } })
+        engine.addRule(rule)
+
+        const json = engine.rules[0].toJSON(false)
+        expect(json.conditions.all[0].operator).to.equal('some')
+        expect(json.conditions.all[0].fact).to.equal('data')
+        expect(json.conditions.all[0].path).to.equal('$.items')
+        expect(json.conditions.all[0].conditions.all).to.have.length(2)
+        expect(json.conditions.all[0].conditions.all[0].path).to.equal('$.state')
+        expect(json.conditions.all[0].conditions.all[0]).to.not.have.property('fact')
+        expect(json.conditions.all[0].conditions.all[1].path).to.equal('$.code')
+        expect(json.conditions.all[0].conditions.all[1]).to.not.have.property('fact')
+      })
+    })
+
+    describe('error handling for path-only conditions outside nested context', () => {
+      it('throws error when path-only condition is used outside nested block', async () => {
+        const conditions = {
+          all: [
+            { path: '$.state', operator: 'equal', value: 'CA' }
+          ]
+        }
+
+        const rule = factories.rule({ conditions, event })
+        engine.addRule(rule)
+
+        engine.addFact('someData', { state: 'CA' })
+
+        try {
+          await engine.run()
+          expect.fail('Should have thrown an error')
+        } catch (error) {
+          expect(error.message).to.include('path-only conditions')
+          expect(error.message).to.include('can only be used inside nested conditions')
+        }
+      })
+    })
+
+    describe('result tracking for path-only scoped conditions', () => {
+      it('tracks factResult and result on path-only nested conditions', async () => {
+        const conditions = {
+          all: [{
+            fact: 'data',
+            path: '$.records',
+            operator: 'some',
+            conditions: {
+              all: [
+                { path: '$.value', operator: 'greaterThan', value: 50 }
+              ]
+            }
+          }]
+        }
+
+        const rule = factories.rule({ conditions, event: { type: 'test' } })
+        engine.addRule(rule)
+
+        engine.addFact('data', {
+          records: [
+            { value: 30 },
+            { value: 100 }
+          ]
+        })
+
+        const results = await engine.run()
+
+        const nestedCondition = results.results[0].conditions.all[0]
+        expect(nestedCondition.result).to.equal(true)
+        expect(nestedCondition.factResult).to.deep.equal([
+          { value: 30 },
+          { value: 100 }
+        ])
+      })
+    })
+  })
 })
