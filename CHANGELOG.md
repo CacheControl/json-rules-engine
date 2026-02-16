@@ -1,3 +1,44 @@
+#### 7.3.1 / 2025-02-20
+  * Upgrade jsonpath-plus to ^10.3.0 to address [CVE in jsonpath-plus](https://security.snyk.io/vuln/SNYK-JS-JSONPATHPLUS-8719585) (#413, #414)
+
+#### 7.3.0 / 2025-01-23
+  * Deprecate `rule.ruleEvent` property in favor of `rule.event` (#404)
+  * Fix typo in `removeOperatorDecorator` export (#411)
+
+#### 7.2.0 / 2024-12-05
+  * Add `valueResult` to condition results and serialization, exposing the resolved value used in fact comparisons (#396)
+  * Add `factResult` to fact-comparison condition values
+
+#### 7.1.0 / 2024-11-11
+  * Add `RuleResult.toJSON()` method with proper TypeScript types (#390, fixes #352)
+  * Add condition result types to TypeScript definitions, including `result` and `factResult` on evaluated conditions
+  * Upgrade jsonpath-plus to ^10.1.0 (#393)
+
+#### 7.0.0 / 2024-10-24
+  * BREAKING CHANGES
+    * Minimum Node.js version is now **18.0.0**
+    * Upgraded jsonpath-plus from ^7.2.0 to ^10.0.0 to address [CVE-2024-21534](https://nvd.nist.gov/vuln/detail/CVE-2024-21534) (Remote Code Execution vulnerability) (#380, #385, #386)
+      * jsonpath-plus v10 is ESM-only, which may affect bundler configurations (see [Bundler Notes](#bundler-notes) below)
+  * MIGRATION FROM v6
+    * Update your Node.js version to 18 or later
+    * If you use a custom bundler (webpack, etc.), ensure it supports ESM dependencies. See #417 for known issues with webpack5.
+    * No changes to the json-rules-engine API itself — the major version bump is due to the jsonpath-plus dependency upgrade
+
+#### 6.6.0 / 2024-10-22
+  * NEW FEATURES
+    * Add operator decorators: `not`, `swap`, `everyFact`, `someFact` — composable modifiers for operators. See [docs/engine.md](./docs/engine.md) and [example 13](./examples/13-using-operator-decorators.js) (#376)
+    * `engine.addOperatorDecorator()` and `engine.removeOperatorDecorator()` methods
+    * Generic type support for `engine.on()` method (#370)
+  * IMPROVEMENTS
+    * Remove lodash dependencies (`lodash.isobjectlike` from almanac and rule-result) (#377)
+    * Simplify `prioritizeAndRun` method for better performance (#378)
+    * Improvements to debug output (#378)
+    * Fix TypeScript types for `addOperator` methods
+
+#### Bundler Notes
+  * **webpack5**: jsonpath-plus v10+ is ESM-only, which can cause chunk loading failures with some webpack configurations. If you encounter issues, ensure your webpack config handles ESM dependencies correctly, or consider using a `pathResolver` to avoid the jsonpath-plus dependency entirely. See #407, #417.
+  * **create-react-app**: The `hash-it` dependency may fail with older webpack versions used by CRA. Consider migrating to a modern build tool. See #344.
+
 #### 6.1.0 / 2021-06-03
   * engine.removeRule() now supports removing rules by name
   * Added engine.updateRule(rule)
