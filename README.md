@@ -226,6 +226,7 @@ localStorage.debug = 'json-rules-engine'
 
 ## Related Projects
 
+_The following community projects integrate with or build on json-rules-engine. They are not maintained or endorsed by the json-rules-engine team — use at your own discretion._
 ### [JSON Rules Editor](https://github.com/vinzdeveloper/json-rule-editor)
 
 Configuration ui for json-rules-engine.
