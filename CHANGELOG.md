@@ -1,3 +1,7 @@
+#### 7.3.2 / 2026-02-16
+  * Mark `Rule.conditions` as `readonly` in TypeScript types (#420, fixes #419)
+  * Add `evaluate` method to `Operator` TypeScript type definition (#415)
+
 #### 7.3.1 / 2025-02-20
   * Upgrade jsonpath-plus to ^10.3.0 to address [CVE in jsonpath-plus](https://security.snyk.io/vuln/SNYK-JS-JSONPATHPLUS-8719585) (#413, #414)
 
