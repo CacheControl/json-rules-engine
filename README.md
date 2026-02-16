@@ -226,9 +226,18 @@ localStorage.debug = 'json-rules-engine'
 
 ## Related Projects
 
-https://github.com/vinzdeveloper/json-rule-editor - configuration ui for json-rules-engine:
+_The following community projects integrate with or build on json-rules-engine. They are not maintained or endorsed by the json-rules-engine team — use at your own discretion._
+### [JSON Rules Editor](https://github.com/vinzdeveloper/json-rule-editor)
+
+Configuration ui for json-rules-engine.
 
 <img width="1680" alt="rule editor 2" src="https://user-images.githubusercontent.com/61467683/82750274-dd3b3b80-9da6-11ea-96eb-434a6a1a9bc1.png">
+
+### [React Rules](https://github.com/rafenden/react-rules)
+
+A React component for building and managing rules.
+
+![React Rules](https://github.com/rafenden/react-rules/raw/main/demo/screenshot2.png)
 
 
 ## License
