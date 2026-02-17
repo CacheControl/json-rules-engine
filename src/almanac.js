@@ -183,4 +183,18 @@ export default class Almanac {
     }
     return Promise.resolve(value)
   }
+
+  /**
+   * Resolves a path - only valid in scoped context (ScopedAlmanac)
+   * This method exists to provide a clear error when path-only conditions
+   * are used outside of a nested condition context
+   * @param {string} path - the path to resolve
+   * @return {Promise} rejects with an error
+   */
+  resolvePath (path) {
+    return Promise.reject(new Error(
+      `Almanac::resolvePath - path-only conditions (path: "${path}") can only be used inside nested conditions. ` +
+      'Ensure this condition is within a "some" or "every" operator block.'
+    ))
+  }
 }

@@ -2,6 +2,7 @@
 
 import Condition from './condition'
 import RuleResult from './rule-result'
+import ScopedAlmanac from './scoped-almanac'
 import debug from './debug'
 import deepClone from 'clone'
 import EventEmitter from 'eventemitter2'
@@ -207,18 +208,18 @@ class Rule extends EventEmitter {
      * @param  {Condition} condition - condition to evaluate
      * @return {Promise(true|false)} - resolves with the result of the condition evaluation
      */
-    const evaluateCondition = (condition) => {
+    const evaluateCondition = (condition, currentAlmanac = almanac) => {
       if (condition.isConditionReference()) {
-        return realize(condition)
+        return realize(condition, currentAlmanac)
       } else if (condition.isBooleanOperator()) {
         const subConditions = condition[condition.operator]
         let comparisonPromise
         if (condition.operator === 'all') {
-          comparisonPromise = all(subConditions)
+          comparisonPromise = all(subConditions, currentAlmanac)
         } else if (condition.operator === 'any') {
-          comparisonPromise = any(subConditions)
+          comparisonPromise = any(subConditions, currentAlmanac)
         } else {
-          comparisonPromise = not(subConditions)
+          comparisonPromise = not(subConditions, currentAlmanac)
         }
         // for booleans, rule passing is determined by the all/any/not result
         return comparisonPromise.then((comparisonValue) => {
@@ -226,9 +227,12 @@ class Rule extends EventEmitter {
           condition.result = passes
           return passes
         })
+      } else if (condition.isNestedCondition()) {
+        // Handle nested conditions (operator: 'some')
+        return evaluateNestedCondition(condition, currentAlmanac)
       } else {
         return condition
-          .evaluate(almanac, this.engine.operators)
+          .evaluate(currentAlmanac, this.engine.operators)
           .then((evaluationResult) => {
             const passes = evaluationResult.result
             condition.factResult = evaluationResult.leftHandSideValue
@@ -240,16 +244,66 @@ class Rule extends EventEmitter {
     }
 
     /**
+     * Evaluates a nested condition (operator: 'some')
+     * @param {Condition} condition - the nested condition to evaluate
+     * @param {Almanac} currentAlmanac - the almanac to use for fact resolution
+     * @return {Promise(boolean)} - resolves with true if any array item matches
+     */
+    const evaluateNestedCondition = (condition, currentAlmanac) => {
+      // Resolve the array fact
+      return currentAlmanac.factValue(condition.fact, condition.params, condition.path)
+        .then((arrayValue) => {
+          if (!Array.isArray(arrayValue)) {
+            debug('rule::evaluateNestedCondition fact is not an array', { fact: condition.fact, value: arrayValue })
+            condition.result = false
+            condition.factResult = arrayValue
+            return false
+          }
+
+          debug('rule::evaluateNestedCondition evaluating', { fact: condition.fact, arrayLength: arrayValue.length })
+
+          // For 'some' operator: return true if any item matches all nested conditions
+          // Use sequential evaluation to check items one by one
+          const evaluateItemsSequentially = (items, index) => {
+            if (index >= items.length) {
+              // No items matched
+              debug('rule::evaluateNestedCondition no matching items found')
+              condition.result = false
+              condition.factResult = arrayValue
+              return false
+            }
+
+            const item = items[index]
+            const scopedAlmanac = new ScopedAlmanac(currentAlmanac, item)
+            return evaluateCondition(condition.conditions, scopedAlmanac)
+              .then((result) => {
+                if (result) {
+                  debug('rule::evaluateNestedCondition found matching item', { item })
+                  condition.result = true
+                  condition.factResult = arrayValue
+                  return true
+                }
+                // Try next item
+                return evaluateItemsSequentially(items, index + 1)
+              })
+          }
+
+          return evaluateItemsSequentially(arrayValue, 0)
+        })
+    }
+
+    /**
      * Evalutes an array of conditions, using an 'every' or 'some' array operation
      * @param  {Condition[]} conditions
      * @param  {string(every|some)} array method to call for determining result
+     * @param  {Almanac} currentAlmanac - the almanac to use for fact resolution
      * @return {Promise(boolean)} whether conditions evaluated truthy or falsey based on condition evaluation + method
      */
-    const evaluateConditions = (conditions, method) => {
+    const evaluateConditions = (conditions, method, currentAlmanac = almanac) => {
       if (!Array.isArray(conditions)) conditions = [conditions]
 
       return Promise.all(
-        conditions.map((condition) => evaluateCondition(condition))
+        conditions.map((condition) => evaluateCondition(condition, currentAlmanac))
       ).then((conditionResults) => {
         debug('rule::evaluateConditions', { results: conditionResults })
         return method.call(conditionResults, (result) => result === true)
@@ -264,9 +318,10 @@ class Rule extends EventEmitter {
      *   it will short-circuit and not bother evaluating any additional rules
      * @param  {Condition[]} conditions - conditions to be evaluated
      * @param  {string('all'|'any'|'not')} operator
+     * @param  {Almanac} currentAlmanac - the almanac to use for fact resolution
      * @return {Promise(boolean)} rule evaluation result
      */
-    const prioritizeAndRun = (conditions, operator) => {
+    const prioritizeAndRun = (conditions, operator, currentAlmanac = almanac) => {
       if (conditions.length === 0) {
         return Promise.resolve(true)
       }
@@ -274,7 +329,7 @@ class Rule extends EventEmitter {
         // no prioritizing is necessary, just evaluate the single condition
         // 'all' and 'any' will give the same results with a single condition so no method is necessary
         // this also covers the 'not' case which should only ever have a single condition
-        return evaluateCondition(conditions[0])
+        return evaluateCondition(conditions[0], currentAlmanac)
       }
       const orderedSets = this.prioritizeConditions(conditions)
       let cursor = Promise.resolve(operator === 'all')
@@ -284,8 +339,8 @@ class Rule extends EventEmitter {
         cursor = cursor.then((setResult) => {
           // rely on the short-circuiting behavior of || and && to avoid evaluating subsequent conditions
           return operator === 'any'
-            ? (setResult || evaluateConditions(set, Array.prototype.some))
-            : (setResult && evaluateConditions(set, Array.prototype.every))
+            ? (setResult || evaluateConditions(set, Array.prototype.some, currentAlmanac))
+            : (setResult && evaluateConditions(set, Array.prototype.every, currentAlmanac))
         })
       }
       return cursor
@@ -294,36 +349,40 @@ class Rule extends EventEmitter {
     /**
      * Runs an 'any' boolean operator on an array of conditions
      * @param  {Condition[]} conditions to be evaluated
+     * @param  {Almanac} currentAlmanac - the almanac to use for fact resolution
      * @return {Promise(boolean)} condition evaluation result
      */
-    const any = (conditions) => {
-      return prioritizeAndRun(conditions, 'any')
+    const any = (conditions, currentAlmanac = almanac) => {
+      return prioritizeAndRun(conditions, 'any', currentAlmanac)
     }
 
     /**
      * Runs an 'all' boolean operator on an array of conditions
      * @param  {Condition[]} conditions to be evaluated
+     * @param  {Almanac} currentAlmanac - the almanac to use for fact resolution
      * @return {Promise(boolean)} condition evaluation result
      */
-    const all = (conditions) => {
-      return prioritizeAndRun(conditions, 'all')
+    const all = (conditions, currentAlmanac = almanac) => {
+      return prioritizeAndRun(conditions, 'all', currentAlmanac)
     }
 
     /**
      * Runs a 'not' boolean operator on a single condition
      * @param  {Condition} condition to be evaluated
+     * @param  {Almanac} currentAlmanac - the almanac to use for fact resolution
      * @return {Promise(boolean)} condition evaluation result
      */
-    const not = (condition) => {
-      return prioritizeAndRun([condition], 'not').then((result) => !result)
+    const not = (condition, currentAlmanac = almanac) => {
+      return prioritizeAndRun([condition], 'not', currentAlmanac).then((result) => !result)
     }
 
     /**
      * Dereferences the condition reference and then evaluates it.
      * @param {Condition} conditionReference
+     * @param {Almanac} currentAlmanac - the almanac to use for fact resolution
      * @returns {Promise(boolean)} condition evaluation result
      */
-    const realize = (conditionReference) => {
+    const realize = (conditionReference, currentAlmanac = almanac) => {
       const condition = this.engine.conditions.get(conditionReference.condition)
       if (!condition) {
         if (this.engine.allowUndefinedConditions) {
@@ -339,7 +398,7 @@ class Rule extends EventEmitter {
         // project the referenced condition onto reference object and evaluate it.
         delete conditionReference.condition
         Object.assign(conditionReference, deepClone(condition))
-        return evaluateCondition(conditionReference)
+        return evaluateCondition(conditionReference, currentAlmanac)
       }
     }
 

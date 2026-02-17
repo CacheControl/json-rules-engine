@@ -95,6 +95,11 @@ export class Almanac {
     params?: Record<string, any>,
     path?: string
   ): Promise<T>;
+  /**
+   * Resolves a path - only valid in scoped context (ScopedAlmanac)
+   * Throws error when called on regular Almanac to catch misuse of scoped conditions
+   */
+  resolvePath<T>(path: string): Promise<T>;
   addFact<T>(fact: Fact<T>): this;
   addFact<T>(
     id: string,
@@ -102,6 +107,25 @@ export class Almanac {
     options?: FactOptions
   ): this;
   addRuntimeFact(factId: string, value: any): void;
+}
+
+/**
+ * Scoped Almanac for nested condition evaluation
+ * Wraps a parent almanac but prioritizes item properties for fact resolution
+ */
+export class ScopedAlmanac {
+  constructor(parentAlmanac: Almanac, item: any);
+  /**
+   * Resolves a path directly on the current scoped item
+   * Used by scoped conditions that have path but no fact
+   */
+  resolvePath<T>(path: string): Promise<T>;
+  factValue<T>(
+    factId: string,
+    params?: Record<string, any>,
+    path?: string
+  ): Promise<T>;
+  getValue<T>(value: any): Promise<T>;
 }
 
 export type FactOptions = {
@@ -210,10 +234,44 @@ interface ConditionProperties {
   name?: string;
 }
 
+/**
+ * Scoped condition that evaluates a path directly on the current array item
+ * Used inside nested conditions where the "fact" is implicitly the current array item
+ * The path is resolved using JSONPath against the scoped item
+ */
+interface ScopedConditionProperties {
+  path: string;
+  operator: string;
+  value: { path: string } | any;
+  priority?: number;
+  params?: Record<string, any>;
+  name?: string;
+}
+
+interface ScopedConditionPropertiesResult extends ScopedConditionProperties, ConditionResultProperties {}
+
+/**
+ * Nested condition that evaluates conditions against array items
+ * Uses the 'some' operator to check if at least one array item matches
+ */
+interface NestedConditionProperties {
+  fact: string;
+  operator: 'some';
+  conditions: TopLevelCondition;
+  path?: string;
+  priority?: number;
+  params?: Record<string, any>;
+  name?: string;
+}
+
+interface NestedConditionPropertiesResult extends NestedConditionProperties, ConditionResultProperties {
+  conditions: TopLevelConditionResult;
+}
+
 type ConditionPropertiesResult = ConditionProperties & ConditionResultProperties
 
-type NestedCondition = ConditionProperties | TopLevelCondition;
-type NestedConditionResult = ConditionPropertiesResult | TopLevelConditionResult;
+type NestedCondition = ConditionProperties | NestedConditionProperties | ScopedConditionProperties | TopLevelCondition;
+type NestedConditionResult = ConditionPropertiesResult | NestedConditionPropertiesResult | ScopedConditionPropertiesResult | TopLevelConditionResult;
 type AllConditions = {
   all: NestedCondition[];
   name?: string;
