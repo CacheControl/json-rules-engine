@@ -92,7 +92,7 @@ export class Almanac {
   constructor(options?: AlmanacOptions);
   factValue<T>(
     factId: string,
-    params?: Record<string, any>,
+    params?: TParams,
     path?: string
   ): Promise<T>;
   addFact<T>(fact: Fact<T>): this;
@@ -109,8 +109,10 @@ export type FactOptions = {
   priority?: number;
 };
 
+type TParams = Record<string, any> | Record<string, any>[];
+
 export type DynamicFactCallback<T = unknown> = (
-  params: Record<string, any>,
+  params: TParams,
   almanac: Almanac
 ) => T;
 
@@ -130,7 +132,7 @@ export class Fact<T = unknown> {
 
 export interface Event {
   type: string;
-  params?: Record<string, any>;
+  params?: TParams;
 }
 
 export type PathResolver = (value: object, path: string) => any;
@@ -206,7 +208,7 @@ interface ConditionProperties {
   value: { fact: string } | any;
   path?: string;
   priority?: number;
-  params?: Record<string, any>;
+  params?: TParams;
   name?: string;
 }
 
